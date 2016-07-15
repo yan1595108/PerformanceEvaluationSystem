@@ -19,7 +19,6 @@
 
 //全局变量
 CString strRunningInfo;				//程序运行信息
-double currentX = 0;;
 DWORD WINAPI DisplayData(LPVOID lpParam);
 
 //线程相关函数
@@ -72,6 +71,8 @@ CPerformanceEvaluationSystemDlg::CPerformanceEvaluationSystemDlg(CWnd* pParent /
 	pGEDevice(NULL)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+	FilePositionPlot = 0;
+	CurrentX = 0;
 }
 
 void CPerformanceEvaluationSystemDlg::DoDataExchange(CDataExchange* pDX)
@@ -96,7 +97,8 @@ BEGIN_MESSAGE_MAP(CPerformanceEvaluationSystemDlg, CDialogEx)
 	ON_CBN_SELCHANGE(IDC_COMBO_WORKMODE, &CPerformanceEvaluationSystemDlg::OnCbnSelchangeComboWorkmode)
 	ON_BN_CLICKED(IDC_BUTTON_TEST1, &CPerformanceEvaluationSystemDlg::OnBnClickedButtonTest1)
 	ON_BN_CLICKED(IDC_BUTTON_TEST2, &CPerformanceEvaluationSystemDlg::OnBnClickedButtonTest2)
-	ON_MESSAGE(WM_PLOTDATA, PlotData)
+	//ON_MESSAGE(WM_PLOTDATA, PlotData)
+	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
 
@@ -410,7 +412,7 @@ void CPerformanceEvaluationSystemDlg::InitialiPlotX()
 	//}
 	//UpdateGrid();
 	//设置iPlotX控件的环形Buffer大小
-	int nRingBufferSize = 100000;
+	int nRingBufferSize = 1000000;
 	m_iPlotX.GetChannel(0).SetRingBufferSize(nRingBufferSize);
 }
 
@@ -1642,45 +1644,66 @@ void CPerformanceEvaluationSystemDlg::Test()
 }
 
 
-LRESULT CPerformanceEvaluationSystemDlg::PlotData(WPARAM wParam, LPARAM lParam)
+//LRESULT CPerformanceEvaluationSystemDlg::PlotData(WPARAM wParam, LPARAM lParam)
+//{
+//	m_iPlotX.GetXAxis(0).SetMin(0);
+//	m_iPlotX.GetXAxis(0).SetSpan(10);
+//	SetTimer(1, 1000, NULL);
+//	return 0;
+//}
+
+void CPerformanceEvaluationSystemDlg::OnTimer(UINT_PTR nIDEvent)
 {
-	char* DataToPlot = (char*)wParam;
-	int DataLength = (int)lParam;
+	// TODO: ÔÚ´ËÌí¼ÓÏûÏ¢´¦Àí³ÌÐò´úÂëºÍ/»òµ÷ÓÃÄ¬ÈÏÖµ
+	int LengPerDisplay = 10000;
+	CFile FileData;
 
-	int uploadtype = m_Page4.m_UploadDataType.GetCurSel();
-	if (uploadtype == 5)           //中频数据为2个字节，数据长度应除以2
+	CString strFileDataDir = "C:\\Recv\\RecvData.dat";
+	FileData.Open(strFileDataDir,CFile::modeRead | CFile::modeCreate | CFile::modeNoTruncate | CFile::shareDenyNone);
+	if (FileData.GetLength() < FilePositionPlot + LengPerDisplay)
 	{
-		DataLength = DataLength / 2;
+		return;
 	}
-	else if (uploadtype == 1)      //锁相环累计误差数据为4个字节，数据长度应除以4
+	else
 	{
-		DataLength = DataLength / 4;
-	}
+		FileData.Seek(FilePositionPlot, CFile::begin);
+		char *pBufFileReadIn = new char[LengPerDisplay];
+		FileData.Read(pBufFileReadIn,LengPerDisplay);
+		int uploadtype = m_Page4.m_UploadDataType.GetCurSel();
+		if (uploadtype == 5)           //中频数据为2个字节，数据长度应除以2
+		{
+			LengPerDisplay = LengPerDisplay / 2;
+		}
+		else if (uploadtype == 1)      //锁相环累计误差数据为4个字节，数据长度应除以4
+		{
+			LengPerDisplay = LengPerDisplay / 4;
+		}
 
-	double dAxisX =0.0;
-	double dAxisXDelt = 0.001;
-	CiPlotChannelX ChannelX = m_iPlotX.GetChannel(0);
-	ChannelX.Clear();
-	CiPlotAxisX XAxis = m_iPlotX.GetXAxis(0);
-	for (int i=0;i<DataLength;i++)
-	{
-		if (uploadtype == 5)
+		double dAxisXDelt = 0.001;
+		CiPlotChannelX ChannelX = m_iPlotX.GetChannel(0);
+		CiPlotAxisX XAxis = m_iPlotX.GetXAxis(0);
+		for (int i=0;i< LengPerDisplay;i++)
 		{
-			ChannelX.AddXY(dAxisX,*(DataToPlot + 2 * i) * 256 + *(DataToPlot + 2 * i));
+			if (uploadtype == 5)
+			{
+				ChannelX.AddXY(CurrentX, *(pBufFileReadIn + 2 * i) * 256 + *(pBufFileReadIn + 2 * i));
+			}
+			else if (uploadtype == 1)
+			{
+				ChannelX.AddXY(CurrentX, *(long *)(pBufFileReadIn + 4 * i));
+			}
+			else
+			{
+				ChannelX.AddXY(CurrentX, (double)*(pBufFileReadIn + i));
+			}
+			CurrentX += dAxisXDelt;
 		}
-		else if (uploadtype == 1)
-		{
-			ChannelX.AddXY(dAxisX,*(long *)(DataToPlot + 4 * i));
-		}
-		else
-		{
-			ChannelX.AddXY(dAxisX,(double)*(DataToPlot + i));
-		}
-		dAxisX += dAxisXDelt;
+		delete[] pBufFileReadIn;
+		FilePositionPlot += LengPerDisplay;
+		m_iPlotX.GetYAxis(0).SetMin(m_iPlotX.GetChannel(0).GetYMin());
+		m_iPlotX.GetYAxis(0).SetSpan(m_iPlotX.GetChannel(0).GetYMax() - m_iPlotX.GetChannel(0).GetYMin());
 	}
-	delete[] DataToPlot;
-	XAxis.SetMin(0);
-	XAxis.SetSpan(dAxisX);
-	TRACE("min = 0, max = %f", dAxisX);
-	return 0;
+	FileData.Close();
+
+	CDialogEx::OnTimer(nIDEvent);
 }

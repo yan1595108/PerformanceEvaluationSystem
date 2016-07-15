@@ -483,6 +483,9 @@ void CPage4::OnBnClickedButtonRecvdata()
 {
 	// TODO: 在此添加控件通知处理程序代码
 	CPerformanceEvaluationSystemDlg *pMainDlg = static_cast<CPerformanceEvaluationSystemDlg*>(pTempMainDlg);
+	pMainDlg->SetTimer(1, 200, NULL);
+	pMainDlg->m_iPlotX.GetXAxis(0).SetMin(0);
+	pMainDlg->m_iPlotX.GetXAxis(0).SetSpan(10);
 
 	strRunningInfo.Empty();
 	//清除套接字缓存
@@ -562,7 +565,7 @@ void CPage4::OnBnClickedButtonRecvdata()
 
 	//////////////////////////////////////////////////////////////////////////
 	//开始接收数据
-	pMainDlg->ClearFiles("C:\\Recv\\*.dat");	//清除缓存文件
+	//pMainDlg->ClearFiles("C:\\Recv\\*.dat");	//清除缓存文件
 	pGEDevice->Open();							//打开千兆网设备
 	pGEDevice->SetStorePath("C:\\Recv\\");
 
@@ -571,8 +574,6 @@ void CPage4::OnBnClickedButtonRecvdata()
 	GetDlgItem(IDC_BUTTON_STOP_RECV)->EnableWindow(TRUE);
 	
 	TRACE("开启线程！\n");
-
-	ThreadRecvParam.pPage4Dlg = this;
 
 	//避免出现线程尚未退出又继续创建线程
 	if (bThreadStopRecv){
@@ -587,9 +588,9 @@ void CPage4::OnBnClickedButtonRecvdata()
 		return;
 	}
 	//创建接收线程
-	hThreadRecv = CreateThread(NULL,0,ThreadRecv,&ThreadRecvParam,0,&dwThreadRecvID);
+	/*hThreadRecv = CreateThread(NULL,0,ThreadRecv,&ThreadRecvParam,0,&dwThreadRecvID);
 	CloseHandle(hThreadRecv);
-	hThreadRecv = INVALID_HANDLE_VALUE;
+	hThreadRecv = INVALID_HANDLE_VALUE;*/
 
 	//避免出现线程尚未退出又继续创建线程
 	if (bThreadStopPlot){
@@ -604,9 +605,10 @@ void CPage4::OnBnClickedButtonRecvdata()
 		return;
 	}
 	//创建线程
+	/*ThreadRecvParam.pPage4Dlg = this;
 	hThreadPlot = CreateThread(NULL,0,ThreadStartPlot,&ThreadRecvParam,0,&dwThreadPlotID);
 	CloseHandle(hThreadPlot);
-	hThreadPlot = INVALID_HANDLE_VALUE;
+	hThreadPlot = INVALID_HANDLE_VALUE;*/
 }
 
 
@@ -697,7 +699,7 @@ DWORD WINAPI ThreadStartPlot(LPVOID lpParam)
 			FileData.Read(pBufFileReadIn,nLenDelt);
 
 			llPosFileData = FileData.GetPosition();
-			::PostMessage(pMainDlg->GetSafeHwnd(), WM_PLOTDATA, (WPARAM)pBufFileReadIn, nLenDelt);
+			//::PostMessage(pMainDlg->GetSafeHwnd(), WM_PLOTDATA, (WPARAM)pBufFileReadIn, nLenDelt);
 		}
 		else
 		{
@@ -715,6 +717,9 @@ void CPage4::OnBnClickedButtonStopRecv()
 {
 	// TODO: 在此添加控件通知处理程序代码
 	CPerformanceEvaluationSystemDlg *pMainDlg = static_cast<CPerformanceEvaluationSystemDlg*>(pTempMainDlg);
+	pMainDlg->KillTimer(1);
+	pMainDlg->FilePositionPlot = 0;
+	pMainDlg->CurrentX = 0;
 
 	//发送指令 将解调FPGA的上传数据停止
 	int nDemodCmdSize_StopRecv =20;

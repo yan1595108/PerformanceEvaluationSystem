@@ -132,13 +132,12 @@ public:
 public:
 	CComboBox m_WorkMode;				//工作模式复合框
 	CComboBox m_SignalType;				//信号类型复合框
-
-public:
 	//Engine *ep;							//Matlab引擎
 	CiPlotX	m_iPlotX;					//绘图控件
+	long FilePositionPlot;				//绘图函数从文件中获取数据的文件位置
+	double CurrentX;					//绘图函数绘图使用的X轴坐标
 
-//千兆网相关变量
-public:
+    //千兆网相关变量
 	//fstream RunInfo;					//千兆网接口运行状态记录文件
 	CGigabitEthernetDevice* pGEDevice;	//千兆网接口设备
 
@@ -219,7 +218,6 @@ public:
 	afx_msg void OnCbnSelchangeComboSignaltype();
 	afx_msg void OnCbnSelchangeComboWorkmode();
 	afx_msg void OnBnClickedButtonTest1();
-	afx_msg LRESULT PlotData(WPARAM wParam, LPARAM lParam);
 
 	//////////////////////////////////////////////////////////////////////////
 	//Page1相关函数
@@ -238,6 +236,7 @@ public:
 	void	ClearFiles(CString Path_DatFile);				//清除文件
 	void	DisplayRunningInfo(CString strInfo);			//输出系统运行信息
 	void	Test();											//测试按钮
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 };
 
 
