@@ -1,0 +1,197 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ReadMe.txt" />
+    <None Include="res\PerformanceEvaluationSystem.rc2">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="res\PerformanceEvaluationSystem.ico">
+      <Filter>资源文件</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="PerformanceEvaluationSystem.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="PerformanceEvaluationSystemDlg.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="font.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="iplotannotationx.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="iplotaxisx.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="iplotchannelx.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="iplotdatacursorx.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="iplotdataviewx.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="iplotlabelx.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="iplotlegendx.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="iplotlimitx.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="iplottoolbarx.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="iplotx.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ixyplotchannelx.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ixyplotx.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="picture.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="PageBase.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Page1.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Page2.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="FFT_DSP.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Page4.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Page3.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Page5.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="CommonFunction.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="GigabitEthernetDevice.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="PerformanceEvaluationSystem.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="PerformanceEvaluationSystemDlg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="font.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="iplotannotationx.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="iplotaxisx.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="iplotchannelx.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="iplotdatacursorx.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="iplotdataviewx.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="iplotlabelx.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="iplotlegendx.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="iplotlimitx.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="iplottoolbarx.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="iplotx.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ixyplotchannelx.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ixyplotx.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="picture.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="PageBase.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Page1.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Page2.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="FFT_DSP.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Page4.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Page3.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Page5.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="CommonFunction.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="GigabitEthernetDevice.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="PerformanceEvaluationSystem.rc">
+      <Filter>资源文件</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>
