@@ -75,6 +75,11 @@ CPerformanceEvaluationSystemDlg::CPerformanceEvaluationSystemDlg(CWnd* pParent /
 	CurrentX = 0;
 }
 
+CPerformanceEvaluationSystemDlg::~CPerformanceEvaluationSystemDlg()
+{
+	engClose(en);
+};
+
 void CPerformanceEvaluationSystemDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
@@ -150,6 +155,15 @@ BOOL CPerformanceEvaluationSystemDlg::OnInitDialog()
 
 	pGEDevice->Initial();			//初始化千兆网接口
 	/*RunInfo.open("C:\\Users\\Administrator\\Desktop\\RunInfo.txt",ios::out);*/
+	if (!(en = engOpen(NULL)))
+	{
+		MessageBox(_T("打开Matlab引擎失败！"));
+	}
+	else
+	{
+		//打开成功则隐藏Matlab引擎
+		engSetVisible(en,FALSE);
+	}
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -208,14 +222,14 @@ void CPerformanceEvaluationSystemDlg::InitialControls()
 {
 	//初始化工作模式
 	m_WorkMode.Clear();
-	m_WorkMode.AddString("在线模式");
-	m_WorkMode.AddString("离线模式");
+	m_WorkMode.AddString(_T("在线模式"));
+	m_WorkMode.AddString(_T("离线模式"));
 	m_WorkMode.SetCurSel(0);
 
 	//初始化信号类型
 	m_SignalType.Clear();
-	m_SignalType.AddString("窄带信号");
-	m_SignalType.AddString("宽带信号");
+	m_SignalType.AddString(_T("窄带信号"));
+	m_SignalType.AddString(_T("宽带信号"));
 	m_SignalType.SetCurSel(0);
 }
 
@@ -335,39 +349,39 @@ void CPerformanceEvaluationSystemDlg::InitialiPlotX()
 	m_iPlotX.GetLabels(lIndexLabel_Marker_Val2).SetFont(NewLableFont);
 
 	//第二层-Center Freq
-	m_iPlotX.GetLabels(lIndexLabel_CenterFreq).SetCaption("Center Freq");
+	m_iPlotX.GetLabels(lIndexLabel_CenterFreq).SetCaption(_T("Center Freq"));
 	m_iPlotX.GetLabels(lIndexLabel_CenterFreq).SetAlignment(AlignhLeft); //1左对齐
 	m_iPlotX.GetLabels(lIndexLabel_CenterFreq).SetMarginLeft(0);
 	m_iPlotX.GetLabels(lIndexLabel_CenterFreq).SetMarginTop(0.1);
 	m_iPlotX.GetLabels(lIndexLabel_CenterFreq).SetMarginRight(0);
 	m_iPlotX.GetLabels(lIndexLabel_CenterFreq).SetMarginBottom(0);
-	m_iPlotX.GetLabels(lIndexLabel_CenterFreq_Val).SetCaption("160.00MHz");
+	m_iPlotX.GetLabels(lIndexLabel_CenterFreq_Val).SetCaption(_T("160.00MHz"));
 	m_iPlotX.GetLabels(lIndexLabel_CenterFreq_Val).SetAlignment(AlignhRight);
 	m_iPlotX.GetLabels(lIndexLabel_CenterFreq_Val).SetMarginLeft(0);
 	m_iPlotX.GetLabels(lIndexLabel_CenterFreq_Val).SetMarginTop(0.1);
 	m_iPlotX.GetLabels(lIndexLabel_CenterFreq_Val).SetMarginRight(0);
 	m_iPlotX.GetLabels(lIndexLabel_CenterFreq_Val).SetMarginBottom(0);
 	//第二层-Span
-	m_iPlotX.GetLabels(lIndexLabel_Span).SetCaption("Span");
+	m_iPlotX.GetLabels(lIndexLabel_Span).SetCaption(_T("Span"));
 	m_iPlotX.GetLabels(lIndexLabel_Span).SetAlignment(AlignhLeft); //1左对齐
 	m_iPlotX.GetLabels(lIndexLabel_Span).SetMarginLeft(0);
 	m_iPlotX.GetLabels(lIndexLabel_Span).SetMarginTop(0.1);
 	m_iPlotX.GetLabels(lIndexLabel_Span).SetMarginRight(0);
 	m_iPlotX.GetLabels(lIndexLabel_Span).SetMarginBottom(0);
-	m_iPlotX.GetLabels(lIndexLabel_Span_Val).SetCaption("320.00MHz");
+	m_iPlotX.GetLabels(lIndexLabel_Span_Val).SetCaption(_T("320.00MHz"));
 	m_iPlotX.GetLabels(lIndexLabel_Span_Val).SetAlignment(AlignhRight);
 	m_iPlotX.GetLabels(lIndexLabel_Span_Val).SetMarginLeft(0);
 	m_iPlotX.GetLabels(lIndexLabel_Span_Val).SetMarginTop(0.1);
 	m_iPlotX.GetLabels(lIndexLabel_Span_Val).SetMarginRight(0);
 	m_iPlotX.GetLabels(lIndexLabel_Span_Val).SetMarginBottom(0);
 	//第四层-Ref
-	m_iPlotX.GetLabels(lIndexLabel_Ref).SetCaption("Ref");
+	m_iPlotX.GetLabels(lIndexLabel_Ref).SetCaption(_T("Ref"));
 	m_iPlotX.GetLabels(lIndexLabel_Ref).SetAlignment(AlignhLeft); //1左对齐
 	m_iPlotX.GetLabels(lIndexLabel_Ref).SetMarginLeft(0);
 	m_iPlotX.GetLabels(lIndexLabel_Ref).SetMarginTop(0.2);
 	m_iPlotX.GetLabels(lIndexLabel_Ref).SetMarginRight(0);
 	m_iPlotX.GetLabels(lIndexLabel_Ref).SetMarginBottom(0.1);
-	m_iPlotX.GetLabels(lIndexLabel_Ref_Val).SetCaption("10.00dBm");
+	m_iPlotX.GetLabels(lIndexLabel_Ref_Val).SetCaption(_T("10.00dBm"));
 	m_iPlotX.GetLabels(lIndexLabel_Ref_Val).SetAlignment(AlignhRight);
 	m_iPlotX.GetLabels(lIndexLabel_Ref_Val).SetMarginLeft(0);
 	m_iPlotX.GetLabels(lIndexLabel_Ref_Val).SetMarginTop(0.2);
@@ -375,19 +389,19 @@ void CPerformanceEvaluationSystemDlg::InitialiPlotX()
 	m_iPlotX.GetLabels(lIndexLabel_Ref_Val).SetMarginBottom(0.1);
 	
 	//第四层-Marker
-	m_iPlotX.GetLabels(lIndexLabel_Marker).SetCaption("Marker1");
+	m_iPlotX.GetLabels(lIndexLabel_Marker).SetCaption(_T("Marker1"));
 	m_iPlotX.GetLabels(lIndexLabel_Marker).SetAlignment(AlignhLeft); //1左对齐
 	m_iPlotX.GetLabels(lIndexLabel_Marker).SetMarginLeft(0);
 	m_iPlotX.GetLabels(lIndexLabel_Marker).SetMarginTop(0.2);
 	m_iPlotX.GetLabels(lIndexLabel_Marker).SetMarginRight(0);
 	m_iPlotX.GetLabels(lIndexLabel_Marker).SetMarginBottom(0.1);
-	m_iPlotX.GetLabels(lIndexLabel_Marker_Val1).SetCaption("320.00MHz");
+	m_iPlotX.GetLabels(lIndexLabel_Marker_Val1).SetCaption(_T("320.00MHz"));
 	m_iPlotX.GetLabels(lIndexLabel_Marker_Val1).SetAlignment(AlignhRight);
 	m_iPlotX.GetLabels(lIndexLabel_Marker_Val1).SetMarginLeft(0);
 	m_iPlotX.GetLabels(lIndexLabel_Marker_Val1).SetMarginTop(0.2);
 	m_iPlotX.GetLabels(lIndexLabel_Marker_Val1).SetMarginRight(0);
 	m_iPlotX.GetLabels(lIndexLabel_Marker_Val1).SetMarginBottom(0.1);
-	m_iPlotX.GetLabels(lIndexLabel_Marker_Val2).SetCaption("-44.91dBm");
+	m_iPlotX.GetLabels(lIndexLabel_Marker_Val2).SetCaption(_T("-44.91dBm"));
 	m_iPlotX.GetLabels(lIndexLabel_Marker_Val2).SetAlignment(AlignhRight);
 	m_iPlotX.GetLabels(lIndexLabel_Marker_Val2).SetMarginLeft(0);
 	m_iPlotX.GetLabels(lIndexLabel_Marker_Val2).SetMarginTop(0.2);
@@ -425,15 +439,15 @@ void CPerformanceEvaluationSystemDlg::InitialiPlotX_Page1()
 	m_iPlotX.GetYAxis(0).SetTitleShow(FALSE);
 
 	//设置标签页
-	m_iPlotX.GetLabels(lIndexLabel_CenterFreq).SetCaption("Center Freq");
+	m_iPlotX.GetLabels(lIndexLabel_CenterFreq).SetCaption(_T("Center Freq"));
 	m_iPlotX.GetLabels(lIndexLabel_CenterFreq_Val).SetCaption(Data2Unit(m_Page1.mPage1_dCenterFreq,UNIT_FREQUENCY));
-	m_iPlotX.GetLabels(lIndexLabel_Span).SetCaption("Span");
+	m_iPlotX.GetLabels(lIndexLabel_Span).SetCaption(_T("Span"));
 	m_iPlotX.GetLabels(lIndexLabel_Span_Val).SetCaption(Data2Unit(m_Page1.mPage1_dBandWidth,UNIT_FREQUENCY));
-	m_iPlotX.GetLabels(lIndexLabel_Ref).SetCaption("Ref");
+	m_iPlotX.GetLabels(lIndexLabel_Ref).SetCaption(_T("Ref"));
 	m_iPlotX.GetLabels(lIndexLabel_Ref_Val).SetCaption(Data2Unit(m_Page1.mPage1_dReferenceLevel,UNIT_AMPLITUDE));
-	m_iPlotX.GetLabels(lIndexLabel_Marker).SetCaption("Marker1");
-	m_iPlotX.GetLabels(lIndexLabel_Marker_Val1).SetCaption("0.0MHz");
-	m_iPlotX.GetLabels(lIndexLabel_Marker_Val2).SetCaption("0.0dBm");
+	m_iPlotX.GetLabels(lIndexLabel_Marker).SetCaption(_T("Marker1"));
+	m_iPlotX.GetLabels(lIndexLabel_Marker_Val1).SetCaption(_T("0.0MHz"));
+	m_iPlotX.GetLabels(lIndexLabel_Marker_Val2).SetCaption(_T("0.0dBm"));
 	
 	//显示网格线
 	/*for (int i=0;i<11;i++)
@@ -446,15 +460,15 @@ void CPerformanceEvaluationSystemDlg::InitialiPlotX_Page1()
 void CPerformanceEvaluationSystemDlg::InitialiPlotX_Page4(int nInitMode)
 {
 	//清空标签页的内容
-	m_iPlotX.GetLabels(lIndexLabel_CenterFreq).SetCaption("");
-	m_iPlotX.GetLabels(lIndexLabel_CenterFreq_Val).SetCaption("");
-	m_iPlotX.GetLabels(lIndexLabel_Span).SetCaption("");
-	m_iPlotX.GetLabels(lIndexLabel_Span_Val).SetCaption("");
-	m_iPlotX.GetLabels(lIndexLabel_Ref).SetCaption("");
-	m_iPlotX.GetLabels(lIndexLabel_Ref_Val).SetCaption("");
-	m_iPlotX.GetLabels(lIndexLabel_Marker).SetCaption("");
-	m_iPlotX.GetLabels(lIndexLabel_Marker_Val1).SetCaption("");
-	m_iPlotX.GetLabels(lIndexLabel_Marker_Val2).SetCaption("");
+	m_iPlotX.GetLabels(lIndexLabel_CenterFreq).SetCaption(_T(""));
+	m_iPlotX.GetLabels(lIndexLabel_CenterFreq_Val).SetCaption(_T(""));
+	m_iPlotX.GetLabels(lIndexLabel_Span).SetCaption(_T(""));
+	m_iPlotX.GetLabels(lIndexLabel_Span_Val).SetCaption(_T(""));
+	m_iPlotX.GetLabels(lIndexLabel_Ref).SetCaption(_T(""));
+	m_iPlotX.GetLabels(lIndexLabel_Ref_Val).SetCaption(_T(""));
+	m_iPlotX.GetLabels(lIndexLabel_Marker).SetCaption(_T(""));
+	m_iPlotX.GetLabels(lIndexLabel_Marker_Val1).SetCaption(_T(""));
+	m_iPlotX.GetLabels(lIndexLabel_Marker_Val2).SetCaption(_T(""));
 
 	//设置坐标轴标题
 	COleFont m_font;
@@ -478,20 +492,20 @@ void CPerformanceEvaluationSystemDlg::InitialiPlotX_Page4(int nInitMode)
 	switch(nInitMode)
 	{
 	case WaveDispMode_DemoduData:
-		m_iPlotX.GetXAxis(0).SetTitle("Time(ms)");
-		m_iPlotX.GetYAxis(0).SetTitle("Amplitude");
+		m_iPlotX.GetXAxis(0).SetTitle(_T("Time(ms)"));
+		m_iPlotX.GetYAxis(0).SetTitle(_T("Amplitude"));
 		break;
 	case WaveDispMode_PLLAccumEr:
-		m_iPlotX.GetXAxis(0).SetTitle("Time(ms)");
-		m_iPlotX.GetYAxis(0).SetTitle("Phase(rad)");
+		m_iPlotX.GetXAxis(0).SetTitle(_T("Time(ms)"));
+		m_iPlotX.GetYAxis(0).SetTitle(_T("Phase(rad)"));
 		break;
 	case WaveDispMode_TimLoopEr:
-		m_iPlotX.GetXAxis(0).SetTitle("Time(ms)");
-		m_iPlotX.GetYAxis(0).SetTitle("Phase(rad)");
+		m_iPlotX.GetXAxis(0).SetTitle(_T("Time(ms)"));
+		m_iPlotX.GetYAxis(0).SetTitle(_T("Phase(rad)"));
 		break;
 	case WaveDispMode_Variance:
-		m_iPlotX.GetXAxis(0).SetTitle("Time(ms)");
-		m_iPlotX.GetYAxis(0).SetTitle("Amplitude");
+		m_iPlotX.GetXAxis(0).SetTitle(_T("Time(ms)"));
+		m_iPlotX.GetYAxis(0).SetTitle(_T("Amplitude"));
 		break;
 	default:
 
@@ -509,53 +523,53 @@ CString CPerformanceEvaluationSystemDlg::Data2Unit(double dDataVal,int nUnitType
 	{
 		if (abs(dDataVal)>=pow((double)10,9))
 		{
-			strTemp.Format("%.2lfGHz",dDataVal/pow((double)10,9));
+			strTemp.Format(_T("%.2lfGHz"),dDataVal/pow((double)10,9));
 		}
 		else if (abs(dDataVal)>=pow((double)10,6))
 		{
-			strTemp.Format("%.2lfMHz",dDataVal/pow((double)10,6));
+			strTemp.Format(_T("%.2lfMHz"),dDataVal/pow((double)10,6));
 		}
 		else if (abs(dDataVal)>=pow((double)10,3))
 		{
-			strTemp.Format("%.2lfKHz",dDataVal/pow((double)10,3));
+			strTemp.Format(_T("%.2lfKHz"),dDataVal/pow((double)10,3));
 		}
 		else if (abs(dDataVal)>=0)
 		{
-			strTemp.Format("%.2lfHz",dDataVal);
+			strTemp.Format(_T("%.2lfHz"),dDataVal);
 		}
 	}
 	else if (UNIT_AMPLITUDE == nUnitType)//幅度单位dB
 	{
 		if (abs(dDataVal)>=pow((double)10,9))
 		{
-			strTemp.Format("%.2lfGdB",dDataVal/pow((double)10,9));
+			strTemp.Format(_T("%.2lfGdB"),dDataVal/pow((double)10,9));
 		}
 		else if (abs(dDataVal)>=pow((double)10,6))
 		{
-			strTemp.Format("%.2lfMdB",dDataVal/pow((double)10,6));
+			strTemp.Format(_T("%.2lfMdB"),dDataVal/pow((double)10,6));
 		}
 		else if (abs(dDataVal)>=pow((double)10,3))
 		{
-			strTemp.Format("%.2lfKdB",dDataVal/pow((double)10,3));
+			strTemp.Format(_T("%.2lfKdB"),dDataVal/pow((double)10,3));
 		}
 		else if (abs(dDataVal)>=0)
 		{
-			strTemp.Format("%.2lfdB",dDataVal);
+			strTemp.Format(_T("%.2lfdB"),dDataVal);
 		}
 	}
 	else if (UNIT_TIME == nUnitType)//时间单位us
 	{
 		if (abs(dDataVal)>=pow((double)10,6))
 		{
-			strTemp.Format("%.2lfs",dDataVal/pow((double)10,6));
+			strTemp.Format(_T("%.2lfs"),dDataVal/pow((double)10,6));
 		}
 		else if (abs(dDataVal)>=pow((double)10,3))
 		{
-			strTemp.Format("%.2lfms",dDataVal/pow((double)10,3));
+			strTemp.Format(_T("%.2lfms"),dDataVal/pow((double)10,3));
 		}
 		else if (abs(dDataVal)>=0)
 		{
-			strTemp.Format("%.2lfus",dDataVal);
+			strTemp.Format(_T("%.2lfus"),dDataVal);
 		}
 	}
 	return strTemp;
@@ -949,7 +963,7 @@ UINT Thread_SpectrumDisplay(LPVOID lpParam)
 	{
 		for (int i=0;i<nNumSubChannels;i++)
 		{
-			strFileSubChaName.Format("SubChannel%d.dat",i+1);
+			strFileSubChaName.Format(_T("SubChannel%d.dat"),i+1);
 			strFileSubChaDir = strFileSubChaPath + strFileSubChaName;
 			FileSubChannels.Open(strFileSubChaDir,CFile::modeRead | CFile::shareDenyNone);
 			while((llPosFileSubChan+2*nSubChanNFFT*sizeof(short))>=FileSubChannels.GetLength())
@@ -1073,15 +1087,15 @@ UINT Thread_SpectrumDisplay(LPVOID lpParam)
 					dXMaxVal = i;
 				}
 			}
-			strXMaxVal.Format("%.2lfMHz",dXMaxVal*dDefFreq + dCenterFreq-dAnalogBand/2);
-			strYMaxVal.Format("%.2lfdBm",dYMaxVal);
+			strXMaxVal.Format(_T("%.2lfMHz"),dXMaxVal*dDefFreq + dCenterFreq-dAnalogBand/2);
+			strYMaxVal.Format(_T("%.2lfdBm"),dYMaxVal);
 			LabelTemp_MarkerVal1.SetCaption(strXMaxVal);
 			LabelTemp_MarkerVal2.SetCaption(strYMaxVal);
 		}
 		pMainDlg->UpdateGrid();
 		double dCarrierFrq = 0.0,dSignalBW = 0.0,dSNR;
 		pMainDlg->GetCarrierFreqAndBW(dpAllChannelsFFT,nNumSubChannels*nSubChanIntercepNFFT,dAnalogBand,dCarrierFrq,dSignalBW);
-		TRACE("载波频率差：%lf\n信号带宽：%lf\n",dCarrierFrq,dSignalBW);
+		TRACE(_T("载波频率差：%lf\n信号带宽：%lf\n"),dCarrierFrq,dSignalBW);
 		pMainDlg->GetSNR(dpAllChannelsFFT,nNumSubChannels*nSubChanIntercepNFFT,dCarrierFrq+70*pow(10.0,6),0.32*pow(10.0,6),dAnalogBand,dSignalBW,dSNR);
 		//CarryAndBWCalculate();
 	}
@@ -1094,7 +1108,7 @@ UINT Thread_SpectrumDisplay(LPVOID lpParam)
 	DWORD t1 = GetTickCount();
 	DWORD t2 = GetTickCount();
 	CString strTimeInfo;
-	strTimeInfo.Format("共耗时：%dms",t2-t1);
+	strTimeInfo.Format(_T("共耗时：%dms"),t2-t1);
 	AfxMessageBox(strTimeInfo);
 	return TRUE;
 }
@@ -1334,11 +1348,11 @@ UINT Thread_Demodulation(LPVOID lpParam)
 		}
 		//pMainDlg->UpdateGrid();
 	}
-	TRACE("nCountTest:%d\n",nCountTest);
+	TRACE(_T("nCountTest:%d\n"),nCountTest);
 
 	DWORD t2 = GetTickCount();
 	CString strTimeInfo;
-	strTimeInfo.Format("共耗时：%dms",t2-t1);
+	strTimeInfo.Format(_T("共耗时：%dms"),t2-t1);
 	AfxMessageBox(strTimeInfo);
 
 	return TRUE;
@@ -1494,7 +1508,7 @@ void CPerformanceEvaluationSystemDlg::OnDestroy()
 void CPerformanceEvaluationSystemDlg::OnCbnSelchangeComboWorkmode()
 {
 	// TODO: 在此添加控件通知处理程序代码
-
+	::SendMessage(m_Page4.GetSafeHwnd(), WM_CHANGEBUTTON, (WPARAM)m_WorkMode.GetCurSel(), 0);
 }
 
 void CPerformanceEvaluationSystemDlg::OnCbnSelchangeComboSignaltype()
@@ -1533,7 +1547,7 @@ void CPerformanceEvaluationSystemDlg::OnBnClickedButtonTest1()
 	delete[] pData;*/
 
 	//InitialiPlotX_Page1();
-	CString strPath = "C:\\接收文件\\文件\\";
+	CString strPath = _T("C:\\接收文件\\文件\\");
 	CreateDir(strPath);
 }
 
@@ -1590,8 +1604,8 @@ CString CPerformanceEvaluationSystemDlg::GetExePath()
 	char cExeDir[MAX_PATH];
 	GetModuleFileNameA(NULL,cExeDir,MAX_PATH);
 	CString strExeDir;
-	strExeDir.Format("%s",cExeDir);
-	TRACE("%s\n",strExeDir);
+	strExeDir.Format(_T("%s"),cExeDir);
+	TRACE(_T("%s\n"),strExeDir);
 	CString strTopFileDir = strExeDir.Left(strExeDir.ReverseFind('\\')+1);
 	return strTopFileDir;
 }
@@ -1604,7 +1618,7 @@ void CPerformanceEvaluationSystemDlg::ClearFiles(CString Path_DatFile)
 	BOOL ret=find1.FindFile(Path_DatFile);
 	while (ret)
 	{
-		CString filename("");
+		CString filename(_T(""));
 		filename.Empty();
 		ret=find1.FindNextFile();
 		filename=find1.GetFileName();
@@ -1633,14 +1647,14 @@ void CPerformanceEvaluationSystemDlg::ClearFiles(CString Path_DatFile)
 
 void CPerformanceEvaluationSystemDlg::DisplayRunningInfo(CString strInfo)
 {
-	CString strTemp = strRunningInfo + strInfo + "\r\n";
+	CString strTemp = strRunningInfo + strInfo + _T("\r\n");
 	strRunningInfo = strTemp;
-	GetDlgItem(IDC_EDIT_SYS_RUN_INFO)->SetWindowTextA(strRunningInfo);
+	GetDlgItem(IDC_EDIT_SYS_RUN_INFO)->SetWindowText(strRunningInfo);
 }
 
 void CPerformanceEvaluationSystemDlg::Test()
 {
-	MessageBox("Test");
+	MessageBox(_T("Test"));
 }
 
 
@@ -1658,7 +1672,7 @@ void CPerformanceEvaluationSystemDlg::OnTimer(UINT_PTR nIDEvent)
 	int LengPerDisplay = 10000;
 	CFile FileData;
 
-	CString strFileDataDir = "C:\\Recv\\RecvData.dat";
+	CString strFileDataDir = _T("C:\\Recv\\RecvData.dat");
 	FileData.Open(strFileDataDir,CFile::modeRead | CFile::modeCreate | CFile::modeNoTruncate | CFile::shareDenyNone);
 	if (FileData.GetLength() < FilePositionPlot + LengPerDisplay)
 	{

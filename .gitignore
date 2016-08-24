@@ -31,3 +31,5 @@ _ReSharper*/
 *.sdf
 ipch/
 *.opensdf
+*.mdl
+*.asv

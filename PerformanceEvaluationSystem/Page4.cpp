@@ -1,4 +1,4 @@
-// Page4.cpp : ÊµÏÖÎÄ¼ş
+ï»¿// Page4.cpp : å®ç°æ–‡ä»¶
 //
 
 #include "stdafx.h"
@@ -12,7 +12,7 @@ DWORD WINAPI ThreadStartPlot(LPVOID lpParam);
 
 extern CString strRunningInfo;
 
-// CPage4 ¶Ô»°¿ò
+// CPage4 å¯¹è¯æ¡†
 
 IMPLEMENT_DYNAMIC(CPage4, CPageBase)
 
@@ -58,30 +58,32 @@ BEGIN_MESSAGE_MAP(CPage4, CPageBase)
 	ON_BN_CLICKED(IDC_BUTTON_STOP_RECV, &CPage4::OnBnClickedButtonStopRecv)
 	ON_BN_CLICKED(IDC_BUTTON_MODULATOR, &CPage4::OnBnClickedButtonModulator)
 	ON_BN_CLICKED(IDC_BUTTON_RESET, &CPage4::OnBnClickedButtonReset)
+	ON_BN_CLICKED(IDC_CALLSIMULINK, &CPage4::OnBnClickedCallsimulink)
 	ON_EN_CHANGE(IDC_EDIT_RECVSIZE, &CPage4::OnEnChangeEditRecvsize)
+	ON_MESSAGE(WM_CHANGEBUTTON, OnButtonChanged)
 END_MESSAGE_MAP()
 
 
-// CPage4 ÏûÏ¢´¦Àí³ÌĞò
+// CPage4 æ¶ˆæ¯å¤„ç†ç¨‹åº
 
 
 BOOL CPage4::Create(UINT nIDTemplate, CWnd* pParentWnd)
 {
-	// TODO: ÔÚ´ËÌí¼Ó×¨ÓÃ´úÂëºÍ/»òµ÷ÓÃ»ùÀà
+	// TODO: åœ¨æ­¤æ·»åŠ ä¸“ç”¨ä»£ç å’Œ/æˆ–è°ƒç”¨åŸºç±»
 	pTempMainDlg = pParentWnd;
 	CPerformanceEvaluationSystemDlg *pMainDlg = static_cast<CPerformanceEvaluationSystemDlg*>(pTempMainDlg);
 	pGEDevice = pMainDlg->pGEDevice;
 	return CPageBase::Create(nIDTemplate, pParentWnd);
 }
 
-//ĞÅµÀ»¯½âµ÷Ä£Ê½-ÅäÖÃ
+//ä¿¡é“åŒ–è§£è°ƒæ¨¡å¼-é…ç½®
 void CPage4::OnBnClickedButtonConfigure()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	CPerformanceEvaluationSystemDlg *pMainDlg = static_cast<CPerformanceEvaluationSystemDlg*>(pTempMainDlg);
 
 	UpdateData(TRUE);
-	int Mode=0;//µ÷ÖÆ·½Ê½
+	int Mode=0;//è°ƒåˆ¶æ–¹å¼
 	Mode =m_ModulateMode.GetCurSel();
 	char modulatestyle[10] = "BPSK";
 	switch (Mode)
@@ -122,14 +124,14 @@ void CPage4::OnBnClickedButtonConfigure()
 	TRACE("ModulateMode = %s\n",modulatestyle);
 
 	int Hz=0;
-	double symbolrate=0.0;				//·ûºÅËÙÂÊ
-	double fo = m_Carrier*1000000;	//ÖĞĞÄÆµÂÊ
-	TRACE("ÖĞĞÄÆµÂÊfo = %f\n",fo);
-	int cic=1;						//cic ÏÂ³éÒò×Ó
-	double fc=0;					//ÏÂ³éÇ°µÄÖĞĞÄÆµÂÊ
-	double fsample=0;				// Êı×Ö²ÉÑùÂÊ
-	double adsample=0;				// AD²ÉÑùÂÊ
-	double sample_flimit=100*1000000;//AD DAµÄ×îµÍ²ÉÑùÊ±ÖÓ
+	double symbolrate=0.0;				//ç¬¦å·é€Ÿç‡
+	double fo = m_Carrier*1000000;	//ä¸­å¿ƒé¢‘ç‡
+	TRACE("ä¸­å¿ƒé¢‘ç‡fo = %f\n",fo);
+	int cic=1;						//cic ä¸‹æŠ½å› å­
+	double fc=0;					//ä¸‹æŠ½å‰çš„ä¸­å¿ƒé¢‘ç‡
+	double fsample=0;				// æ•°å­—é‡‡æ ·ç‡
+	double adsample=0;				// ADé‡‡æ ·ç‡
+	double sample_flimit=100*1000000;//AD DAçš„æœ€ä½é‡‡æ ·æ—¶é’Ÿ
 	double analog_filter=0;
 	int up_s=1;
 	Hz = m_SymbolRateUnit.GetCurSel();
@@ -158,8 +160,8 @@ void CPage4::OnBnClickedButtonConfigure()
 	{
 		analog_filter=200000;//200KHz
 	}
-	TRACE("·ûºÅËÙÂÊsymbolrate = %d\n", symbolrate);
-	//***************ÒÀ´ÎÉÏ³é Ê¹µÃĞÅºÅÔÚ¹æ¶¨Ä£Äâ´ø¿íÄÚ Ö»±£ÁôÖ÷°ê******************************************
+	TRACE("ç¬¦å·é€Ÿç‡symbolrate = %d\n", symbolrate);
+	//***************ä¾æ¬¡ä¸ŠæŠ½ ä½¿å¾—ä¿¡å·åœ¨è§„å®šæ¨¡æ‹Ÿå¸¦å®½å†… åªä¿ç•™ä¸»ç“£******************************************
 	int struct_coe;
 	switch (Mode)
 	{
@@ -191,7 +193,7 @@ void CPage4::OnBnClickedButtonConfigure()
 			if(cic>10000)
 			{
 				break;
-				AfxMessageBox("error");
+				AfxMessageBox(_T("error"));
 			}
 		}
 		else
@@ -238,20 +240,20 @@ void CPage4::OnBnClickedButtonConfigure()
 		cic = cic / 2;
 	}
 	fsample=symbolrate*struct_coe*cic*HB[0]*HB[1]*HB[2];
-	TRACE("Ö±³éºó²ÉÑùÂÊ = %f\n", fsample);
-	TRACE("Ç·²ÉÑùµÈĞ§ÔØ²¨ = %f\n", fc);
-	TRACE("ÏÂ³éÏµÊıcic = %d\n", cic);
+	TRACE("ç›´æŠ½åé‡‡æ ·ç‡ = %f\n", fsample);
+	TRACE("æ¬ é‡‡æ ·ç­‰æ•ˆè½½æ³¢ = %f\n", fc);
+	TRACE("ä¸‹æŠ½ç³»æ•°cic = %d\n", cic);
 	TRACE("HB[0] = %d, HB[1] = %d, HB[2] = %d\n", HB[0], HB[1], HB[2]);
 
-	//************************************È·¶¨NCO ÆµÂÊ¿ØÖÆ×Ö*****************************************************************
-	unsigned long pinlvkongzhizi_down=0;//µÚÒ»¼¶Êı×ÖÏÂ±äÆµ
+	//************************************ç¡®å®šNCO é¢‘ç‡æ§åˆ¶å­—*****************************************************************
+	unsigned long pinlvkongzhizi_down=0;//ç¬¬ä¸€çº§æ•°å­—ä¸‹å˜é¢‘
 	pinlvkongzhizi_down=(fo)*4294967296.0/fsample;
 	TRACE("pinlvkongzhizi_down = %u\n", pinlvkongzhizi_down);
-	unsigned long pinlvkongzhizi_up=0;//Êı×ÖÉÏ±äÆµ
-	pinlvkongzhizi_up=(1.0/5)*4294967296.0; //ÒòÎªÊ¹ÓÃÆ½·½»·£¬Îª±£Ö¤ÆµÂÊ×ÖÓ¦µ±Ğ¡ÓÚ1/2
+	unsigned long pinlvkongzhizi_up=0;//æ•°å­—ä¸Šå˜é¢‘
+	pinlvkongzhizi_up=(1.0/5)*4294967296.0; //å› ä¸ºä½¿ç”¨å¹³æ–¹ç¯ï¼Œä¸ºä¿è¯é¢‘ç‡å­—åº”å½“å°äº1/2
 	TRACE("pinlvkongzhizi_up = %ld\n", pinlvkongzhizi_up);
 
-	unsigned long pinlvkongzhizi1=0;//ÔØ²¨»Ö¸´ÆµÂÊ×Ö   ³ËÒÔ2ÊÇÒòÎªÆ½·½»·
+	unsigned long pinlvkongzhizi1=0;//è½½æ³¢æ¢å¤é¢‘ç‡å­—   ä¹˜ä»¥2æ˜¯å› ä¸ºå¹³æ–¹ç¯
 	unsigned long pinlvkongzhizi2=0;
 	switch (Mode)
 	{
@@ -276,12 +278,12 @@ void CPage4::OnBnClickedButtonConfigure()
 	//***********************************************************************************************************************
 	for (up_s=2;up_s<1000;up_s++)
 	{
-		adsample=fsample*up_s;		//up_s´Ó2¿ªÊ¼ÊÇ±£Ö¤Ö±³éÒò×Ó±ØĞë´óÓÚµÈÓÚ2£¬FPGAÊ¹ÓÃµÄÊÇË«Í¨µÀÂË²¨Æ÷
+		adsample=fsample*up_s;		//up_sä»2å¼€å§‹æ˜¯ä¿è¯ç›´æŠ½å› å­å¿…é¡»å¤§äºç­‰äº2ï¼ŒFPGAä½¿ç”¨çš„æ˜¯åŒé€šé“æ»¤æ³¢å™¨
 		if(adsample>=sample_flimit)
 			break;
 	}
 	TRACE("adsample=%f\n", adsample);
-	//************************************È·¶¨ADF4351 Òò×Ó*****************************************************************
+	//************************************ç¡®å®šADF4351 å› å­*****************************************************************
 	int R_4351=0;
 	int INT_4351=0;
 	int FRAC_4351=0;
@@ -299,15 +301,15 @@ void CPage4::OnBnClickedButtonConfigure()
 	TRACE("INT_4351=%d\n",INT_4351);
 	TRACE("FRAC_4351=%d\n",FRAC_4351);
 
-	//************************************·¢ËÍÃüÁî*****************************************************************
-	//ÅäÖÃÔ¤´¦Àí°å
+	//************************************å‘é€å‘½ä»¤*****************************************************************
+	//é…ç½®é¢„å¤„ç†æ¿
 	int nDemodulateCmdSize =20;
 	char *szDemodulateCmd=new char[nDemodulateCmdSize];
 	szDemodulateCmd[0]=0x17;
 	szDemodulateCmd[1]=0x57;
 	szDemodulateCmd[2]=0x90;
 	szDemodulateCmd[3]=0xeb;
-	szDemodulateCmd[4]=0x82;//ÅäÖÃ¼°ADF4351
+	szDemodulateCmd[4]=0x82;//é…ç½®åŠADF4351
 	szDemodulateCmd[5]=0x00;
 	szDemodulateCmd[6]=0x0f;
 	szDemodulateCmd[7]=INT_4351>>8;
@@ -330,8 +332,8 @@ void CPage4::OnBnClickedButtonConfigure()
 
 	pGEDevice->SendTo(szDemodulateCmd,nDemodulateCmdSize);
 	//************************************************************************************************//
-	//Êı×Ö½âµ÷°å FPGA ÅäÖÃ
-	szDemodulateCmd[4]=0x01;//Ä£Ê½ÅäÖÃ
+	//æ•°å­—è§£è°ƒæ¿ FPGA é…ç½®
+	szDemodulateCmd[4]=0x01;//æ¨¡å¼é…ç½®
 	szDemodulateCmd[7]=0x00;
 	szDemodulateCmd[8]=Mode;
 	szDemodulateCmd[9]=up_s>>8;
@@ -351,7 +353,7 @@ void CPage4::OnBnClickedButtonConfigure()
 	}
 	pGEDevice->SendTo(szDemodulateCmd,nDemodulateCmdSize);
 
-	szDemodulateCmd[4]=0x02;//ÂË²¨Æ÷
+	szDemodulateCmd[4]=0x02;//æ»¤æ³¢å™¨
 	szDemodulateCmd[7]=cic>>8;
 	szDemodulateCmd[8]=cic;
 	szDemodulateCmd[9]=0x00;
@@ -391,7 +393,7 @@ void CPage4::OnBnClickedButtonConfigure()
 	}
 	pGEDevice->SendTo(szDemodulateCmd,nDemodulateCmdSize);
 
-	szDemodulateCmd[4]=0x04;//½âµ÷»·Â·¸´Î»
+	szDemodulateCmd[4]=0x04;//è§£è°ƒç¯è·¯å¤ä½
 	szDemodulateCmd[7]=0x00;
 	szDemodulateCmd[8]=0x01;
 	szDemodulateCmd[9]=0x00;
@@ -411,7 +413,7 @@ void CPage4::OnBnClickedButtonConfigure()
 	}
 	pGEDevice->SendTo(szDemodulateCmd,nDemodulateCmdSize);
 
-	szDemodulateCmd[4]=0x05;//½âµ÷ÔØ²¨1
+	szDemodulateCmd[4]=0x05;//è§£è°ƒè½½æ³¢1
 	szDemodulateCmd[7]=pinlvkongzhizi1>>24;
 	szDemodulateCmd[8]=pinlvkongzhizi1>>16;
 	szDemodulateCmd[9]=pinlvkongzhizi1>>8;
@@ -431,7 +433,7 @@ void CPage4::OnBnClickedButtonConfigure()
 	}
 	pGEDevice->SendTo(szDemodulateCmd,nDemodulateCmdSize);
 
-	szDemodulateCmd[4]=0x07;//GMSKÏÂ/ÉÏ±äÆµ
+	szDemodulateCmd[4]=0x07;//GMSKä¸‹/ä¸Šå˜é¢‘
 	szDemodulateCmd[7]=pinlvkongzhizi_down>>24;
 	szDemodulateCmd[8]=pinlvkongzhizi_down>>16;
 	szDemodulateCmd[9]=pinlvkongzhizi_down>>8;
@@ -451,7 +453,7 @@ void CPage4::OnBnClickedButtonConfigure()
 	}
 	pGEDevice->SendTo(szDemodulateCmd,nDemodulateCmdSize);
 
-	szDemodulateCmd[4]=0x08;//½âµ÷ÔØ²¨2
+	szDemodulateCmd[4]=0x08;//è§£è°ƒè½½æ³¢2
 	szDemodulateCmd[7]=pinlvkongzhizi2>>24;
 	szDemodulateCmd[8]=pinlvkongzhizi2>>16;
 	szDemodulateCmd[9]=pinlvkongzhizi2>>8;
@@ -474,42 +476,43 @@ void CPage4::OnBnClickedButtonConfigure()
 	delete [] szDemodulateCmd;
 	strRunningInfo.Empty();
 	CString dpy;
-	dpy.Format(" fo:%3f MHz\r\n adsample:%3f MHz \r\n up_s:%d\r\n HB:%d %d %d\r\n cic:%d\r\n R_4351:%d INT_4351:%d FRAC_4351:%d",fsample*1.0/5/1000000,adsample/1000000,up_s,HB[0],HB[1],HB[2],cic,R_4351,INT_4351,FRAC_4351);
+	dpy.Format(_T(" fo:%3f MHz\r\n adsample:%3f MHz \r\n up_s:%d\r\n HB:%d %d %d\r\n cic:%d\r\n R_4351:%d INT_4351:%d FRAC_4351:%d"),fsample*1.0/5/1000000,adsample/1000000,up_s,HB[0],HB[1],HB[2],cic,R_4351,INT_4351,FRAC_4351);
 	pMainDlg->DisplayRunningInfo(dpy);
 }
 
-//ĞÅµÀ»¯½âµ÷Ä£Ê½-½ÓÊÕÊı¾İ
+//ä¿¡é“åŒ–è§£è°ƒæ¨¡å¼-æ¥æ”¶æ•°æ®
 void CPage4::OnBnClickedButtonRecvdata()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	CPerformanceEvaluationSystemDlg *pMainDlg = static_cast<CPerformanceEvaluationSystemDlg*>(pTempMainDlg);
 	pMainDlg->SetTimer(1, 200, NULL);
 	pMainDlg->m_iPlotX.GetXAxis(0).SetMin(0);
 	pMainDlg->m_iPlotX.GetXAxis(0).SetSpan(10);
+	pMainDlg->m_iPlotX.GetChannel(0).Clear();
 
 	strRunningInfo.Empty();
-	//Çå³ıÌ×½Ó×Ö»º´æ
+	//æ¸…é™¤å¥—æ¥å­—ç¼“å­˜
 	int nClearBuf = pGEDevice->ClearSocketBuffer();
 	UpdateData(TRUE);
 
-	//·¢ËÍÇ§Õ×Íø²éÑ¯Ö¸Áî
+	//å‘é€åƒå…†ç½‘æŸ¥è¯¢æŒ‡ä»¤
 	char cmd_query[3] = {0xe8,0x01,(char)m_nFramesPerPackage};
-	//TRACE("Ã¿°ü°üº¬Ö¡Êı£º%d\n",m_nFramesPerPackage);
+	//TRACE("æ¯åŒ…åŒ…å«å¸§æ•°ï¼š%d\n",m_nFramesPerPackage);
 	pGEDevice->SetFramesInOnePackage(m_nFramesPerPackage);
 	pGEDevice->SetRecvSize(m_nRecvSize);
-	//TRACE("½ÓÊÕ×Ü°üÊı£º%d\n",m_nRecvSize);
+	//TRACE("æ¥æ”¶æ€»åŒ…æ•°ï¼š%d\n",m_nRecvSize);
 	pGEDevice->SendTo(cmd_query,3);
 
 	//////////////////////////////////////////////////////////////////////////
-	//·¢ËÍ½ÓÊÕÊı¾İÖ¸Áî
+	//å‘é€æ¥æ”¶æ•°æ®æŒ‡ä»¤
 	UpdateData(TRUE);
-	int upmode=0;//ÉÏ´«Êı¾İÀàĞÍ
+	int upmode=0;//ä¸Šä¼ æ•°æ®ç±»å‹
 	upmode =m_UploadDataType.GetCurSel();
 	TRACE("Mode=%d\n",upmode);
 
 	int nDemodCmdSize_RecvData =20;
 	char *szDemodCmd_RecvData=new char[nDemodCmdSize_RecvData];
-	//Ô¤´¦Àí°å
+	//é¢„å¤„ç†æ¿
 	szDemodCmd_RecvData[0]=0x17;
 	szDemodCmd_RecvData[1]=0x57;
 	szDemodCmd_RecvData[2]=0x90;
@@ -520,7 +523,7 @@ void CPage4::OnBnClickedButtonRecvdata()
 	szDemodCmd_RecvData[7]=0x00;
 	szDemodCmd_RecvData[8]=upmode;
 	szDemodCmd_RecvData[9]=0x00;
-	szDemodCmd_RecvData[10]=0x01;  //¿ªÊ¼ÉÏ´«
+	szDemodCmd_RecvData[10]=0x01;  //å¼€å§‹ä¸Šä¼ 
 	szDemodCmd_RecvData[11]=0x00;
 	szDemodCmd_RecvData[12]=0x00;
 	szDemodCmd_RecvData[13]=0x00;
@@ -564,18 +567,18 @@ void CPage4::OnBnClickedButtonRecvdata()
 	delete [] szDemodCmd_RecvData;
 
 	//////////////////////////////////////////////////////////////////////////
-	//¿ªÊ¼½ÓÊÕÊı¾İ
-	//pMainDlg->ClearFiles("C:\\Recv\\*.dat");	//Çå³ı»º´æÎÄ¼ş
-	pGEDevice->Open();							//´ò¿ªÇ§Õ×ÍøÉè±¸
-	pGEDevice->SetStorePath("C:\\Recv\\");
+	//å¼€å§‹æ¥æ”¶æ•°æ®
+	//pMainDlg->ClearFiles("C:\\Recv\\*.dat");	//æ¸…é™¤ç¼“å­˜æ–‡ä»¶
+	pGEDevice->Open();							//æ‰“å¼€åƒå…†ç½‘è®¾å¤‡
+	pGEDevice->SetStorePath(_T("C:\\Recv\\"));
 
-	//°´Å¥½ûÓÃÉèÖÃ
+	//æŒ‰é’®ç¦ç”¨è®¾ç½®
 	GetDlgItem(IDC_BUTTON_RECVDATA)->EnableWindow(FALSE);
 	GetDlgItem(IDC_BUTTON_STOP_RECV)->EnableWindow(TRUE);
 	
-	TRACE("¿ªÆôÏß³Ì£¡\n");
+	TRACE("å¼€å¯çº¿ç¨‹ï¼\n");
 
-	//±ÜÃâ³öÏÖÏß³ÌÉĞÎ´ÍË³öÓÖ¼ÌĞø´´½¨Ïß³Ì
+	//é¿å…å‡ºç°çº¿ç¨‹å°šæœªé€€å‡ºåˆç»§ç»­åˆ›å»ºçº¿ç¨‹
 	if (bThreadStopRecv){
 		bThreadStopRecv = FALSE;
 	}
@@ -584,15 +587,16 @@ void CPage4::OnBnClickedButtonRecvdata()
 	}
 	if (hThreadRecv!=INVALID_HANDLE_VALUE)
 	{
-		TRACE("Ïß³ÌÎ´ÍË³ö£¬´´½¨Ïß³ÌÊ§°Ü£¡\n");
+		TRACE("çº¿ç¨‹æœªé€€å‡ºï¼Œåˆ›å»ºçº¿ç¨‹å¤±è´¥ï¼\n");
 		return;
 	}
-	//´´½¨½ÓÊÕÏß³Ì
-	/*hThreadRecv = CreateThread(NULL,0,ThreadRecv,&ThreadRecvParam,0,&dwThreadRecvID);
+	//åˆ›å»ºæ¥æ”¶çº¿ç¨‹
+	ThreadRecvParam.pPage4Dlg = this;
+	hThreadRecv = CreateThread(NULL,0,ThreadRecv,&ThreadRecvParam,0,&dwThreadRecvID);
 	CloseHandle(hThreadRecv);
-	hThreadRecv = INVALID_HANDLE_VALUE;*/
+	hThreadRecv = INVALID_HANDLE_VALUE;
 
-	//±ÜÃâ³öÏÖÏß³ÌÉĞÎ´ÍË³öÓÖ¼ÌĞø´´½¨Ïß³Ì
+	//é¿å…å‡ºç°çº¿ç¨‹å°šæœªé€€å‡ºåˆç»§ç»­åˆ›å»ºçº¿ç¨‹
 	if (bThreadStopPlot){
 		bThreadStopPlot = FALSE;
 	}
@@ -601,10 +605,10 @@ void CPage4::OnBnClickedButtonRecvdata()
 	}
 	if (hThreadPlot!=INVALID_HANDLE_VALUE)
 	{
-		TRACE("Ïß³ÌÎ´ÍË³ö£¬´´½¨Ïß³ÌÊ§°Ü£¡\n");
+		TRACE("çº¿ç¨‹æœªé€€å‡ºï¼Œåˆ›å»ºçº¿ç¨‹å¤±è´¥ï¼\n");
 		return;
 	}
-	//´´½¨Ïß³Ì
+	//åˆ›å»ºçº¿ç¨‹
 	/*ThreadRecvParam.pPage4Dlg = this;
 	hThreadPlot = CreateThread(NULL,0,ThreadStartPlot,&ThreadRecvParam,0,&dwThreadPlotID);
 	CloseHandle(hThreadPlot);
@@ -614,7 +618,7 @@ void CPage4::OnBnClickedButtonRecvdata()
 
 DWORD WINAPI ThreadRecv(LPVOID lpParam)
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	THREADPARAM* pThreadParam = (THREADPARAM*)lpParam;
 	CPage4* pPage4Dlg = dynamic_cast<CPage4*>(pThreadParam->pPage4Dlg);
 	CPerformanceEvaluationSystemDlg *pMainDlg = static_cast<CPerformanceEvaluationSystemDlg*>(pPage4Dlg->pTempMainDlg);
@@ -627,15 +631,15 @@ DWORD WINAPI ThreadRecv(LPVOID lpParam)
 		{
 			char cmd_quit[2] = {0xe8,0x05};
 			pPage4Dlg->pGEDevice->SendTo(cmd_quit,2);
-			TRACE("·¢ËÍÍ£Ö¹Ö¸Áî\n");
+			TRACE("å‘é€åœæ­¢æŒ‡ä»¤\n");
 			break;
 		}
 		int RetRecv = pPage4Dlg->pGEDevice->RecvFrom(pBufRecvPackage,255*nLenFrame,10000);
 		int currentid = GetCurrentThreadId();
-		TRACE("µ±Ç°Ïß³ÌID = %d\n", currentid);
+		TRACE("å½“å‰çº¿ç¨‹ID = %d\n", currentid);
 		if (0x54 == RetRecv)
 		{
-			TRACE("³¬Ê±´ÎÊı³¬¹ı3´Î£¬½ÓÊÕ³ÌĞò±»ÆÈÖÕÖ¹£¡");
+			TRACE("è¶…æ—¶æ¬¡æ•°è¶…è¿‡3æ¬¡ï¼Œæ¥æ”¶ç¨‹åºè¢«è¿«ç»ˆæ­¢ï¼");
 			pPage4Dlg->bThreadStopRecv = TRUE;
 			pPage4Dlg->bThreadStopPlot = TRUE;
 			Beep(1000,600);
@@ -643,7 +647,7 @@ DWORD WINAPI ThreadRecv(LPVOID lpParam)
 		}
 		else if (0x53 == RetRecv)
 		{
-			TRACE("¶ª°ü´ÎÊı³¬¹ı3´Î£¬½ÓÊÕ³ÌĞò±»ÆÈÖÕÖ¹£¡");
+			TRACE("ä¸¢åŒ…æ¬¡æ•°è¶…è¿‡3æ¬¡ï¼Œæ¥æ”¶ç¨‹åºè¢«è¿«ç»ˆæ­¢ï¼");
 			pPage4Dlg->bThreadStopRecv = TRUE;
 			pPage4Dlg->bThreadStopPlot = TRUE;
 			Beep(1000,600);
@@ -651,15 +655,15 @@ DWORD WINAPI ThreadRecv(LPVOID lpParam)
 		}
 		else if (0x55 == RetRecv)
 		{
-			/*TRACE("½ÓÊÕÍê³É£¡");
+			/*TRACE("æ¥æ”¶å®Œæˆï¼");
 			pPage4Dlg->bThreadStopRecv = TRUE;
 			pPage4Dlg->bThreadStopPlot = TRUE;
-			pMainDlg->DisplayRunningInfo("½ÓÊÕÍê³É£¡");
+			pMainDlg->DisplayRunningInfo("æ¥æ”¶å®Œæˆï¼");
 			pPage4Dlg->OnBnClickedButtonStopRecv();
 			break;*/
 			if (pPage4Dlg->pGEDevice->GetReceivedPackage() == pPage4Dlg->m_nRecvSize)
 			{
-				TRACE("½ÓÊÕÍê³É£¡");
+				TRACE("æ¥æ”¶å®Œæˆï¼");
 				pPage4Dlg->bThreadStopRecv = TRUE;
 				pPage4Dlg->bThreadStopPlot = TRUE;
 				break;
@@ -667,7 +671,7 @@ DWORD WINAPI ThreadRecv(LPVOID lpParam)
 		}
 	}
 	delete[] pBufRecvPackage;
-	TRACE("Page4ÍË³öÏß³Ì-ThreadRecv£¡\n");
+	TRACE("Page4é€€å‡ºçº¿ç¨‹-ThreadRecvï¼\n");
 	return 0x55;
 }
 
@@ -682,7 +686,7 @@ DWORD WINAPI ThreadStartPlot(LPVOID lpParam)
 	CiPlotAxisX AxisX = pMainDlg->m_iPlotX.GetXAxis(0);
 
 	CFile FileData;
-	CString strFileDataDir = "C:\\Recv\\RecvData.dat";
+	CString strFileDataDir = _T("C:\\Recv\\RecvData.dat");
 	FileData.Open(strFileDataDir,CFile::modeRead | CFile::modeCreate | CFile::modeNoTruncate | CFile::shareDenyNone);
 	LONGLONG llPosFileData = 0;
 	while(1)
@@ -708,20 +712,20 @@ DWORD WINAPI ThreadStartPlot(LPVOID lpParam)
 	}
 	FileData.Close();
 
-	TRACE("Page4ÍË³öÏß³Ì-ThreadStartPlot£¡\n");
+	TRACE("Page4é€€å‡ºçº¿ç¨‹-ThreadStartPlotï¼\n");
 	return 0x55;
 }
 
-//ĞÅµÀ»¯½âµ÷Ä£Ê½-Í£Ö¹½ÓÊÕÊı¾İ
+//ä¿¡é“åŒ–è§£è°ƒæ¨¡å¼-åœæ­¢æ¥æ”¶æ•°æ®
 void CPage4::OnBnClickedButtonStopRecv()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	CPerformanceEvaluationSystemDlg *pMainDlg = static_cast<CPerformanceEvaluationSystemDlg*>(pTempMainDlg);
 	pMainDlg->KillTimer(1);
 	pMainDlg->FilePositionPlot = 0;
 	pMainDlg->CurrentX = 0;
 
-	//·¢ËÍÖ¸Áî ½«½âµ÷FPGAµÄÉÏ´«Êı¾İÍ£Ö¹
+	//å‘é€æŒ‡ä»¤ å°†è§£è°ƒFPGAçš„ä¸Šä¼ æ•°æ®åœæ­¢
 	int nDemodCmdSize_StopRecv =20;
 	char *szDemodCmd_StopRecv=new char[nDemodCmdSize_StopRecv];
 	szDemodCmd_StopRecv[0]=0x17;
@@ -749,7 +753,7 @@ void CPage4::OnBnClickedButtonStopRecv()
 		szDemodCmd_StopRecv[19]=szDemodCmd_StopRecv[19]+szDemodCmd_StopRecv[i];
 	}
 	pGEDevice->SendTo(szDemodCmd_StopRecv,nDemodCmdSize_StopRecv);
-	//½«Ô¤´¦ÀíFPGAµÄÉÏ´«Êı¾İÍ£Ö¹
+	//å°†é¢„å¤„ç†FPGAçš„ä¸Šä¼ æ•°æ®åœæ­¢
 	szDemodCmd_StopRecv[0]=0x17;
 	szDemodCmd_StopRecv[1]=0x57;
 	szDemodCmd_StopRecv[2]=0x90;
@@ -758,7 +762,7 @@ void CPage4::OnBnClickedButtonStopRecv()
 	szDemodCmd_StopRecv[5]=0x00;
 	szDemodCmd_StopRecv[6]=0x0f;
 	szDemodCmd_StopRecv[7]=0x00;
-	szDemodCmd_StopRecv[8]=0x00;  //Í£Ö¹ÉÏ´«
+	szDemodCmd_StopRecv[8]=0x00;  //åœæ­¢ä¸Šä¼ 
 	szDemodCmd_StopRecv[9]=0x00;
 	szDemodCmd_StopRecv[10]=0x00;
 	szDemodCmd_StopRecv[11]=0x00;
@@ -778,7 +782,7 @@ void CPage4::OnBnClickedButtonStopRecv()
 	delete [] szDemodCmd_StopRecv;
 
 	//////////////////////////////////////////////////////////////////////////
-	//·¢ËÍÇ§Õ×Íø¸´Î»Ö¸Áî
+	//å‘é€åƒå…†ç½‘å¤ä½æŒ‡ä»¤
 
 	char *szResetCmd = new char[2];
 	szResetCmd[0] = 0xe8;
@@ -794,22 +798,22 @@ void CPage4::OnBnClickedButtonStopRecv()
 	GetDlgItem(IDC_BUTTON_STOP_RECV)->EnableWindow(FALSE);
 }
 
-//ĞÅµÀ»¯½âµ÷Ä£Ê½-Êı¾İ±È¶Ô
+//ä¿¡é“åŒ–è§£è°ƒæ¨¡å¼-æ•°æ®æ¯”å¯¹
 void CPage4::OnBnClickedButtonCompar()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	//CPerformanceEvaluationSystemDlg *pMainDlg = static_cast<CPerformanceEvaluationSystemDlg*>(pTempMainDlg);
 
 	CString strExeFilepath;
-	strExeFilepath="F:\\Sam\\504\\BERdetection\\Debug\\BERdetection.exe";
-	ShellExecute(NULL,"open",strExeFilepath,NULL,NULL,SW_SHOWNORMAL);
+	strExeFilepath = _T("F:\\Sam\\504\\BERdetection\\Debug\\BERdetection.exe");
+	ShellExecute(NULL,_T("open"),strExeFilepath,NULL,NULL,SW_SHOWNORMAL);
 }
 
-//ĞÅµÀ»¯½âµ÷Ä£Ê½-Ç§Õ×Íø¸´Î»
+//ä¿¡é“åŒ–è§£è°ƒæ¨¡å¼-åƒå…†ç½‘å¤ä½
 void CPage4::OnBnClickedButtonReset()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
-	//·¢ËÍÇ§Õ×Íø¸´Î»Ö¸Áî
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
+	//å‘é€åƒå…†ç½‘å¤ä½æŒ‡ä»¤
 	char *szResetCmd = new char[2];
 	szResetCmd[0] = 0xe8;
 	szResetCmd[1] = 0x05;
@@ -817,15 +821,15 @@ void CPage4::OnBnClickedButtonReset()
 	delete [] szResetCmd;
 }
 
-//ĞÅµÀ»¯½âµ÷Ä£Ê½-µ÷ÖÆÆ÷
+//ä¿¡é“åŒ–è§£è°ƒæ¨¡å¼-è°ƒåˆ¶å™¨
 void CPage4::OnBnClickedButtonModulator()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	//CPerformanceEvaluationSystemDlg *pMainDlg = static_cast<CPerformanceEvaluationSystemDlg*>(pTempMainDlg);
 
 	CString strExeFilepath;
-	strExeFilepath="E:\\Sam\\504\\Pro_504\\Èí¼ş\\Mod_UpVS_plus\\Debug\\USBTest.exe";
-	ShellExecute(NULL,"open",strExeFilepath,NULL,NULL,SW_SHOWNORMAL);
+	strExeFilepath = _T("E:\\Sam\\504\\Pro_504\\è½¯ä»¶\\Mod_UpVS_plus\\Debug\\USBTest.exe");
+	ShellExecute(NULL,_T("open"),strExeFilepath,NULL,NULL,SW_SHOWNORMAL);
 }
 
 
@@ -833,12 +837,12 @@ BOOL CPage4::OnInitDialog()
 {
 	CPageBase::OnInitDialog();
 
-	// TODO:  ÔÚ´ËÌí¼Ó¶îÍâµÄ³õÊ¼»¯
+	// TODO:  åœ¨æ­¤æ·»åŠ é¢å¤–çš„åˆå§‹åŒ–
 	CPerformanceEvaluationSystemDlg *pMainDlg = static_cast<CPerformanceEvaluationSystemDlg*>(pTempMainDlg);
-	pMainDlg->ClearFiles("F:\\Recv\\*.dat");
+	pMainDlg->ClearFiles(_T("F:\\Recv\\*.dat"));
 
 	//////////////////////////////////////////////////////////////////////////
-	//µ÷ÊÔÓÃ
+	//è°ƒè¯•ç”¨
 	GetDlgItem(IDC_BUTTON_CONFIGURE)->EnableWindow(TRUE);
 	GetDlgItem(IDC_BUTTON_RECVDATA)->EnableWindow(TRUE);
 	GetDlgItem(IDC_BUTTON_COMPAR)->EnableWindow(FALSE);
@@ -850,9 +854,9 @@ BOOL CPage4::OnInitDialog()
 	//pGEDevice = new CGigabitEthernetDevice(m_hWnd);
 	//pGEDevice->Initial();
 	//pGEDevice->Open();
-	//GetDlgItem(IDC_STATIC_TIP)->SetWindowText("×¼±¸¾ÍĞ÷...");
+	//GetDlgItem(IDC_STATIC_TIP)->SetWindowText("å‡†å¤‡å°±ç»ª...");
 
-	//½âµ÷²ÎÊıÏà¹Ø³õÊ¼»¯
+	//è§£è°ƒå‚æ•°ç›¸å…³åˆå§‹åŒ–
 	m_ModulateMode.AddString(_T("BPSK"));
 	m_ModulateMode.AddString(_T("QPSK"));
 	m_ModulateMode.AddString(_T("16QAM"));
@@ -869,27 +873,121 @@ BOOL CPage4::OnInitDialog()
 	m_SymbolRateUnit.AddString(_T("Hz"));
 	m_SymbolRateUnit.SetCurSel(1);
 
-	m_UploadDataType.AddString(_T("½âµ÷Êı¾İ"));
-	m_UploadDataType.AddString(_T("ËøÏà»·ÀÛ¼ÆÎó²î"));
-	m_UploadDataType.AddString(_T("¶¨Ê±»·Â·Îó²î"));
-	m_UploadDataType.AddString(_T("ÀÛ¼ÓÊı¾İ"));
-	m_UploadDataType.AddString(_T("ĞÇ×ùµãÊı¾İ"));
-	m_UploadDataType.AddString(_T("ÖĞÆµÊı¾İ"));
+	m_UploadDataType.AddString(_T("è§£è°ƒæ•°æ®"));
+	m_UploadDataType.AddString(_T("é”ç›¸ç¯ç´¯è®¡è¯¯å·®"));
+	m_UploadDataType.AddString(_T("å®šæ—¶ç¯è·¯è¯¯å·®"));
+	m_UploadDataType.AddString(_T("ç´¯åŠ æ•°æ®"));
+	m_UploadDataType.AddString(_T("æ˜Ÿåº§ç‚¹æ•°æ®"));
+	m_UploadDataType.AddString(_T("ä¸­é¢‘æ•°æ®"));
 	m_UploadDataType.SetCurSel(3);
 
-	TRACE("Page4³õÊ¼»¯Íê³É£¡\n");
+	GetDlgItem(IDC_BUTTON_CONFIGURE)->GetWindowRect(rect_button[0]);
+	GetDlgItem(IDC_BUTTON_RECVDATA)->GetWindowRect(rect_button[1]);
+	GetDlgItem(IDC_BUTTON_COMPAR)->GetWindowRect(rect_button[2]);
+	GetDlgItem(IDC_BUTTON_RESET)->GetWindowRect(rect_button[3]);
+	GetDlgItem(IDC_BUTTON_STOP_RECV)->GetWindowRect(rect_button[4]);
+	GetDlgItem(IDC_BUTTON_MODULATOR)->GetWindowRect(rect_button[5]);
+	ScreenToClient(rect_button[0]);
+	ScreenToClient(rect_button[1]);
+	ScreenToClient(rect_button[2]);
+	ScreenToClient(rect_button[3]);
+	ScreenToClient(rect_button[4]);
+	ScreenToClient(rect_button[5]);
+
+	m_buttons[0] = static_cast<CButton *>(GetDlgItem(IDC_BUTTON_CONFIGURE));
+	m_buttons[1] = static_cast<CButton *>(GetDlgItem(IDC_BUTTON_RECVDATA));
+	m_buttons[2] = static_cast<CButton *>(GetDlgItem(IDC_BUTTON_COMPAR));
+	m_buttons[3] = static_cast<CButton *>(GetDlgItem(IDC_BUTTON_RESET));
+	m_buttons[4] = static_cast<CButton *>(GetDlgItem(IDC_BUTTON_STOP_RECV));
+	m_buttons[5] = static_cast<CButton *>(GetDlgItem(IDC_BUTTON_MODULATOR));
+	TRACE("Page4åˆå§‹åŒ–å®Œæˆï¼\n");
 	return TRUE;  
 	// return TRUE unless you set the focus to a control
-	// Òì³£: OCX ÊôĞÔÒ³Ó¦·µ»Ø FALSE
+	// å¼‚å¸¸: OCX å±æ€§é¡µåº”è¿”å› FALSE
 }
 
 
 void CPage4::OnEnChangeEditRecvsize()
 {
-	// TODO:  Èç¹û¸Ã¿Ø¼şÊÇ RICHEDIT ¿Ø¼ş£¬Ëü½«²»
-	// ·¢ËÍ´ËÍ¨Öª£¬³ı·ÇÖØĞ´ CPageBase::OnInitDialog()
-	// º¯Êı²¢µ÷ÓÃ CRichEditCtrl().SetEventMask()£¬
-	// Í¬Ê±½« ENM_CHANGE ±êÖ¾¡°»ò¡±ÔËËãµ½ÑÚÂëÖĞ¡£
+	// TODO:  å¦‚æœè¯¥æ§ä»¶æ˜¯ RICHEDIT æ§ä»¶ï¼Œå®ƒå°†ä¸
+	// å‘é€æ­¤é€šçŸ¥ï¼Œé™¤éé‡å†™ CPageBase::OnInitDialog()
+	// å‡½æ•°å¹¶è°ƒç”¨ CRichEditCtrl().SetEventMask()ï¼Œ
+	// åŒæ—¶å°† ENM_CHANGE æ ‡å¿—â€œæˆ–â€è¿ç®—åˆ°æ©ç ä¸­ã€‚
 
-	// TODO:  ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO:  åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
+}
+
+
+afx_msg LRESULT CPage4::OnButtonChanged(WPARAM wParam, LPARAM lParam)
+{
+	switch ((int)wParam)
+	{
+	case 0:               //åœ¨çº¿æ¨¡å¼
+		{
+			for (int i = 0; i < BUTTON_NUM_OFFLINE; i++)          //å…ˆé”€æ¯ç¦»çº¿æ¨¡å¼çš„æŒ‰é’®
+			{
+				m_buttons[i]->DestroyWindow();
+				m_buttons[i] = nullptr;
+			}
+
+			for (int i = 0; i < BUTTON_NUM_ONLINE; i++)           //å†æ–°å»ºåœ¨çº¿æ¨¡å¼çš„æŒ‰é’®
+			{
+				m_buttons[i] = new CButton();
+			}
+			m_buttons[0]->Create(_T("é…ç½®"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, rect_button[0], this, IDC_BUTTON_CONFIGURE);
+			m_buttons[1]->Create(_T("æ¥æ”¶æ•°æ®"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, rect_button[1], this, IDC_BUTTON_RECVDATA);
+			m_buttons[2]->Create(_T("æ¯”å¯¹"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, rect_button[2], this, IDC_BUTTON_COMPAR);
+			m_buttons[3]->Create(_T("åƒå…†ç½‘å¤ä½"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, rect_button[3], this, IDC_BUTTON_RESET);
+			m_buttons[4]->Create(_T("åœæ­¢æ¥æ”¶"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, rect_button[4], this, IDC_BUTTON_STOP_RECV);
+			m_buttons[5]->Create(_T("è°ƒåˆ¶å™¨"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, rect_button[5], this, IDC_BUTTON_MODULATOR);
+			m_buttons[0]->SetFont(GetFont());
+			m_buttons[1]->SetFont(GetFont());
+			m_buttons[2]->SetFont(GetFont());
+			m_buttons[3]->SetFont(GetFont());
+			m_buttons[4]->SetFont(GetFont());
+			m_buttons[5]->SetFont(GetFont());
+			break;
+		}
+	case 1:               //ç¦»çº¿æ¨¡å¼
+	{
+		for (int i = 0; i < BUTTON_NUM_ONLINE; i++)
+		{
+			m_buttons[i]->DestroyWindow();
+			m_buttons[i] = nullptr;
+		}
+
+		for (int i = 0; i < BUTTON_NUM_OFFLINE; i++)
+		{
+			m_buttons[i] = new CButton();
+		}
+		m_buttons[0]->Create(_T("è°ƒç”¨simulink"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, rect_button[0], this, IDC_CALLSIMULINK);
+		m_buttons[0]->SetFont(GetFont());
+		break;
+	}
+
+	default:
+		break;
+	}
+	return 0;
+}
+
+
+void CPage4::OnBnClickedCallsimulink()
+{
+	// TODO: Ã”ÃšÂ´Ã‹ÃŒÃ­Â¼Ã“Â¿Ã˜Â¼Ã¾ÃÂ¨Ã–ÂªÂ´Â¦Ã€Ã­Â³ÃŒÃÃ²Â´ÃºÃ‚Ã«
+	TCHAR path_execution[100];
+	CPerformanceEvaluationSystemDlg *pMainDlg = static_cast<CPerformanceEvaluationSystemDlg *>(GetParent());
+	GetModuleFileName(NULL, path_execution, 100);
+	CString path_simulink(path_execution);
+	path_simulink = path_simulink.Left(path_simulink.ReverseFind('\\'));
+	path_simulink = path_simulink.Left(path_simulink.ReverseFind('\\'));
+	path_simulink.Append(_T("\\MatlabFiles\\Demodulation"));
+	mxArray *mPath = nullptr;
+	mPath = mxCreateString(path_simulink.GetBuffer());
+	engPutVariable(pMainDlg->en, _T("simulinkpath"), mPath);
+	engEvalString(pMainDlg->en, _T("cd(simulinkpath)"));
+	//engEvalString(en, "callsimulink");
+	engEvalString(pMainDlg->en, _T("load_system('QAM16_100K_I2Q2');"));
+	engEvalString(pMainDlg->en, _T("sim('QAM16_100K_I2Q2')"));
+	engEvalString(pMainDlg->en, _T("close_system('QAM16_100K_I2Q2')"));
 }

@@ -71,25 +71,25 @@ BOOL CPage1::OnInitDialog()
 
 	// TODO:  在此添加额外的初始化
 	m_UnitCenterFreq.Clear();
-	m_UnitCenterFreq.AddString("GHz");
-	m_UnitCenterFreq.AddString("MHz");
-	m_UnitCenterFreq.AddString("KHz");
-	m_UnitCenterFreq.AddString("Hz");
+	m_UnitCenterFreq.AddString(_T("GHz"));
+	m_UnitCenterFreq.AddString(_T("MHz"));
+	m_UnitCenterFreq.AddString(_T("KHz"));
+	m_UnitCenterFreq.AddString(_T("Hz"));
 	m_UnitCenterFreq.SetCurSel(1);
 
 	m_UnitBandWidth.Clear();
-	m_UnitBandWidth.AddString("GHz");
-	m_UnitBandWidth.AddString("MHz");
-	m_UnitBandWidth.AddString("KHz");
-	m_UnitBandWidth.AddString("Hz");
+	m_UnitBandWidth.AddString(_T("GHz"));
+	m_UnitBandWidth.AddString(_T("MHz"));
+	m_UnitBandWidth.AddString(_T("KHz"));
+	m_UnitBandWidth.AddString(_T("Hz"));
 	m_UnitBandWidth.SetCurSel(1);
 
 	m_UnitReferenceLevel.Clear();
-	m_UnitReferenceLevel.AddString("dB");
+	m_UnitReferenceLevel.AddString(_T("dB"));
 	m_UnitReferenceLevel.SetCurSel(0);
 
 	m_UnitReferenceLevelDiv.Clear();
-	m_UnitReferenceLevelDiv.AddString("dB/Div");
+	m_UnitReferenceLevelDiv.AddString(_T("dB/Div"));
 	m_UnitReferenceLevelDiv.SetCurSel(0);
 
 	return TRUE;  // return TRUE unless you set the focus to a control

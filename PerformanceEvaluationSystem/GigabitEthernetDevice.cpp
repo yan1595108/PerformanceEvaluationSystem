@@ -45,7 +45,7 @@ double CTestTramsmissionRateCalculate::GetTramsmissionRate(LONGLONG llPackagesRe
 {
 	if (0 == dwBeginTime)
 	{
-		AfxMessageBox("错误：初始时刻值为0！");
+		AfxMessageBox(_T("错误：初始时刻值为0！"));
 	}
 	dwEndTime = GetTickCount();
 	if((dwEndTime-dwBeginTime)==0)
@@ -124,13 +124,13 @@ BOOL CGigabitEthernetDevice::Initial()
 	err = WSAStartup(wVersionRequested,&wsaData);
 	if (err!=0)
 	{
-		AfxMessageBox("加载套接字失败！");
+		AfxMessageBox(_T("加载套接字失败！"));
 		return FALSE;
 	}
 	if (LOBYTE(wsaData.wVersion)!=2 || HIBYTE(wsaData.wVersion)!=2)
 	{
 		WSACleanup();
-		AfxMessageBox("无法加载加载套接字2.2，该版本不支持！");
+		AfxMessageBox(_T("无法加载加载套接字2.2，该版本不支持！"));
 		return FALSE;
 	}
 
@@ -169,14 +169,14 @@ BOOL CGigabitEthernetDevice::Initial()
 	int retval14 = setsockopt(m_socket,SOL_SOCKET,SO_REUSEADDR,(const char*)&bReuseaddr,sizeof(BOOL));*/
 	if (retval11!=0 && retval12!=0)
 	{
-		AfxMessageBox("设置参数1失败");
+		AfxMessageBox(_T("设置参数1失败"));
 	}
 	int nTimeOut = 100;
 	int nRetval = setsockopt(m_socket,SOL_SOCKET,SO_RCVTIMEO,(char*)&nTimeOut,sizeof(int));
 	int nRealTimeOut = 0;
 	int nlen_nRealTimeOut = sizeof(int);
 	getsockopt(m_socket,SOL_SOCKET,SO_RCVTIMEO,(char*)&nRealTimeOut,&nlen_nRealTimeOut);
-	TRACE("超时时间：%d\n",nRealTimeOut);
+	TRACE(_T("超时时间：%d\n"),nRealTimeOut);
 
 	//设置PC地址信息
 	//SetPCAddress("192.168.1.100",8000);
@@ -298,7 +298,7 @@ BOOL CGigabitEthernetDevice::SetStorePath(CString strPath)
 			CreateDirectory(strSub,NULL);
 		}
 	}
-	strFileStoreName.Format("RecvData.dat");
+	strFileStoreName.Format(_T("RecvData.dat"));
 	strFileStoreDir = strFileStorePath + strFileStoreName;
 	return TRUE;
 }
@@ -347,7 +347,7 @@ int CGigabitEthernetDevice::SendTo(char *pBufSend,int nSizeBufSend)
 	}
 	if (dw_Send == WSA_WAIT_TIMEOUT)
 	{
-		AfxMessageBox("SendTo发送数据超时！");
+		AfxMessageBox(_T("SendTo发送数据超时！"));
 		//RunInfo<<"Semd Cmd:Send cmd failure-TimeOut!\n";
 		//TRACE("Send cmd Failure-Timeout！\n");
 		return -3;
@@ -423,7 +423,7 @@ int CGigabitEthernetDevice::RecvFrom(char *pBufRecvPackage,int nSizeBufRecv,int 
 			CTime m_Time1;
 			m_Time1 = CTime::GetCurrentTime();
 			CString strMes1;
-			strMes1.Format("%s:TimeOut Retry!,nIndexCount:%d,nIndexReal:%d,nPackageIndexReal:%d",m_Time1.Format("%H:%M:%S"),nFrameIndexCount,nFrameIndexReal,nPackageIndexReal);
+			strMes1.Format(_T("%s:TimeOut Retry!,nIndexCount:%d,nIndexReal:%d,nPackageIndexReal:%d"),m_Time1.Format(_T("%H:%M:%S")),nFrameIndexCount,nFrameIndexReal,nPackageIndexReal);
 			//RunInfo<<strMes1;
 			//RunInfo<<", set nIndexCount = 0\n";
 
@@ -447,7 +447,7 @@ int CGigabitEthernetDevice::RecvFrom(char *pBufRecvPackage,int nSizeBufRecv,int 
 			if (nNumTimeOut==2)
 			{
 				//RunInfo<<"TimeOut:nNumTimeOut>2";
-				AfxMessageBox("超时次数超过上限，接收数据失败！");
+				AfxMessageBox(_T("超时次数超过上限，接收数据失败！"));
 				return 0x54;
 			}
 
@@ -486,7 +486,7 @@ int CGigabitEthernetDevice::RecvFrom(char *pBufRecvPackage,int nSizeBufRecv,int 
 				//连接被意外关闭
 				if (lastErr == WSAECONNRESET){
 					TRACE("Connection was reset.\n");
-					AfxMessageBox("Connection was reset!");
+					AfxMessageBox(_T("Connection was reset!"));
 				}
 				TRACE("Break From here!\n");
 				break;
@@ -528,7 +528,7 @@ int CGigabitEthernetDevice::RecvFrom(char *pBufRecvPackage,int nSizeBufRecv,int 
 			if ((nFrameIndexReal<1) || (nFrameIndexReal>nNumFramesInOnePackage))
 			{
 				CString strErrorInfo;
-				strErrorInfo.Format("从帧头获取的帧编号异常nFrameIndexReal:%d nFrameIndexLast:%d",nFrameIndexReal,nFrameIndexLast);
+				strErrorInfo.Format(_T("从帧头获取的帧编号异常nFrameIndexReal:%d nFrameIndexLast:%d"),nFrameIndexReal,nFrameIndexLast);
 				TRACE("从帧头获取的帧编号异常nFrameIndexReal:%d nFrameIndexLast:%d",nFrameIndexReal,nFrameIndexLast);
 				AfxMessageBox(strErrorInfo);
 				break;
@@ -556,7 +556,7 @@ int CGigabitEthernetDevice::RecvFrom(char *pBufRecvPackage,int nSizeBufRecv,int 
 			//检查帧计数是否异常
 			if (nFrameIndexCount > nNumFramesInOnePackage){
 				CString strErrorInfo;
-				strErrorInfo.Format("帧计数异常nFrameIndexCount:%d!",nFrameIndexCount);
+				strErrorInfo.Format(_T("帧计数异常nFrameIndexCount:%d!"),nFrameIndexCount);
 				AfxMessageBox(strErrorInfo);
 				break;
 			}
@@ -634,9 +634,9 @@ int CGigabitEthernetDevice::RecvFrom(char *pBufRecvPackage,int nSizeBufRecv,int 
 						//计算实时速率
 						double dTransRate = TransmissionRate.GetTramsmissionRate(llPackagesRecv,nNumFramesInOnePackage);
 						CString strTransRate;
-						strTransRate.Format("%.2fMbps",dTransRate);
+						strTransRate.Format(_T("%.2fMbps"),dTransRate);
 
-						pMainDlg->SetDlgItemTextA(IDC_STATIC_TRANSFER_RATE,strTransRate);
+						pMainDlg->SetDlgItemText(IDC_STATIC_TRANSFER_RATE,strTransRate);
 
 						if (nNumPackets2Store == 10001)
 						{
@@ -690,7 +690,7 @@ int CGigabitEthernetDevice::RecvFrom(char *pBufRecvPackage,int nSizeBufRecv,int 
 					if (nPackageIndexTimeOut == nPackageIndexReal)
 					{
 						CString strMes1;
-						strMes1.Format("对于同一包数据超时重传之后的不进行丢包重传！");
+						strMes1.Format(_T("对于同一包数据超时重传之后的不进行丢包重传！"));
 						pMainDlg->DisplayRunningInfo(strMes1);
 					} 
 					else
@@ -698,7 +698,7 @@ int CGigabitEthernetDevice::RecvFrom(char *pBufRecvPackage,int nSizeBufRecv,int 
 						CTime m_Time1;
 						m_Time1 = CTime::GetCurrentTime();
 						CString strMes1;
-						strMes1.Format("%s:Lost Frames! nIndexCount：%d\n",m_Time1.Format("%H:%M:%S"),nFrameIndexCount);
+						strMes1.Format(_T("%s:Lost Frames! nIndexCount：%d\n"),m_Time1.Format("%H:%M:%S"),nFrameIndexCount);
 						pMainDlg->DisplayRunningInfo(strMes1);
 
 						//更新丢包次数
@@ -706,7 +706,7 @@ int CGigabitEthernetDevice::RecvFrom(char *pBufRecvPackage,int nSizeBufRecv,int 
 						if (nNumLost==2)
 						{
 							//RunInfo<<"Lost:nNumLost>2";
-							AfxMessageBox("丢包重传次数超过上限，接收数据失败！");
+							AfxMessageBox(_T("丢包重传次数超过上限，接收数据失败！"));
 							return 0x53;
 						}
 
@@ -797,7 +797,7 @@ int CGigabitEthernetDevice::ClearSocketBuffer()
 		DWORD dw = WSAWaitForMultipleEvents(1,&overlapRecv.hEvent,FALSE,dwWaitTime,FALSE);
 		WSAResetEvent(overlapRecv.hEvent);
 		if (dw == WSA_WAIT_FAILED){
-			AfxMessageBox("Recv Failure！");
+			AfxMessageBox(_T("Recv Failure！"));
 			return nRetVal;
 		}
 		else if (dw == WSA_WAIT_TIMEOUT)
@@ -806,7 +806,7 @@ int CGigabitEthernetDevice::ClearSocketBuffer()
 			CTime m_Time1;
 			m_Time1 = CTime::GetCurrentTime();
 			CString strMes1;
-			strMes1.Format("%s:Clear FIFO - DataSize:%dB!",\
+			strMes1.Format(_T("%s:Clear FIFO - DataSize:%dB!"),
 				m_Time1.Format("%H:%M:%S"),nRetVal);
 			pMainDlg->DisplayRunningInfo(strMes1);
 			CancelIoEx((HANDLE)m_socket, &overlapRecv);
@@ -821,7 +821,7 @@ int CGigabitEthernetDevice::ClearSocketBuffer()
 				//连接被意外关闭
 				if (lastErr == WSAECONNRESET){
 					TRACE("Connection was reset.\n");
-					AfxMessageBox("Connection was reset!");
+					AfxMessageBox(_T("Connection was reset!"));
 				}
 			}
 			//保存数据

@@ -2,6 +2,9 @@
 #include "PageBase.h"
 #include "GigabitEthernetDevice.h"
 
+#define BUTTON_NUM_ONLINE 6
+#define BUTTON_NUM_OFFLINE 1
+
 extern const int nLenFrame;
 
 // CPage4 对话框
@@ -35,6 +38,7 @@ public:
 	volatile BOOL bThreadStopPlot;		//停止绘图标志
 	HANDLE hThreadPlot;					//绘图线程
 	DWORD dwThreadPlotID;				//绘图线程ID
+	CRect rect_button[6];               //存放几个按钮的位置
 
 	THREADPARAM ThreadRecvParam;		//线程参数
 
@@ -50,6 +54,8 @@ public:
 	int m_C1;							//滤波系数C1
 	int m_C2;							//滤波系数C2
 	
+private:
+	CButton *m_buttons[BUTTON_NUM_ONLINE];      //所有的按钮
 
 // 对话框数据
 	enum { IDD = IDD_PAGE4 };
@@ -68,4 +74,6 @@ public:
 	afx_msg void OnBnClickedButtonStopRecv();
 	afx_msg void OnBnClickedButtonModulator();
 	afx_msg void OnEnChangeEditRecvsize();
+	afx_msg LRESULT OnButtonChanged(WPARAM wParam, LPARAM lParam);
+	afx_msg void OnBnClickedCallsimulink();
 };

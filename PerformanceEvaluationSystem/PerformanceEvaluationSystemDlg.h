@@ -1,8 +1,8 @@
-
+#pragma once
 // PerformanceEvaluationSystemDlg.h : 头文件
 //
 #include "iplotx.h"
-//#include "engine.h"
+#include "engine.h"
 //#include "mclmcrrt.h"
 //#include "mclcppclass.h"
 
@@ -30,10 +30,14 @@
 
 #include "GigabitEthernetDevice.h"
 
-#pragma once
 #include "afxwin.h"
+#pragma comment(lib, "libmat.lib")
+#pragma comment(lib, "libmx.lib")
+#pragma comment(lib, "libmex.lib")
+#pragma comment(lib, "libeng.lib")
 
 #define WM_PLOTDATA (WM_USER + 1)
+#define WM_CHANGEBUTTON (WM_USER + 2)
 
 typedef enum COLOR{
 	BLACK = 0,
@@ -122,6 +126,7 @@ class CPerformanceEvaluationSystemDlg : public CDialogEx
 // 构造
 public:
 	CPerformanceEvaluationSystemDlg(CWnd* pParent = NULL);	// 标准构造函数
+	~CPerformanceEvaluationSystemDlg();
 
 // 对话框数据
 	enum { IDD = IDD_PERFORMANCEEVALUATIONSYSTEM_DIALOG };
@@ -132,7 +137,7 @@ public:
 public:
 	CComboBox m_WorkMode;				//工作模式复合框
 	CComboBox m_SignalType;				//信号类型复合框
-	//Engine *ep;							//Matlab引擎
+	Engine *en;							//Matlab引擎
 	CiPlotX	m_iPlotX;					//绘图控件
 	long FilePositionPlot;				//绘图函数从文件中获取数据的文件位置
 	double CurrentX;					//绘图函数绘图使用的X轴坐标
@@ -165,6 +170,7 @@ public:
 private:
 	CWinThread *m_pThreadSpectrumDisplay;
 	CWinThread *m_pThreadDemodulation;
+	//Engine *en;
 
 //动态链接库相关
 private:

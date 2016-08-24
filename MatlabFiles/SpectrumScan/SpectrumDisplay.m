@@ -1,7 +1,7 @@
 clc
 clear
 
-fid = fopen('E:\MainProject\5-4\C程序\频谱显示\绘图控件测试\TEST\Orign_dat_Sam.txt','rt');
+fid = fopen('F:\504\PerformanceEvaluationSystem\MatlabFiles\频段频谱扫描模式\Orign_dat_Sam.txt','rt');
 input = fscanf(fid,'%f');
 fclose(fid);
 
@@ -17,7 +17,7 @@ freqs = abs(freqs);
 y_ampl = 20*log10(freqs/max(freqs));
 %y_ampl = freqs/max(freqs);
 %plot(x_freq,y_ampl);
-plot(x_freq(1:nSamplePoints/2),y_ampl(1:nSamplePoints/2));
+plot(x_freq(1:nSamplePoints),y_ampl(1:nSamplePoints));
 
 %%保存-输出频谱数据到文件
 %FileOut = fopen('E:\MainProject\5-4\C程序\频谱显示\绘图控件测试\TEST\Spectrum.txt','wt');
