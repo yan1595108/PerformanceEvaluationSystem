@@ -41,8 +41,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>D:\MATLAB_R2013a\extern\include;D:\MATLAB_R2013a\extern\include\win32;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\MATLAB_R2013a\extern\lib\win32\microsoft;D:\MATLAB_R2013a\extern\lib\win64\microsoft;$(LibraryPath)</LibraryPath>
+    <IncludePath>E:\MATLAB\install\extern\include;E:\MATLAB\install\extern\include\win32;$(IncludePath)</IncludePath>
+    <LibraryPath>E:\MATLAB\install\extern\lib\win32\microsoft;E:\MATLAB\install\extern\lib\win64\microsoft;$(LibraryPath)</LibraryPath>
     <SourcePath>$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -54,7 +54,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>D:\MATLAB_R2013a\extern\include;D:\MATLAB_R2013a\extern\include\win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\MATLAB\install\extern\include;E:\MATLAB\install\extern\include\win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
     </ClCompile>
     <Link>

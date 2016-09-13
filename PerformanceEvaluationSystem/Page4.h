@@ -1,6 +1,7 @@
 #pragma once
 #include "PageBase.h"
 #include "GigabitEthernetDevice.h"
+#include "afxwin.h"
 
 #define BUTTON_NUM_ONLINE 6
 #define BUTTON_NUM_OFFLINE 1
@@ -53,6 +54,9 @@ public:
 	CComboBox m_UploadDataType;			//上传数据类型
 	int m_C1;							//滤波系数C1
 	int m_C2;							//滤波系数C2
+	int m_c1delta;
+	int m_c2delta;
+	double m_offsetvalue;
 	
 private:
 	CButton *m_buttons[BUTTON_NUM_ONLINE];      //所有的按钮
@@ -76,4 +80,8 @@ public:
 	afx_msg void OnEnChangeEditRecvsize();
 	afx_msg LRESULT OnButtonChanged(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnBnClickedCallsimulink();
+	afx_msg void OnBnClickedBegintrack();
+	afx_msg void OnBnClickedEndtrack();
+	afx_msg void OnBnClickedBeginoffset();
+	afx_msg void OnBnClickedEndoffset();
 };

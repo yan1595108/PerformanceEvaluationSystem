@@ -24,7 +24,9 @@ CPage4::CPage4(CWnd* pParent /*=NULL*/)
 	, dwThreadRecvID(0),dwThreadPlotID(0)
 	, m_nRecvSize(1000000),m_nFramesPerPackage(255)
 	, m_Carrier(70.0),m_SymbolRateVal(100),m_C1(12),m_C2(20)
-	
+	, m_c1delta(0)
+	, m_c2delta(0)
+	, m_offsetvalue(0)
 {
 
 }
@@ -47,6 +49,9 @@ void CPage4::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX,IDC_EDIT_C1,m_C1);
 	DDX_Text(pDX,IDC_EDIT_C2,m_C2);
 	DDV_MinMaxInt(pDX, m_nFramesPerPackage, 1, 255);
+	DDX_Text(pDX, IDC_EDIT_C1DELTA, m_c1delta);
+	DDX_Text(pDX, IDC_EDIT_C2DELTA, m_c2delta);
+	DDX_Text(pDX, IDC_OFFSETVALUE, m_offsetvalue);
 }
 
 
@@ -60,6 +65,10 @@ BEGIN_MESSAGE_MAP(CPage4, CPageBase)
 	ON_BN_CLICKED(IDC_BUTTON_RESET, &CPage4::OnBnClickedButtonReset)
 	ON_BN_CLICKED(IDC_CALLSIMULINK, &CPage4::OnBnClickedCallsimulink)
 	ON_EN_CHANGE(IDC_EDIT_RECVSIZE, &CPage4::OnEnChangeEditRecvsize)
+	ON_BN_CLICKED(IDC_BEGINTRACK, &CPage4::OnBnClickedBegintrack)
+	ON_BN_CLICKED(IDC_ENDTRACK, &CPage4::OnBnClickedEndtrack)
+	ON_BN_CLICKED(IDC_BEGINOFFSET, &CPage4::OnBnClickedBeginoffset)
+	ON_BN_CLICKED(IDC_ENDOFFSET, &CPage4::OnBnClickedEndoffset)
 	ON_MESSAGE(WM_CHANGEBUTTON, OnButtonChanged)
 END_MESSAGE_MAP()
 
@@ -568,7 +577,7 @@ void CPage4::OnBnClickedButtonRecvdata()
 
 	//////////////////////////////////////////////////////////////////////////
 	//开始接收数据
-	//pMainDlg->ClearFiles("C:\\Recv\\*.dat");	//清除缓存文件
+	pMainDlg->ClearFiles("C:\\Recv\\*.dat");	//清除缓存文件
 	pGEDevice->Open();							//打开千兆网设备
 	pGEDevice->SetStorePath(_T("C:\\Recv\\"));
 
@@ -609,10 +618,10 @@ void CPage4::OnBnClickedButtonRecvdata()
 		return;
 	}
 	//创建线程
-	/*ThreadRecvParam.pPage4Dlg = this;
+	ThreadRecvParam.pPage4Dlg = this;
 	hThreadPlot = CreateThread(NULL,0,ThreadStartPlot,&ThreadRecvParam,0,&dwThreadPlotID);
 	CloseHandle(hThreadPlot);
-	hThreadPlot = INVALID_HANDLE_VALUE;*/
+	hThreadPlot = INVALID_HANDLE_VALUE;
 }
 
 
@@ -684,7 +693,10 @@ DWORD WINAPI ThreadStartPlot(LPVOID lpParam)
 
 	CiPlotChannelX ChannelTemp = pMainDlg->m_iPlotX.GetChannel(0);
 	CiPlotAxisX AxisX = pMainDlg->m_iPlotX.GetXAxis(0);
+	double dAxisX =0.0;
+	double dAxisXDelt = 0.001;
 
+	int uploadtype = pPage4Dlg->m_UploadDataType.GetCurSel();         //上传数据类型
 	CFile FileData;
 	CString strFileDataDir = _T("C:\\Recv\\RecvData.dat");
 	FileData.Open(strFileDataDir,CFile::modeRead | CFile::modeCreate | CFile::modeNoTruncate | CFile::shareDenyNone);
@@ -701,8 +713,37 @@ DWORD WINAPI ThreadStartPlot(LPVOID lpParam)
 		{
 			char *pBufFileReadIn = new char[nLenDelt];
 			FileData.Read(pBufFileReadIn,nLenDelt);
-
+			if (uploadtype == 5)           //中频数据为2个字节，数据长度应除以2
+			{
+				nLenDelt = nLenDelt / 2;
+			}
+			else if (uploadtype == 1)      //锁相环累计误差数据为4个字节，数据长度应除以4
+			{
+				nLenDelt = nLenDelt / 4;
+			}
 			llPosFileData = FileData.GetPosition();
+			for (int i=0;i<nLenDelt;i++)
+			{
+				if (uploadtype == 5)
+				{
+					ChannelTemp.AddXY(dAxisX,*(pBufFileReadIn + 2 * i) * 256 + *(pBufFileReadIn + 2 * i));
+				}
+				else if (uploadtype == 1)
+				{
+					long temp = *(long *)(pBufFileReadIn + 4 * i);
+					ChannelTemp.AddXY(dAxisX, *(long *)(pBufFileReadIn + 4 * i));
+				}
+				else
+				{
+					ChannelTemp.AddXY(dAxisX,(double)*(pBufFileReadIn + i));
+				}
+				dAxisX += dAxisXDelt;
+				if (pPage4Dlg->bThreadStopPlot)
+				{
+					break;
+				}
+			}
+			delete[] pBufFileReadIn;
 			//::PostMessage(pMainDlg->GetSafeHwnd(), WM_PLOTDATA, (WPARAM)pBufFileReadIn, nLenDelt);
 		}
 		else
@@ -805,7 +846,7 @@ void CPage4::OnBnClickedButtonCompar()
 	//CPerformanceEvaluationSystemDlg *pMainDlg = static_cast<CPerformanceEvaluationSystemDlg*>(pTempMainDlg);
 
 	CString strExeFilepath;
-	strExeFilepath = _T("F:\\Sam\\504\\BERdetection\\Debug\\BERdetection.exe");
+	strExeFilepath="F:\\504\\上位机\\BERdetection\\Debug\\BERdetection.exe";
 	ShellExecute(NULL,_T("open"),strExeFilepath,NULL,NULL,SW_SHOWNORMAL);
 }
 
@@ -828,8 +869,8 @@ void CPage4::OnBnClickedButtonModulator()
 	//CPerformanceEvaluationSystemDlg *pMainDlg = static_cast<CPerformanceEvaluationSystemDlg*>(pTempMainDlg);
 
 	CString strExeFilepath;
-	strExeFilepath = _T("E:\\Sam\\504\\Pro_504\\软件\\Mod_UpVS_plus\\Debug\\USBTest.exe");
-	ShellExecute(NULL,_T("open"),strExeFilepath,NULL,NULL,SW_SHOWNORMAL);
+	strExeFilepath="F:\\504\\上位机\\调制源\\Debug\\USBTest.exe";
+	ShellExecute(NULL,"open",strExeFilepath,NULL,NULL,SW_SHOWNORMAL);
 }
 
 
@@ -845,10 +886,12 @@ BOOL CPage4::OnInitDialog()
 	//调试用
 	GetDlgItem(IDC_BUTTON_CONFIGURE)->EnableWindow(TRUE);
 	GetDlgItem(IDC_BUTTON_RECVDATA)->EnableWindow(TRUE);
-	GetDlgItem(IDC_BUTTON_COMPAR)->EnableWindow(FALSE);
+	GetDlgItem(IDC_BUTTON_COMPAR)->EnableWindow(TRUE);
 	GetDlgItem(IDC_BUTTON_RESET)->EnableWindow(TRUE);
-	GetDlgItem(IDC_BUTTON_MODULATOR)->EnableWindow(FALSE);
+	GetDlgItem(IDC_BUTTON_MODULATOR)->EnableWindow(TRUE);
 	GetDlgItem(IDC_BUTTON_STOP_RECV)->EnableWindow(FALSE);
+	GetDlgItem(IDC_ENDTRACK)->EnableWindow(FALSE);
+	GetDlgItem(IDC_ENDOFFSET)->EnableWindow(FALSE);
 
 
 	//pGEDevice = new CGigabitEthernetDevice(m_hWnd);
@@ -915,6 +958,155 @@ void CPage4::OnEnChangeEditRecvsize()
 	// 同时将 ENM_CHANGE 标志“或”运算到掩码中。
 
 	// TODO:  在此添加控件通知处理程序代码
+}
+
+
+void CPage4::OnBnClickedBegintrack()
+{
+	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼þÍ¨Öª´¦Àí³ÌÐò´úÂë
+	UpdateData(TRUE);
+	GetDlgItem(IDC_ENDTRACK)->EnableWindow(TRUE);
+	GetDlgItem(IDC_BEGINTRACK)->EnableWindow(FALSE);
+	int nDemodCmdSize_RecvData =20;
+	char *szDemodCmd_RecvData=new char[nDemodCmdSize_RecvData];
+	szDemodCmd_RecvData[0]=0x17;
+	szDemodCmd_RecvData[1]=0x57;
+	szDemodCmd_RecvData[2]=0x90;
+	szDemodCmd_RecvData[3]=0xeb;
+	szDemodCmd_RecvData[4]=0x09;
+	szDemodCmd_RecvData[5]=0x00;
+	szDemodCmd_RecvData[6]=0x0f;
+	szDemodCmd_RecvData[7]=0x00;
+	szDemodCmd_RecvData[8]=m_c1delta;
+	szDemodCmd_RecvData[9]=0x00;
+	szDemodCmd_RecvData[10]=m_c2delta;
+	szDemodCmd_RecvData[11]=0x00;
+	szDemodCmd_RecvData[12]=0x01;
+	szDemodCmd_RecvData[13]=0x00;
+	szDemodCmd_RecvData[14]=0x00;
+	szDemodCmd_RecvData[15]=0x00;
+	szDemodCmd_RecvData[16]=0x00;
+	szDemodCmd_RecvData[17]=0x00;
+	szDemodCmd_RecvData[18]=0x01;
+	szDemodCmd_RecvData[19]=0x00;
+	TRACE("m_c1delta = %u\n", m_c1delta);
+	TRACE("m_c2delta = %u\n", m_c2delta);
+	for(int i=0;i<19;i++)
+	{
+		szDemodCmd_RecvData[19]=szDemodCmd_RecvData[19]+szDemodCmd_RecvData[i];
+	}
+	pGEDevice->SendTo(szDemodCmd_RecvData,nDemodCmdSize_RecvData);
+}
+
+
+void CPage4::OnBnClickedEndtrack()
+{
+	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼þÍ¨Öª´¦Àí³ÌÐò´úÂë
+	UpdateData(TRUE);
+	GetDlgItem(IDC_ENDTRACK)->EnableWindow(FALSE);
+	GetDlgItem(IDC_BEGINTRACK)->EnableWindow(TRUE);
+	int nDemodCmdSize_RecvData =20;
+	char *szDemodCmd_RecvData=new char[nDemodCmdSize_RecvData];
+	szDemodCmd_RecvData[0]=0x17;
+	szDemodCmd_RecvData[1]=0x57;
+	szDemodCmd_RecvData[2]=0x90;
+	szDemodCmd_RecvData[3]=0xeb;
+	szDemodCmd_RecvData[4]=0x09;
+	szDemodCmd_RecvData[5]=0x00;
+	szDemodCmd_RecvData[6]=0x0f;
+	szDemodCmd_RecvData[7]=0x00;
+	szDemodCmd_RecvData[8]=m_c1delta;
+	szDemodCmd_RecvData[9]=0x00;
+	szDemodCmd_RecvData[10]=m_c2delta;
+	szDemodCmd_RecvData[11]=0x00;
+	szDemodCmd_RecvData[12]=0x00;
+	szDemodCmd_RecvData[13]=0x00;
+	szDemodCmd_RecvData[14]=0x00;
+	szDemodCmd_RecvData[15]=0x00;
+	szDemodCmd_RecvData[16]=0x00;
+	szDemodCmd_RecvData[17]=0x00;
+	szDemodCmd_RecvData[18]=0x01;
+	szDemodCmd_RecvData[19]=0x00;
+	TRACE("m_c1delta = %u\n", m_c1delta);
+	TRACE("m_c2delta = %u\n", m_c2delta);
+	for(int i=0;i<19;i++)
+	{
+		szDemodCmd_RecvData[19]=szDemodCmd_RecvData[19]+szDemodCmd_RecvData[i];
+	}
+	pGEDevice->SendTo(szDemodCmd_RecvData,nDemodCmdSize_RecvData);
+}
+
+
+void CPage4::OnBnClickedBeginoffset()
+{
+	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼þÍ¨Öª´¦Àí³ÌÐò´úÂë
+	UpdateData(TRUE);
+	GetDlgItem(IDC_BEGINOFFSET)->EnableWindow(FALSE);
+	GetDlgItem(IDC_ENDOFFSET)->EnableWindow(TRUE);
+	int nDemodCmdSize_RecvData =20;
+	char *szDemodCmd_RecvData=new char[nDemodCmdSize_RecvData];
+	szDemodCmd_RecvData[0]=0x17;
+	szDemodCmd_RecvData[1]=0x57;
+	szDemodCmd_RecvData[2]=0x90;
+	szDemodCmd_RecvData[3]=0xeb;
+	szDemodCmd_RecvData[4]=0x10;
+	szDemodCmd_RecvData[5]=0x00;
+	szDemodCmd_RecvData[6]=0x0f;
+	szDemodCmd_RecvData[7]=0x00;
+	szDemodCmd_RecvData[8]=0x01;            //开始去偏置标志
+	szDemodCmd_RecvData[9]=(short)m_offsetvalue >> 8;
+	szDemodCmd_RecvData[10]=(short)m_offsetvalue;
+	szDemodCmd_RecvData[11]=0x00;
+	szDemodCmd_RecvData[12]=0x00;
+	szDemodCmd_RecvData[13]=0x00;
+	szDemodCmd_RecvData[14]=0x00;
+	szDemodCmd_RecvData[15]=0x00;
+	szDemodCmd_RecvData[16]=0x00;
+	szDemodCmd_RecvData[17]=0x00;
+	szDemodCmd_RecvData[18]=0x01;
+	szDemodCmd_RecvData[19]=0x00;
+	TRACE("m_offsetvalue_H = %d\n",szDemodCmd_RecvData[9]);
+	TRACE("m_offsetvalue_L = %d\n", szDemodCmd_RecvData[10]);
+	for(int i=0;i<19;i++)
+	{
+		szDemodCmd_RecvData[19]=szDemodCmd_RecvData[19]+szDemodCmd_RecvData[i];
+	}
+	pGEDevice->SendTo(szDemodCmd_RecvData,nDemodCmdSize_RecvData);
+}
+
+
+void CPage4::OnBnClickedEndoffset()
+{
+	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼þÍ¨Öª´¦Àí³ÌÐò´úÂë
+	GetDlgItem(IDC_BEGINOFFSET)->EnableWindow(TRUE);
+	GetDlgItem(IDC_ENDOFFSET)->EnableWindow(FALSE);
+	int nDemodCmdSize_RecvData =20;
+	char *szDemodCmd_RecvData=new char[nDemodCmdSize_RecvData];
+	szDemodCmd_RecvData[0]=0x17;
+	szDemodCmd_RecvData[1]=0x57;
+	szDemodCmd_RecvData[2]=0x90;
+	szDemodCmd_RecvData[3]=0xeb;
+	szDemodCmd_RecvData[4]=0x10;
+	szDemodCmd_RecvData[5]=0x00;
+	szDemodCmd_RecvData[6]=0x0f;
+	szDemodCmd_RecvData[7]=0x00;
+	szDemodCmd_RecvData[8]=0x00;            //停止去偏置标志
+	szDemodCmd_RecvData[9]=0x00;
+	szDemodCmd_RecvData[10]=0x00;
+	szDemodCmd_RecvData[11]=0x00;
+	szDemodCmd_RecvData[12]=0x00;
+	szDemodCmd_RecvData[13]=0x00;
+	szDemodCmd_RecvData[14]=0x00;
+	szDemodCmd_RecvData[15]=0x00;
+	szDemodCmd_RecvData[16]=0x00;
+	szDemodCmd_RecvData[17]=0x00;
+	szDemodCmd_RecvData[18]=0x01;
+	szDemodCmd_RecvData[19]=0x00;
+	for(int i=0;i<19;i++)
+	{
+		szDemodCmd_RecvData[19]=szDemodCmd_RecvData[19]+szDemodCmd_RecvData[i];
+	}
+	pGEDevice->SendTo(szDemodCmd_RecvData,nDemodCmdSize_RecvData);
 }
 
 
