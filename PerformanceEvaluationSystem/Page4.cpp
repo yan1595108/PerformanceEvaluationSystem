@@ -986,8 +986,13 @@ void CPage4::OnBnClickedCallsimulink()
 	mPath = mxCreateString(path_simulink.GetBuffer());
 	engPutVariable(pMainDlg->en, _T("simulinkpath"), mPath);
 	engEvalString(pMainDlg->en, _T("cd(simulinkpath)"));
-	//engEvalString(en, "callsimulink");
+	//engEvalString(pMainDlg->en, "callsimulink");
 	engEvalString(pMainDlg->en, _T("load_system('QAM16_100K_I2Q2');"));
 	engEvalString(pMainDlg->en, _T("sim('QAM16_100K_I2Q2')"));
 	engEvalString(pMainDlg->en, _T("close_system('QAM16_100K_I2Q2')"));
+	engEvalString(pMainDlg->en, _T("save result"));
+	engEvalString(pMainDlg->en, _T("subplot(2,1,1);"));
+	engEvalString(pMainDlg->en, _T("plot(result.time, result.signals(1).values);"));
+	engEvalString(pMainDlg->en, _T("subplot(2,1,2);"));
+	engEvalString(pMainDlg->en, _T("plot(result.time, result.signals(2).values);"));
 }

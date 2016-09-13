@@ -153,6 +153,12 @@ BOOL CPerformanceEvaluationSystemDlg::OnInitDialog()
 	
 	SwitchPages(PAGE4);
 
+	//屏蔽掉"服务器正在运行中"要选择"切换到..."或"重试"的对话框
+	AfxOleGetMessageFilter()->EnableBusyDialog(FALSE);
+	AfxOleGetMessageFilter()->SetBusyReply(SERVERCALL_RETRYLATER);
+	AfxOleGetMessageFilter()->EnableNotRespondingDialog(TRUE);
+	AfxOleGetMessageFilter()->SetMessagePendingDelay(-1);
+
 	pGEDevice->Initial();			//初始化千兆网接口
 	/*RunInfo.open("C:\\Users\\Administrator\\Desktop\\RunInfo.txt",ios::out);*/
 	if (!(en = engOpen(NULL)))
