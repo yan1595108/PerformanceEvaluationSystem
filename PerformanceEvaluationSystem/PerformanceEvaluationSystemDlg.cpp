@@ -73,6 +73,8 @@ CPerformanceEvaluationSystemDlg::CPerformanceEvaluationSystemDlg(CWnd* pParent /
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 	FilePositionPlot = 0;
 	CurrentX = 0;
+	average = 0;
+	count_average = 0;
 }
 
 CPerformanceEvaluationSystemDlg::~CPerformanceEvaluationSystemDlg()
@@ -102,7 +104,7 @@ BEGIN_MESSAGE_MAP(CPerformanceEvaluationSystemDlg, CDialogEx)
 	ON_CBN_SELCHANGE(IDC_COMBO_WORKMODE, &CPerformanceEvaluationSystemDlg::OnCbnSelchangeComboWorkmode)
 	ON_BN_CLICKED(IDC_BUTTON_TEST1, &CPerformanceEvaluationSystemDlg::OnBnClickedButtonTest1)
 	ON_BN_CLICKED(IDC_BUTTON_TEST2, &CPerformanceEvaluationSystemDlg::OnBnClickedButtonTest2)
-	//ON_MESSAGE(WM_PLOTDATA, PlotData)
+	ON_MESSAGE(WM_PLOTDATA, PlotData)
 	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
@@ -1664,64 +1666,82 @@ void CPerformanceEvaluationSystemDlg::Test()
 }
 
 
-//LRESULT CPerformanceEvaluationSystemDlg::PlotData(WPARAM wParam, LPARAM lParam)
-//{
-//	m_iPlotX.GetXAxis(0).SetMin(0);
-//	m_iPlotX.GetXAxis(0).SetSpan(10);
-//	SetTimer(1, 1000, NULL);
-//	return 0;
-//}
+LRESULT CPerformanceEvaluationSystemDlg::PlotData(WPARAM wParam, LPARAM lParam)
+{
+	//m_iPlotX.GetXAxis(0).SetMin(0);
+	//m_iPlotX.GetXAxis(0).SetSpan(10);
+	SetTimer(1, 100, NULL);
+	return 0;
+}
 
 void CPerformanceEvaluationSystemDlg::OnTimer(UINT_PTR nIDEvent)
 {
 	// TODO: ÔÚ´ËÌí¼ÓÏûÏ¢´¦Àí³ÌÐò´úÂëºÍ/»òµ÷ÓÃÄ¬ÈÏÖµ
-	int LengPerDisplay = 10000;
+	int len_per_display_byte = 10000;              //一次显示的数据的字节数
+	int len_per_display;                          //一次显示的数据个数
 	CFile FileData;
+	double sum = 0;
 
 	CString strFileDataDir = _T("C:\\Recv\\RecvData.dat");
 	FileData.Open(strFileDataDir,CFile::modeRead | CFile::modeCreate | CFile::modeNoTruncate | CFile::shareDenyNone);
-	if (FileData.GetLength() < FilePositionPlot + LengPerDisplay)
+	if (FileData.GetLength() <= FilePositionPlot + len_per_display_byte)
 	{
 		return;
 	}
 	else
 	{
 		FileData.Seek(FilePositionPlot, CFile::begin);
-		char *pBufFileReadIn = new char[LengPerDisplay];
-		FileData.Read(pBufFileReadIn,LengPerDisplay);
+		char *pBufFileReadIn = new char[len_per_display_byte];
+		FileData.Read(pBufFileReadIn,len_per_display_byte);
 		int uploadtype = m_Page4.m_UploadDataType.GetCurSel();
 		if (uploadtype == 5)           //中频数据为2个字节，数据长度应除以2
 		{
-			LengPerDisplay = LengPerDisplay / 2;
+			len_per_display = len_per_display_byte / 2;
 		}
 		else if (uploadtype == 1)      //锁相环累计误差数据为4个字节，数据长度应除以4
 		{
-			LengPerDisplay = LengPerDisplay / 4;
+			len_per_display = len_per_display_byte / 4;
+		}
+		else
+		{
+			len_per_display = len_per_display_byte;
 		}
 
 		double dAxisXDelt = 0.001;
 		CiPlotChannelX ChannelX = m_iPlotX.GetChannel(0);
 		CiPlotAxisX XAxis = m_iPlotX.GetXAxis(0);
-		for (int i=0;i< LengPerDisplay;i++)
+		long origindata;
+		for (int i=0;i< len_per_display;i++)
 		{
 			if (uploadtype == 5)
 			{
-				ChannelX.AddXY(CurrentX, *(pBufFileReadIn + 2 * i) * 256 + *(pBufFileReadIn + 2 * i));
+				origindata = *(pBufFileReadIn + 2 * i) * 256 + *(pBufFileReadIn + 2 * i);
+				ChannelX.AddXY(CurrentX, origindata);
 			}
 			else if (uploadtype == 1)
 			{
-				ChannelX.AddXY(CurrentX, *(long *)(pBufFileReadIn + 4 * i));
+				origindata = *(long *)(pBufFileReadIn + 4 * i);
+				ChannelX.AddXY(CurrentX, origindata);
 			}
 			else
 			{
-				ChannelX.AddXY(CurrentX, (double)*(pBufFileReadIn + i));
+				origindata = (double)*(pBufFileReadIn + i);
+				ChannelX.AddXY(CurrentX, origindata);
 			}
 			CurrentX += dAxisXDelt;
+			sum += origindata;
 		}
 		delete[] pBufFileReadIn;
-		FilePositionPlot += LengPerDisplay;
-		m_iPlotX.GetYAxis(0).SetMin(m_iPlotX.GetChannel(0).GetYMin());
-		m_iPlotX.GetYAxis(0).SetSpan(m_iPlotX.GetChannel(0).GetYMax() - m_iPlotX.GetChannel(0).GetYMin());
+		FilePositionPlot += len_per_display_byte;
+		double cur_average = (double)sum / len_per_display;                     //本次显示的数据的平均值
+		average = average * count_average / (count_average + len_per_display) + cur_average * len_per_display / (count_average + len_per_display);            //由之前总的平均值和本次平均值算出新的总的平均值
+		count_average += len_per_display;
+		CString str_average;
+		str_average.Format(_T("%f"), average);
+		m_Page4.GetDlgItem(IDC_AVERAGE)->SetWindowText(str_average);
+
+		//m_iPlotX.GetYAxis(0).SetMin(m_iPlotX.GetChannel(0).GetYMin());                //每次更新显示数据后，设置坐标轴的范围，貌似不用不用设置，空间可以自己调整
+		//m_iPlotX.GetYAxis(0).SetSpan(m_iPlotX.GetChannel(0).GetYMax() - m_iPlotX.GetChannel(0).GetYMin());
 	}
 	FileData.Close();
 

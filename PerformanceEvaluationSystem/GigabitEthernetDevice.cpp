@@ -178,16 +178,10 @@ BOOL CGigabitEthernetDevice::Initial()
 	getsockopt(m_socket,SOL_SOCKET,SO_RCVTIMEO,(char*)&nRealTimeOut,&nlen_nRealTimeOut);
 	TRACE(_T("超时时间：%d\n"),nRealTimeOut);
 
-	//设置PC地址信息
-	//SetPCAddress("192.168.1.100",8000);
-
-	//设置FPGA地址信息
-	//SetFPGAAddress("192.168.1.150",8080);
-
 	//调用bind把本地套接字地址绑定到监听套接字
 	if (SOCKET_ERROR == bind(m_socket,(sockaddr*)&saPC,sizeof(sockaddr_in)))
 	{
-		TRACE("Bind Error",WSAGetLastError());
+		TRACE("Bind Error %d\n",WSAGetLastError());
 		closesocket(m_socket);
 		m_socket = INVALID_SOCKET;
 		return FALSE;

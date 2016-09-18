@@ -141,6 +141,8 @@ public:
 	CiPlotX	m_iPlotX;					//绘图控件
 	long FilePositionPlot;				//绘图函数从文件中获取数据的文件位置
 	double CurrentX;					//绘图函数绘图使用的X轴坐标
+	double average;                     //接收数据的平均值
+	long count_average;                   //已经计算了平均值的数据个数
 
     //千兆网相关变量
 	//fstream RunInfo;					//千兆网接口运行状态记录文件
@@ -243,6 +245,7 @@ public:
 	void	DisplayRunningInfo(CString strInfo);			//输出系统运行信息
 	void	Test();											//测试按钮
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
+	afx_msg LRESULT PlotData(WPARAM wParam, LPARAM lParam);
 };
 
 

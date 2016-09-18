@@ -644,8 +644,6 @@ DWORD WINAPI ThreadRecv(LPVOID lpParam)
 			break;
 		}
 		int RetRecv = pPage4Dlg->pGEDevice->RecvFrom(pBufRecvPackage,255*nLenFrame,10000);
-		int currentid = GetCurrentThreadId();
-		TRACE("当前线程ID = %d\n", currentid);
 		if (0x54 == RetRecv)
 		{
 			TRACE("超时次数超过3次，接收程序被迫终止！");
@@ -686,75 +684,76 @@ DWORD WINAPI ThreadRecv(LPVOID lpParam)
 
 
 DWORD WINAPI ThreadStartPlot(LPVOID lpParam)
-{
+{                   //给PerformanceEvaluationSystem发送画图消息，启动它的画图定时器
 	THREADPARAM* pThreadParam = (THREADPARAM*)lpParam;
 	CPage4* pPage4Dlg = dynamic_cast<CPage4*>(pThreadParam->pPage4Dlg);
 	CPerformanceEvaluationSystemDlg *pMainDlg = static_cast<CPerformanceEvaluationSystemDlg*>(pPage4Dlg->pTempMainDlg);
+	::SendMessage(pMainDlg->GetSafeHwnd(), WM_PLOTDATA, 0, 0);
+	return 0;
+	//CiPlotChannelX ChannelTemp = pMainDlg->m_iPlotX.GetChannel(0);
+	//CiPlotAxisX AxisX = pMainDlg->m_iPlotX.GetXAxis(0);
+	//double dAxisX =0.0;
+	//double dAxisXDelt = 0.001;
 
-	CiPlotChannelX ChannelTemp = pMainDlg->m_iPlotX.GetChannel(0);
-	CiPlotAxisX AxisX = pMainDlg->m_iPlotX.GetXAxis(0);
-	double dAxisX =0.0;
-	double dAxisXDelt = 0.001;
+	//int uploadtype = pPage4Dlg->m_UploadDataType.GetCurSel();         //上传数据类型
+	//CFile FileData;
+	//CString strFileDataDir = _T("C:\\Recv\\RecvData.dat");
+	//FileData.Open(strFileDataDir,CFile::modeRead | CFile::modeCreate | CFile::modeNoTruncate | CFile::shareDenyNone);
+	//LONGLONG llPosFileData = 0;
+	//while(1)
+	//{
+	//	if (pPage4Dlg->bThreadStopPlot)
+	//	{
+	//		break;
+	//	}
+	//	int nLenDelt = FileData.GetLength()-llPosFileData;
 
-	int uploadtype = pPage4Dlg->m_UploadDataType.GetCurSel();         //上传数据类型
-	CFile FileData;
-	CString strFileDataDir = _T("C:\\Recv\\RecvData.dat");
-	FileData.Open(strFileDataDir,CFile::modeRead | CFile::modeCreate | CFile::modeNoTruncate | CFile::shareDenyNone);
-	LONGLONG llPosFileData = 0;
-	while(1)
-	{
-		if (pPage4Dlg->bThreadStopPlot)
-		{
-			break;
-		}
-		int nLenDelt = FileData.GetLength()-llPosFileData;
+	//	if (nLenDelt>=10240)
+	//	{
+	//		char *pBufFileReadIn = new char[nLenDelt];
+	//		FileData.Read(pBufFileReadIn,nLenDelt);
+	//		if (uploadtype == 5)           //中频数据为2个字节，数据长度应除以2
+	//		{
+	//			nLenDelt = nLenDelt / 2;
+	//		}
+	//		else if (uploadtype == 1)      //锁相环累计误差数据为4个字节，数据长度应除以4
+	//		{
+	//			nLenDelt = nLenDelt / 4;
+	//		}
+	//		llPosFileData = FileData.GetPosition();
+	//		for (int i=0;i<nLenDelt;i++)
+	//		{
+	//			if (uploadtype == 5)
+	//			{
+	//				ChannelTemp.AddXY(dAxisX,*(pBufFileReadIn + 2 * i) * 256 + *(pBufFileReadIn + 2 * i));
+	//			}
+	//			else if (uploadtype == 1)
+	//			{
+	//				long temp = *(long *)(pBufFileReadIn + 4 * i);
+	//				ChannelTemp.AddXY(dAxisX, *(long *)(pBufFileReadIn + 4 * i));
+	//			}
+	//			else
+	//			{
+	//				ChannelTemp.AddXY(dAxisX,(double)*(pBufFileReadIn + i));
+	//			}
+	//			dAxisX += dAxisXDelt;
+	//			if (pPage4Dlg->bThreadStopPlot)
+	//			{
+	//				break;
+	//			}
+	//		}
+	//		delete[] pBufFileReadIn;
+	//		Sleep(1000);
+	//	}
+	//	else
+	//	{
+	//		Sleep(50);
+	//	}
+	//}
+	//FileData.Close();
 
-		if (nLenDelt>=10240)
-		{
-			char *pBufFileReadIn = new char[nLenDelt];
-			FileData.Read(pBufFileReadIn,nLenDelt);
-			if (uploadtype == 5)           //中频数据为2个字节，数据长度应除以2
-			{
-				nLenDelt = nLenDelt / 2;
-			}
-			else if (uploadtype == 1)      //锁相环累计误差数据为4个字节，数据长度应除以4
-			{
-				nLenDelt = nLenDelt / 4;
-			}
-			llPosFileData = FileData.GetPosition();
-			for (int i=0;i<nLenDelt;i++)
-			{
-				if (uploadtype == 5)
-				{
-					ChannelTemp.AddXY(dAxisX,*(pBufFileReadIn + 2 * i) * 256 + *(pBufFileReadIn + 2 * i));
-				}
-				else if (uploadtype == 1)
-				{
-					long temp = *(long *)(pBufFileReadIn + 4 * i);
-					ChannelTemp.AddXY(dAxisX, *(long *)(pBufFileReadIn + 4 * i));
-				}
-				else
-				{
-					ChannelTemp.AddXY(dAxisX,(double)*(pBufFileReadIn + i));
-				}
-				dAxisX += dAxisXDelt;
-				if (pPage4Dlg->bThreadStopPlot)
-				{
-					break;
-				}
-			}
-			delete[] pBufFileReadIn;
-			//::PostMessage(pMainDlg->GetSafeHwnd(), WM_PLOTDATA, (WPARAM)pBufFileReadIn, nLenDelt);
-		}
-		else
-		{
-			Sleep(50);
-		}
-	}
-	FileData.Close();
-
-	TRACE("Page4退出线程-ThreadStartPlot！\n");
-	return 0x55;
+	//TRACE("Page4退出线程-ThreadStartPlot！\n");
+	//return 0x55;
 }
 
 //信道化解调模式-停止接收数据
@@ -765,6 +764,8 @@ void CPage4::OnBnClickedButtonStopRecv()
 	pMainDlg->KillTimer(1);
 	pMainDlg->FilePositionPlot = 0;
 	pMainDlg->CurrentX = 0;
+	pMainDlg->average = 0;
+	pMainDlg->count_average = 0;
 
 	//发送指令 将解调FPGA的上传数据停止
 	int nDemodCmdSize_StopRecv =20;
@@ -894,10 +895,9 @@ BOOL CPage4::OnInitDialog()
 	GetDlgItem(IDC_ENDOFFSET)->EnableWindow(FALSE);
 
 
-	//pGEDevice = new CGigabitEthernetDevice(m_hWnd);
-	//pGEDevice->Initial();
-	//pGEDevice->Open();
-	//GetDlgItem(IDC_STATIC_TIP)->SetWindowText("准备就绪...");
+	/*pGEDevice = new CGigabitEthernetDevice(m_hWnd);
+	pGEDevice->Initial();
+	pGEDevice->Open();*/
 
 	//解调参数相关初始化
 	m_ModulateMode.AddString(_T("BPSK"));
