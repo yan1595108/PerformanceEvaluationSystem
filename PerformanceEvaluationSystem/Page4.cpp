@@ -279,6 +279,9 @@ void CPage4::OnBnClickedButtonConfigure()
 		pinlvkongzhizi2=(fsample*1.0/5-symbolrate/2)*2*4294967296.0/fsample;
 		break;
 	case 6:
+		pinlvkongzhizi1 = (fsample * 1.0 / 5 + symbolrate / 2) * 2 * 4294967296.0 / fsample;
+		pinlvkongzhizi2 = (fsample * 1.0 / 5 - symbolrate / 2) * 2 * 4294967296.0 / fsample;
+		break;
 	case 7:
 		pinlvkongzhizi1 = (fsample * 1.0 / 5 + m_modulatedeep * symbolrate / 2) * 2 * 4294967296.0 / fsample;
 		pinlvkongzhizi2 = (fsample * 1.0 / 5 - m_modulatedeep * symbolrate / 2) * 2 * 4294967296.0 / fsample;
