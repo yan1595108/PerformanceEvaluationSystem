@@ -27,6 +27,7 @@ CPage4::CPage4(CWnd* pParent /*=NULL*/)
 	, m_c1delta(0)
 	, m_c2delta(0)
 	, m_offsetvalue(0)
+	, m_modulatedeep(0)
 {
 
 }
@@ -52,6 +53,7 @@ void CPage4::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_EDIT_C1DELTA, m_c1delta);
 	DDX_Text(pDX, IDC_EDIT_C2DELTA, m_c2delta);
 	DDX_Text(pDX, IDC_OFFSETVALUE, m_offsetvalue);
+	DDX_Text(pDX, IDC_MODULATEDEEP, m_modulatedeep);
 }
 
 
@@ -92,6 +94,8 @@ void CPage4::OnBnClickedButtonConfigure()
 	CPerformanceEvaluationSystemDlg *pMainDlg = static_cast<CPerformanceEvaluationSystemDlg*>(pTempMainDlg);
 
 	UpdateData(TRUE);
+	CString info;         //用于显示相关信息
+	strRunningInfo.Empty();       //清空相关信息的显示
 	int Mode=0;//调制方式
 	Mode =m_ModulateMode.GetCurSel();
 	char modulatestyle[10] = "BPSK";
@@ -119,7 +123,7 @@ void CPage4::OnBnClickedButtonConfigure()
 		strcpy_s(modulatestyle, "GMSK");
 		break;
 	case 7:
-		strcpy_s(modulatestyle, "RMSK");
+		strcpy_s(modulatestyle, "2FSK");
 		break;
 	case 8:
 		strcpy_s(modulatestyle, "FM");
@@ -271,19 +275,25 @@ void CPage4::OnBnClickedButtonConfigure()
 	case 2:
 	case 3:
 	case 5:
-		pinlvkongzhizi1 = (fo)*4294967296.0/fsample;
+		pinlvkongzhizi1 = fo * 4294967296.0 / fsample;
+		pinlvkongzhizi2=(fsample*1.0/5-symbolrate/2)*2*4294967296.0/fsample;
 		break;
 	case 6:
 	case 7:
-		pinlvkongzhizi1=(fsample*1.0/5+symbolrate/2)*2*4294967296.0/fsample;
+		pinlvkongzhizi1 = (fsample * 1.0 / 5 + m_modulatedeep * symbolrate / 2) * 2 * 4294967296.0 / fsample;
+		pinlvkongzhizi2 = (fsample * 1.0 / 5 - m_modulatedeep * symbolrate / 2) * 2 * 4294967296.0 / fsample;
 		break;
 	default:
 		pinlvkongzhizi1 = 0;
+		pinlvkongzhizi2=(fsample*1.0/5-symbolrate/2)*2*4294967296.0/fsample;
 		break;
 	}
 	TRACE("pinlvkongzhizi1=%ld\n", pinlvkongzhizi1);
-	pinlvkongzhizi2=(fsample*1.0/5-symbolrate/2)*2*4294967296.0/fsample;
+	info.Format("pinlvkongzhizi1=%ld", pinlvkongzhizi1);
+	pMainDlg->DisplayRunningInfo(info);
 	TRACE("pinlvkongzhizi2=%ld\n", pinlvkongzhizi2);
+	info.Format("pinlvkongzhizi2=%ld", pinlvkongzhizi2);
+	pMainDlg->DisplayRunningInfo(info);
 	//***********************************************************************************************************************
 	for (up_s=2;up_s<1000;up_s++)
 	{
@@ -483,7 +493,6 @@ void CPage4::OnBnClickedButtonConfigure()
 	pGEDevice->SendTo(szDemodulateCmd,nDemodulateCmdSize);
 
 	delete [] szDemodulateCmd;
-	strRunningInfo.Empty();
 	CString dpy;
 	dpy.Format(_T(" fo:%3f MHz\r\n adsample:%3f MHz \r\n up_s:%d\r\n HB:%d %d %d\r\n cic:%d\r\n R_4351:%d INT_4351:%d FRAC_4351:%d"),fsample*1.0/5/1000000,adsample/1000000,up_s,HB[0],HB[1],HB[2],cic,R_4351,INT_4351,FRAC_4351);
 	pMainDlg->DisplayRunningInfo(dpy);
@@ -907,6 +916,7 @@ BOOL CPage4::OnInitDialog()
 	m_ModulateMode.AddString(_T("Sin"));
 	m_ModulateMode.AddString(_T("OQPSK"));
 	m_ModulateMode.AddString(_T("GMSK"));
+	m_ModulateMode.AddString(_T("2FSK"));
 	m_ModulateMode.AddString(_T("FM"));
 	m_ModulateMode.AddString(_T("AM"));
 	m_ModulateMode.SetCurSel(2);

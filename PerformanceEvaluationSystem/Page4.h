@@ -84,4 +84,5 @@ public:
 	afx_msg void OnBnClickedEndtrack();
 	afx_msg void OnBnClickedBeginoffset();
 	afx_msg void OnBnClickedEndoffset();
+	double m_modulatedeep;
 };
