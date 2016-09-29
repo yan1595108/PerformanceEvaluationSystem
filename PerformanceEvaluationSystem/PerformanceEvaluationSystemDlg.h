@@ -139,10 +139,12 @@ public:
 	CComboBox m_SignalType;				//信号类型复合框
 	Engine *en;							//Matlab引擎
 	CiPlotX	m_iPlotX;					//绘图控件
-	long FilePositionPlot;				//绘图函数从文件中获取数据的文件位置
+	long position_file_plot;				//绘图函数从文件中获取数据的文件位置
 	double CurrentX;					//绘图函数绘图使用的X轴坐标
 	double average;                     //接收数据的平均值
-	long count_average;                   //已经计算了平均值的数据个数
+	long count_average;                 //已经计算了平均值的数据个数
+	double shock_average;               //震荡平均值
+	long count_shock;                   //已经计算了平均值的震荡数据个数
 
     //千兆网相关变量
 	//fstream RunInfo;					//千兆网接口运行状态记录文件

@@ -774,10 +774,12 @@ void CPage4::OnBnClickedButtonStopRecv()
 	// TODO: 在此添加控件通知处理程序代码
 	CPerformanceEvaluationSystemDlg *pMainDlg = static_cast<CPerformanceEvaluationSystemDlg*>(pTempMainDlg);
 	pMainDlg->KillTimer(1);
-	pMainDlg->FilePositionPlot = 0;
+	pMainDlg->position_file_plot = 0;
 	pMainDlg->CurrentX = 0;
 	pMainDlg->average = 0;
 	pMainDlg->count_average = 0;
+	pMainDlg->shock_average = 0;
+	pMainDlg->count_shock = 0;
 
 	//发送指令 将解调FPGA的上传数据停止
 	int nDemodCmdSize_StopRecv =20;

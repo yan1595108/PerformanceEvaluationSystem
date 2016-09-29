@@ -71,10 +71,12 @@ CPerformanceEvaluationSystemDlg::CPerformanceEvaluationSystemDlg(CWnd* pParent /
 	pGEDevice(NULL)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
-	FilePositionPlot = 0;
+	position_file_plot = 0;
 	CurrentX = 0;
 	average = 0;
 	count_average = 0;
+	shock_average = 0;
+	count_shock = 0;
 }
 
 CPerformanceEvaluationSystemDlg::~CPerformanceEvaluationSystemDlg()
@@ -1684,16 +1686,17 @@ void CPerformanceEvaluationSystemDlg::OnTimer(UINT_PTR nIDEvent)
 
 	CString strFileDataDir = _T("C:\\Recv\\RecvData.dat");
 	FileData.Open(strFileDataDir,CFile::modeRead | CFile::modeCreate | CFile::modeNoTruncate | CFile::shareDenyNone);
-	if (FileData.GetLength() <= FilePositionPlot + len_per_display_byte)
+	if (FileData.GetLength() <= position_file_plot + len_per_display_byte)
 	{
 		return;
 	}
 	else
 	{
-		FileData.Seek(FilePositionPlot, CFile::begin);
+		FileData.Seek(position_file_plot, CFile::begin);
 		char *pBufFileReadIn = new char[len_per_display_byte];
 		FileData.Read(pBufFileReadIn,len_per_display_byte);
 		int uploadtype = m_Page4.m_UploadDataType.GetCurSel();
+		int maxdata = 0, mindata = 0;
 		if (uploadtype == 5)           //中频数据为2个字节，数据长度应除以2
 		{
 			len_per_display = len_per_display_byte / 2;
@@ -1730,15 +1733,30 @@ void CPerformanceEvaluationSystemDlg::OnTimer(UINT_PTR nIDEvent)
 			}
 			CurrentX += dAxisXDelt;
 			sum += origindata;
+			if (origindata > maxdata)
+			{
+				maxdata = origindata;
+			}
+			if (origindata < mindata)
+			{
+				mindata = origindata;
+			}
 		}
 		delete[] pBufFileReadIn;
-		FilePositionPlot += len_per_display_byte;
+		position_file_plot += len_per_display_byte;
 		double cur_average = (double)sum / len_per_display;                     //本次显示的数据的平均值
 		average = average * count_average / (count_average + len_per_display) + cur_average * len_per_display / (count_average + len_per_display);            //由之前总的平均值和本次平均值算出新的总的平均值
 		count_average += len_per_display;
+		
+		int differ = maxdata - mindata;
+		shock_average = shock_average * count_shock / (count_shock + 1) + differ / (count_shock + 1);
+		count_shock++;
+
 		CString str_average;
 		str_average.Format(_T("%f"), average);
 		m_Page4.GetDlgItem(IDC_AVERAGE)->SetWindowText(str_average);
+		str_average.Format(_T("%f"), shock_average);
+		m_Page4.GetDlgItem(IDC_SHOCKAVERAGE)->SetWindowText(str_average);
 
 		//m_iPlotX.GetYAxis(0).SetMin(m_iPlotX.GetChannel(0).GetYMin());                //每次更新显示数据后，设置坐标轴的范围，貌似不用不用设置，空间可以自己调整
 		//m_iPlotX.GetYAxis(0).SetSpan(m_iPlotX.GetChannel(0).GetYMax() - m_iPlotX.GetChannel(0).GetYMin());
