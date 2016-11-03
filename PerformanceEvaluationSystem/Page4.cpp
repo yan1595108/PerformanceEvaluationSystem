@@ -143,6 +143,7 @@ void CPage4::OnBnClickedButtonConfigure()
 	int cic=1;						//cic 下抽因子
 	double fc=0;					//下抽前的中心频率
 	double fsample=0;				// 数字采样率
+	double fsymbol_32 = 0;          //符号速率的32倍
 	double adsample=0;				// AD采样率
 	double sample_flimit=100*1000000;//AD DA的最低采样时钟
 	double analog_filter=0;
@@ -253,6 +254,8 @@ void CPage4::OnBnClickedButtonConfigure()
 		cic = cic / 2;
 	}
 	fsample=symbolrate*struct_coe*cic*HB[0]*HB[1]*HB[2];
+	fsymbol_32 = symbolrate*struct_coe;//GMSK和2FSK的struct_coe都是32
+	TRACE("符号速率的32倍 = %d\n", fsymbol_32);
 	TRACE("直抽后采样率 = %f\n", fsample);
 	TRACE("欠采样等效载波 = %f\n", fc);
 	TRACE("下抽系数cic = %d\n", cic);
@@ -279,12 +282,12 @@ void CPage4::OnBnClickedButtonConfigure()
 		pinlvkongzhizi2=(fsample*1.0/5-symbolrate/2)*2*4294967296.0/fsample;
 		break;
 	case 6:
-		pinlvkongzhizi1 = (fsample * 1.0 / 5 + symbolrate / 2) * 2 * 4294967296.0 / fsample;
-		pinlvkongzhizi2 = (fsample * 1.0 / 5 - symbolrate / 2) * 2 * 4294967296.0 / fsample;
+		pinlvkongzhizi1 = (fsymbol_32 * 1.0 / 5 + symbolrate / 2) * 2 * 4294967296.0 / fsymbol_32;
+		pinlvkongzhizi2 = (fsymbol_32 * 1.0 / 5 - symbolrate / 2) * 2 * 4294967296.0 / fsymbol_32;
 		break;
 	case 7:
-		pinlvkongzhizi1 = (fsample * 1.0 / 5 + m_modulatedeep * symbolrate / 2) * 2 * 4294967296.0 / fsample;
-		pinlvkongzhizi2 = (fsample * 1.0 / 5 - m_modulatedeep * symbolrate / 2) * 2 * 4294967296.0 / fsample;
+		pinlvkongzhizi1 = (fsymbol_32 * 1.0 / 5 + m_modulatedeep * symbolrate / 2) * 4294967296.0 / fsymbol_32;
+		pinlvkongzhizi2 = (fsymbol_32 * 1.0 / 5 - m_modulatedeep * symbolrate / 2) * 4294967296.0 / fsymbol_32;
 		break;
 	default:
 		pinlvkongzhizi1 = 0;
