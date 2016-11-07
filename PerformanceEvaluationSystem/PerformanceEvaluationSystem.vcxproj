@@ -54,7 +54,11 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+<<<<<<< HEAD
       <AdditionalIncludeDirectories>D:\MATLAB_R2013a\\extern\include;D:\MATLAB_R2013a\\extern\include\win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+=======
+      <AdditionalIncludeDirectories>C:\Program Files (x86)\MATLAB\R2010b\\extern\include;C:\Program Files (x86)\MATLAB\R2010b\\extern\include\win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+>>>>>>> aebb1ec5ea43f6b1429a3fc016744de04414e28f
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
     </ClCompile>
     <Link>
