@@ -1733,6 +1733,10 @@ void CPerformanceEvaluationSystemDlg::OnTimer(UINT_PTR nIDEvent)
 			}
 			CurrentX += dAxisXDelt;
 			sum += origindata;
+			if (i == 0)
+			{
+				mindata = origindata;
+			}
 			if (origindata > maxdata)
 			{
 				maxdata = origindata;
