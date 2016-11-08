@@ -31,16 +31,16 @@ void CPage1::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_COMBO_BAND_WIDTH_UNIT, m_UnitBandWidth);
 	DDX_Control(pDX, IDC_COMBO_REFERENCE_LEVEL_UNIT, m_UnitReferenceLevel);
 	DDX_Control(pDX, IDC_COMBO_REFERENCE_LEVEL_DIV_UNIT, m_UnitReferenceLevelDiv);
-	DDX_Text(pDX, IDC_EDIT_CENTER_FREQ, m_CenterFreq);
-	DDX_Text(pDX, IDC_EDIT_BAND_WIDTH, m_BandWidth);
-	DDX_Text(pDX, IDC_EDIT_REFERENCE_LEVEL, m_ReferenceLevel);
-	DDX_Text(pDX, IDC_EDIT_REFERENCE_LEVEL_DIV, m_ReferenceLevelDiv);
-	DDX_Text(pDX, IDC_EDIT_FFT_POINTS, m_nNumFFTPoints);
+	DDX_Text(pDX, IDE_CENTER_FREQ, m_CenterFreq);
+	DDX_Text(pDX, IDE_BAND_WIDTH, m_BandWidth);
+	DDX_Text(pDX, IDE_REFERENCE_LEVEL, m_ReferenceLevel);
+	DDX_Text(pDX, IDE_REFERENCE_LEVEL_DIV, m_ReferenceLevelDiv);
+	DDX_Text(pDX, IDE_FFT_POINTS, m_nNumFFTPoints);
 }
 
 
 BEGIN_MESSAGE_MAP(CPage1, CPageBase)
-	ON_BN_CLICKED(IDC_BUTTON_SET, &CPage1::OnBnClickedButtonSet)
+	ON_BN_CLICKED(IDB_SET, &CPage1::OnBnClickedButtonSet)
 END_MESSAGE_MAP()
 
 

@@ -630,7 +630,7 @@ int CGigabitEthernetDevice::RecvFrom(char *pBufRecvPackage,int nSizeBufRecv,int 
 						CString strTransRate;
 						strTransRate.Format(_T("%.2fMbps"),dTransRate);
 
-						pMainDlg->SetDlgItemText(IDC_STATIC_TRANSFER_RATE,strTransRate);
+						pMainDlg->SetDlgItemText(IDS_TRANSFER_RATE,strTransRate);
 
 						if (nNumPackets2Store == 10001)
 						{

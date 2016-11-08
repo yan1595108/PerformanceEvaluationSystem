@@ -108,6 +108,12 @@
     <ClInclude Include="GigabitEthernetDevice.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="COMM1.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="COMM2.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PerformanceEvaluationSystem.cpp">
@@ -186,6 +192,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="GigabitEthernetDevice.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="COMM1.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="COMM2.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

@@ -54,9 +54,14 @@ public:
 	CComboBox m_UploadDataType;			//上传数据类型
 	int m_C1;							//滤波系数C1
 	int m_C2;							//滤波系数C2
-	int m_c1delta;
-	int m_c2delta;
-	double m_offsetvalue;
+	int c1delta;
+	int c2delta;
+	double offsetvalue;
+	double m_modulatedeep;
+	short bandwidth;
+	short directpull;						//直抽倍数
+	short downsample1;					//第一级CIC下抽倍数
+	short downsample2;					//第二级CIC下抽倍数
 	
 private:
 	CButton *m_buttons[BUTTON_NUM_ONLINE];      //所有的按钮
@@ -77,12 +82,14 @@ public:
 	afx_msg void OnBnClickedButtonReset();
 	afx_msg void OnBnClickedButtonStopRecv();
 	afx_msg void OnBnClickedButtonModulator();
-	afx_msg void OnEnChangeEditRecvsize();
 	afx_msg LRESULT OnButtonChanged(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnBnClickedCallsimulink();
-	afx_msg void OnBnClickedBegintrack();
-	afx_msg void OnBnClickedEndtrack();
-	afx_msg void OnBnClickedBeginoffset();
-	afx_msg void OnBnClickedEndoffset();
-	double m_modulatedeep;
+	void Begintrack();
+	void Endtrack();
+	void Beginoffset();
+	void Endoffset();
+	void Channelize();
+	void SpectrumAnalyse();
+	void DataUpload();
+	afx_msg void OnBnClickedTransfer();
 };

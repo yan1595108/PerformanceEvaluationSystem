@@ -96,16 +96,16 @@ BEGIN_MESSAGE_MAP(CPerformanceEvaluationSystemDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_BN_CLICKED(IDC_BTN_BAND_SPECTRUM_SCANNING, &CPerformanceEvaluationSystemDlg::OnBnClickedBtnBandSpectrumScanning)
-	ON_BN_CLICKED(IDC_BTN_BAND_CHANNELIZATION, &CPerformanceEvaluationSystemDlg::OnBnClickedBtnBandChannelization)
-	ON_BN_CLICKED(IDC_BTN_PARAMETER_MEASUREMENT, &CPerformanceEvaluationSystemDlg::OnBnClickedBtnParameterMeasurement)
-	ON_BN_CLICKED(IDC_BTN_CHANNELIZATION_DEMODULATION, &CPerformanceEvaluationSystemDlg::OnBnClickedBtnChannelizationDemodulation)
-	ON_BN_CLICKED(IDC_BTN_REMOTE_SENSING_CONTROL, &CPerformanceEvaluationSystemDlg::OnBnClickedBtnRemoteSensingControl)
+	ON_BN_CLICKED(IDB_BAND_SPECTRUM_SCANNING, &CPerformanceEvaluationSystemDlg::OnBnClickedBtnBandSpectrumScanning)
+	ON_BN_CLICKED(IDB_BAND_CHANNELIZATION, &CPerformanceEvaluationSystemDlg::OnBnClickedBtnBandChannelization)
+	ON_BN_CLICKED(IDB_PARAMETER_MEASUREMENT, &CPerformanceEvaluationSystemDlg::OnBnClickedBtnParameterMeasurement)
+	ON_BN_CLICKED(IDB_CHANNELIZATION_DEMODULATION, &CPerformanceEvaluationSystemDlg::OnBnClickedBtnChannelizationDemodulation)
+	ON_BN_CLICKED(IDB_REMOTE_SENSING_CONTROL, &CPerformanceEvaluationSystemDlg::OnBnClickedBtnRemoteSensingControl)
 	ON_WM_DESTROY()
 	ON_CBN_SELCHANGE(IDC_COMBO_SIGNALTYPE, &CPerformanceEvaluationSystemDlg::OnCbnSelchangeComboSignaltype)
 	ON_CBN_SELCHANGE(IDC_COMBO_WORKMODE, &CPerformanceEvaluationSystemDlg::OnCbnSelchangeComboWorkmode)
-	ON_BN_CLICKED(IDC_BUTTON_TEST1, &CPerformanceEvaluationSystemDlg::OnBnClickedButtonTest1)
-	ON_BN_CLICKED(IDC_BUTTON_TEST2, &CPerformanceEvaluationSystemDlg::OnBnClickedButtonTest2)
+	ON_BN_CLICKED(IDB_TEST1, &CPerformanceEvaluationSystemDlg::OnBnClickedButtonTest1)
+	ON_BN_CLICKED(IDB_TEST2, &CPerformanceEvaluationSystemDlg::OnBnClickedButtonTest2)
 	ON_MESSAGE(WM_PLOTDATA, PlotData)
 	ON_WM_TIMER()
 END_MESSAGE_MAP()
@@ -703,7 +703,7 @@ void MatlabDemo()
 void CPerformanceEvaluationSystemDlg::InitialPages()
 {
 	RECT DialogBoundaryRect;
-	GetDlgItem(IDC_STATIC_PAGES_BOUNDARY)->GetWindowRect(&DialogBoundaryRect);
+	GetDlgItem(IDS_PAGES_BOUNDARY)->GetWindowRect(&DialogBoundaryRect);
 	ScreenToClient(&DialogBoundaryRect);
 	DialogBoundaryRect.left += 1;
 	DialogBoundaryRect.right -= 1;
@@ -1526,17 +1526,17 @@ void CPerformanceEvaluationSystemDlg::OnCbnSelchangeComboSignaltype()
 	// TODO: 在此添加控件通知处理程序代码
 	if (0 == m_SignalType.GetCurSel())
 	{
-		GetDlgItem(IDC_BTN_BAND_SPECTRUM_SCANNING)->EnableWindow(TRUE);
-		GetDlgItem(IDC_BTN_BAND_CHANNELIZATION)->EnableWindow(TRUE);
-		GetDlgItem(IDC_BTN_PARAMETER_MEASUREMENT)->EnableWindow(TRUE);
-		GetDlgItem(IDC_BTN_CHANNELIZATION_DEMODULATION)->EnableWindow(TRUE);
+		GetDlgItem(IDB_BAND_SPECTRUM_SCANNING)->EnableWindow(TRUE);
+		GetDlgItem(IDB_BAND_CHANNELIZATION)->EnableWindow(TRUE);
+		GetDlgItem(IDB_PARAMETER_MEASUREMENT)->EnableWindow(TRUE);
+		GetDlgItem(IDB_CHANNELIZATION_DEMODULATION)->EnableWindow(TRUE);
 	} 
 	else
 	{
-		GetDlgItem(IDC_BTN_BAND_SPECTRUM_SCANNING)->EnableWindow(TRUE);
-		GetDlgItem(IDC_BTN_BAND_CHANNELIZATION)->EnableWindow(TRUE);
-		GetDlgItem(IDC_BTN_PARAMETER_MEASUREMENT)->EnableWindow(FALSE);
-		GetDlgItem(IDC_BTN_CHANNELIZATION_DEMODULATION)->EnableWindow(FALSE);
+		GetDlgItem(IDB_BAND_SPECTRUM_SCANNING)->EnableWindow(TRUE);
+		GetDlgItem(IDB_BAND_CHANNELIZATION)->EnableWindow(TRUE);
+		GetDlgItem(IDB_PARAMETER_MEASUREMENT)->EnableWindow(FALSE);
+		GetDlgItem(IDB_CHANNELIZATION_DEMODULATION)->EnableWindow(FALSE);
 	}
 }
 
@@ -1659,7 +1659,7 @@ void CPerformanceEvaluationSystemDlg::DisplayRunningInfo(CString strInfo)
 {
 	CString strTemp = strRunningInfo + strInfo + _T("\r\n");
 	strRunningInfo = strTemp;
-	GetDlgItem(IDC_EDIT_SYS_RUN_INFO)->SetWindowText(strRunningInfo);
+	GetDlgItem(IDE_SYS_RUN_INFO)->SetWindowText(strRunningInfo);
 }
 
 void CPerformanceEvaluationSystemDlg::Test()
@@ -1758,9 +1758,9 @@ void CPerformanceEvaluationSystemDlg::OnTimer(UINT_PTR nIDEvent)
 
 		CString str_average;
 		str_average.Format(_T("%f"), average);
-		m_Page4.GetDlgItem(IDC_AVERAGE)->SetWindowText(str_average);
+		m_Page4.GetDlgItem(IDE_AVERAGE)->SetWindowText(str_average);
 		str_average.Format(_T("%f"), shock_average);
-		m_Page4.GetDlgItem(IDC_SHOCKAVERAGE)->SetWindowText(str_average);
+		m_Page4.GetDlgItem(IDE_SHOCKAVERAGE)->SetWindowText(str_average);
 
 		//m_iPlotX.GetYAxis(0).SetMin(m_iPlotX.GetChannel(0).GetYMin());                //每次更新显示数据后，设置坐标轴的范围，貌似不用不用设置，空间可以自己调整
 		//m_iPlotX.GetYAxis(0).SetSpan(m_iPlotX.GetChannel(0).GetYMax() - m_iPlotX.GetChannel(0).GetYMin());

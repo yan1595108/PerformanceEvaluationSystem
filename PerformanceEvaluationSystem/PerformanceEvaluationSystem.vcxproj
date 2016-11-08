@@ -54,11 +54,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-<<<<<<< HEAD
       <AdditionalIncludeDirectories>D:\MATLAB_R2013a\\extern\include;D:\MATLAB_R2013a\\extern\include\win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-=======
-      <AdditionalIncludeDirectories>C:\Program Files (x86)\MATLAB\R2010b\\extern\include;C:\Program Files (x86)\MATLAB\R2010b\\extern\include\win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
->>>>>>> aebb1ec5ea43f6b1429a3fc016744de04414e28f
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
     </ClCompile>
     <Link>
@@ -108,6 +104,8 @@
     <None Include="res\PerformanceEvaluationSystem.rc2" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="COMM1.h" />
+    <ClInclude Include="COMM2.h" />
     <ClInclude Include="FFT_DSP.h" />
     <ClInclude Include="font.h" />
     <ClInclude Include="GigabitEthernetDevice.h" />
@@ -138,6 +136,8 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="COMM1.cpp" />
+    <ClCompile Include="COMM2.cpp" />
     <ClCompile Include="FFT_DSP.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
