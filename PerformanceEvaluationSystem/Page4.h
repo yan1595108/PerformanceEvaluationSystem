@@ -92,4 +92,6 @@ public:
 	void SpectrumAnalyse();
 	void DataUpload();
 	afx_msg void OnBnClickedTransfer();
+	afx_msg void OnBnClickedGmskifdelay();
+	unsigned char m_ifdelay;
 };

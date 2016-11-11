@@ -27,6 +27,7 @@ CPage4::CPage4(CWnd* pParent /*=NULL*/)
 	, m_nRecvSize(1000000),m_nFramesPerPackage(255)
 	, m_Carrier(70.0),m_SymbolRateVal(100),m_C1(12),m_C2(20)
 	, m_modulatedeep(0)
+	, m_ifdelay(0)
 {
 	c1delta = 0;
 	c2delta = 0;
@@ -56,6 +57,7 @@ void CPage4::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX,IDE_C2,m_C2);
 	DDV_MinMaxInt(pDX, m_nFramesPerPackage, 1, 255);
 	DDX_Text(pDX, IDE_MODULATEDEEP, m_modulatedeep);
+	DDX_Text(pDX, IDE_IFDELAY, m_ifdelay);
 }
 
 
@@ -70,6 +72,7 @@ BEGIN_MESSAGE_MAP(CPage4, CPageBase)
 	ON_BN_CLICKED(IDB_CALLSIMULINK, &CPage4::OnBnClickedCallsimulink)
 	ON_MESSAGE(WM_CHANGEBUTTON, OnButtonChanged)
 	ON_BN_CLICKED(IDB_TRANSFER, &CPage4::OnBnClickedTransfer)
+	ON_BN_CLICKED(IDB_GMSKIFDELAY, &CPage4::OnBnClickedGmskifdelay)
 END_MESSAGE_MAP()
 
 
@@ -1316,4 +1319,39 @@ void CPage4::OnBnClickedTransfer()
 		downsample1 = secondpage.m_downsample1;
 		downsample2 = secondpage.m_downsample2;
 	}
+}
+
+
+void CPage4::OnBnClickedGmskifdelay()
+{
+	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼þÍ¨Öª´¦Àí³ÌÐò´úÂë
+	UpdateData(TRUE);
+	int nDemodCmdSize_RecvData =20;
+	char *szDemodCmd_RecvData=new char[nDemodCmdSize_RecvData];
+	szDemodCmd_RecvData[0]=0x17;
+	szDemodCmd_RecvData[1]=0x57;
+	szDemodCmd_RecvData[2]=0x90;
+	szDemodCmd_RecvData[3]=0xeb;
+	szDemodCmd_RecvData[4]=0x11;
+	szDemodCmd_RecvData[5]=0x00;
+	szDemodCmd_RecvData[6]=0x0f;
+	szDemodCmd_RecvData[7]=0x00;
+	szDemodCmd_RecvData[8]=m_ifdelay;
+	szDemodCmd_RecvData[9]=0x00;
+	szDemodCmd_RecvData[10]=0x00;
+	szDemodCmd_RecvData[11]=0x00;
+	szDemodCmd_RecvData[12]=0x00;
+	szDemodCmd_RecvData[13]=0x00;
+	szDemodCmd_RecvData[14]=0x00;
+	szDemodCmd_RecvData[15]=0x00;
+	szDemodCmd_RecvData[16]=0x00;
+	szDemodCmd_RecvData[17]=0x00;
+	szDemodCmd_RecvData[18]=0x01;
+	szDemodCmd_RecvData[19]=0x00;
+	TRACE("IF_delay_sel = %u\n", m_ifdelay);
+	for(int i=0;i<19;i++)
+	{
+		szDemodCmd_RecvData[19]=szDemodCmd_RecvData[19]+szDemodCmd_RecvData[i];
+	}
+	pGEDevice->SendTo(szDemodCmd_RecvData,nDemodCmdSize_RecvData);
 }
