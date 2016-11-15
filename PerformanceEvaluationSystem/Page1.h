@@ -42,6 +42,11 @@ public:
 	double	mPage1_dReferenceLevel;
 	double	mPage1_dReferenceLevelDiv;
 	int		mPage1_nNumFFTPoints;
+	CComboBox m_bandwidth;
+	short m_directpull;
+	short m_downsample1;
+	short m_downsample2;
+	short bandwidth;
 
 // 对话框数据
 	enum { IDD = IDD_PAGE1 };
@@ -54,4 +59,9 @@ protected:
 public:
 	afx_msg void OnBnClickedButtonSet();
 	virtual BOOL OnInitDialog();
+	void UpdateControls(int index_bandwidth);
+	afx_msg void OnCbnSelchangeComboBandwidth();
+	afx_msg void OnBnClickedSpectrum();
+	afx_msg void OnBnClickedChannelize();
+	afx_msg void OnBnClickedUpload();
 };

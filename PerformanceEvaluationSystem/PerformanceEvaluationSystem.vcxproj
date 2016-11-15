@@ -104,8 +104,6 @@
     <None Include="res\PerformanceEvaluationSystem.rc2" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="COMM1.h" />
-    <ClInclude Include="COMM2.h" />
     <ClInclude Include="FFT_DSP.h" />
     <ClInclude Include="font.h" />
     <ClInclude Include="GigabitEthernetDevice.h" />
@@ -136,8 +134,6 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="COMM1.cpp" />
-    <ClCompile Include="COMM2.cpp" />
     <ClCompile Include="FFT_DSP.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>

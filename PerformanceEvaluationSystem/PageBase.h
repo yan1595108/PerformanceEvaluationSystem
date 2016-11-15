@@ -1,5 +1,5 @@
 #pragma once
-
+#include "GigabitEthernetDevice.h"
 
 // CPageBase 对话框
 
@@ -13,6 +13,7 @@ public:
 
 public:
 	RECT DlgPosition;
+	static CGigabitEthernetDevice *pGEDevice;	//千兆网接口设备
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 支持

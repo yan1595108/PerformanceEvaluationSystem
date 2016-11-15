@@ -6,8 +6,6 @@
 #include "PerformanceEvaluationSystemDlg.h"
 #include "Page4.h"
 #include "afxdialogex.h"
-#include "COMM1.h"
-#include "COMM2.h"
 
 DWORD WINAPI ThreadRecv(LPVOID lpParam);
 DWORD WINAPI ThreadStartPlot(LPVOID lpParam);
@@ -20,7 +18,7 @@ IMPLEMENT_DYNAMIC(CPage4, CPageBase)
 
 CPage4::CPage4(CWnd* pParent /*=NULL*/)
 	: CPageBase(CPage4::IDD, pParent)
-	, pTempMainDlg(NULL),pGEDevice(NULL)
+	, pTempMainDlg(NULL)
 	, bThreadStopRecv(TRUE),bThreadStopPlot(TRUE)
 	, hThreadRecv(INVALID_HANDLE_VALUE),hThreadPlot(INVALID_HANDLE_VALUE)
 	, dwThreadRecvID(0),dwThreadPlotID(0)
@@ -28,9 +26,9 @@ CPage4::CPage4(CWnd* pParent /*=NULL*/)
 	, m_Carrier(70.0),m_SymbolRateVal(100),m_C1(12),m_C2(20)
 	, m_modulatedeep(0)
 {
-	c1delta = 0;
-	c2delta = 0;
-	offsetvalue = 0;
+	m_c1delta = 0;
+	m_c2delta = 0;
+	m_offsetvalue = 0;
 	bandwidth = 0;
 	directpull = 0;
 	downsample1 = 0;
@@ -56,6 +54,9 @@ void CPage4::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX,IDE_C2,m_C2);
 	DDV_MinMaxInt(pDX, m_nFramesPerPackage, 1, 255);
 	DDX_Text(pDX, IDE_MODULATEDEEP, m_modulatedeep);
+	DDX_Text(pDX, IDE_OFFSETVALUE, m_offsetvalue);
+	DDX_Text(pDX, IDE_C1DELTA, m_c1delta);
+	DDX_Text(pDX, IDE_C2DELTA, m_c2delta);
 }
 
 
@@ -69,7 +70,10 @@ BEGIN_MESSAGE_MAP(CPage4, CPageBase)
 	ON_BN_CLICKED(IDB_RESET, &CPage4::OnBnClickedButtonReset)
 	ON_BN_CLICKED(IDB_CALLSIMULINK, &CPage4::OnBnClickedCallsimulink)
 	ON_MESSAGE(WM_CHANGEBUTTON, OnButtonChanged)
-	ON_BN_CLICKED(IDB_TRANSFER, &CPage4::OnBnClickedTransfer)
+	ON_BN_CLICKED(IDB_BEGINOFFSET, &CPage4::OnBnClickedBeginoffset)
+	ON_BN_CLICKED(IDB_ENDOFFSET, &CPage4::OnBnClickedEndoffset)
+	ON_BN_CLICKED(IDB_BEGINTRACK, &CPage4::OnBnClickedBegintrack)
+	ON_BN_CLICKED(IDB_ENDTRACK, &CPage4::OnBnClickedEndtrack)
 END_MESSAGE_MAP()
 
 
@@ -939,24 +943,36 @@ BOOL CPage4::OnInitDialog()
 	m_UploadDataType.SetCurSel(3);
 
 	GetDlgItem(IDB_CONFIGURE)->GetWindowRect(rect_button[0]);
-	GetDlgItem(IDB_RECVDATA)->GetWindowRect(rect_button[1]);
-	GetDlgItem(IDB_COMPAR)->GetWindowRect(rect_button[2]);
-	GetDlgItem(IDB_RESET)->GetWindowRect(rect_button[3]);
-	GetDlgItem(IDB_STOP_RECV)->GetWindowRect(rect_button[4]);
-	GetDlgItem(IDB_MODULATOR)->GetWindowRect(rect_button[5]);
+	GetDlgItem(IDB_RESET)->GetWindowRect(rect_button[1]);
+	GetDlgItem(IDB_RECVDATA)->GetWindowRect(rect_button[2]);
+	GetDlgItem(IDB_STOP_RECV)->GetWindowRect(rect_button[3]);
+	GetDlgItem(IDB_MODULATOR)->GetWindowRect(rect_button[4]);
+	GetDlgItem(IDB_BEGINOFFSET)->GetWindowRect(rect_button[5]);
+	GetDlgItem(IDB_ENDOFFSET)->GetWindowRect(rect_button[6]);
+	GetDlgItem(IDB_COMPAR)->GetWindowRect(rect_button[7]);
+	GetDlgItem(IDB_BEGINTRACK)->GetWindowRect(rect_button[8]);
+	GetDlgItem(IDB_ENDTRACK)->GetWindowRect(rect_button[9]);
 	ScreenToClient(rect_button[0]);
 	ScreenToClient(rect_button[1]);
 	ScreenToClient(rect_button[2]);
 	ScreenToClient(rect_button[3]);
 	ScreenToClient(rect_button[4]);
 	ScreenToClient(rect_button[5]);
+	ScreenToClient(rect_button[6]);
+	ScreenToClient(rect_button[7]);
+	ScreenToClient(rect_button[8]);
+	ScreenToClient(rect_button[9]);
 
 	m_buttons[0] = static_cast<CButton *>(GetDlgItem(IDB_CONFIGURE));
-	m_buttons[1] = static_cast<CButton *>(GetDlgItem(IDB_RECVDATA));
-	m_buttons[2] = static_cast<CButton *>(GetDlgItem(IDB_COMPAR));
-	m_buttons[3] = static_cast<CButton *>(GetDlgItem(IDB_RESET));
-	m_buttons[4] = static_cast<CButton *>(GetDlgItem(IDB_STOP_RECV));
-	m_buttons[5] = static_cast<CButton *>(GetDlgItem(IDB_MODULATOR));
+	m_buttons[1] = static_cast<CButton *>(GetDlgItem(IDB_RESET));
+	m_buttons[2] = static_cast<CButton *>(GetDlgItem(IDB_RECVDATA));
+	m_buttons[3] = static_cast<CButton *>(GetDlgItem(IDB_STOP_RECV));
+	m_buttons[4] = static_cast<CButton *>(GetDlgItem(IDB_MODULATOR));
+	m_buttons[5] = static_cast<CButton *>(GetDlgItem(IDB_BEGINOFFSET));
+	m_buttons[6] = static_cast<CButton *>(GetDlgItem(IDB_ENDOFFSET));
+	m_buttons[7] = static_cast<CButton *>(GetDlgItem(IDB_COMPAR));
+	m_buttons[8] = static_cast<CButton *>(GetDlgItem(IDB_BEGINTRACK));
+	m_buttons[9] = static_cast<CButton *>(GetDlgItem(IDB_ENDTRACK));
 	TRACE("Page4初始化完成！\n");
 	return TRUE;  
 	// return TRUE unless you set the focus to a control
@@ -964,7 +980,7 @@ BOOL CPage4::OnInitDialog()
 }
 
 
-void CPage4::Begintrack()
+void CPage4::OnBnClickedBegintrack()
 {
 	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼þÍ¨Öª´¦Àí³ÌÐò´úÂë
 	UpdateData(TRUE);
@@ -980,9 +996,9 @@ void CPage4::Begintrack()
 	szDemodCmd_RecvData[5]=0x00;
 	szDemodCmd_RecvData[6]=0x0f;
 	szDemodCmd_RecvData[7]=0x00;
-	szDemodCmd_RecvData[8]=c1delta;
+	szDemodCmd_RecvData[8]=m_c1delta;
 	szDemodCmd_RecvData[9]=0x00;
-	szDemodCmd_RecvData[10]=c2delta;
+	szDemodCmd_RecvData[10]=m_c2delta;
 	szDemodCmd_RecvData[11]=0x00;
 	szDemodCmd_RecvData[12]=0x01;
 	szDemodCmd_RecvData[13]=0x00;
@@ -992,8 +1008,8 @@ void CPage4::Begintrack()
 	szDemodCmd_RecvData[17]=0x00;
 	szDemodCmd_RecvData[18]=0x01;
 	szDemodCmd_RecvData[19]=0x00;
-	TRACE("c1delta = %u\n", c1delta);
-	TRACE("c2delta = %u\n", c2delta);
+	TRACE("c1delta = %u\n", m_c1delta);
+	TRACE("c2delta = %u\n", m_c2delta);
 	for(int i=0;i<19;i++)
 	{
 		szDemodCmd_RecvData[19]=szDemodCmd_RecvData[19]+szDemodCmd_RecvData[i];
@@ -1002,7 +1018,7 @@ void CPage4::Begintrack()
 }
 
 
-void CPage4::Endtrack()
+void CPage4::OnBnClickedEndtrack()
 {
 	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼þÍ¨Öª´¦Àí³ÌÐò´úÂë
 	UpdateData(TRUE);
@@ -1018,9 +1034,9 @@ void CPage4::Endtrack()
 	szDemodCmd_RecvData[5]=0x00;
 	szDemodCmd_RecvData[6]=0x0f;
 	szDemodCmd_RecvData[7]=0x00;
-	szDemodCmd_RecvData[8]=c1delta;
+	szDemodCmd_RecvData[8]=m_c1delta;
 	szDemodCmd_RecvData[9]=0x00;
-	szDemodCmd_RecvData[10]=c2delta;
+	szDemodCmd_RecvData[10]=m_c2delta;
 	szDemodCmd_RecvData[11]=0x00;
 	szDemodCmd_RecvData[12]=0x00;
 	szDemodCmd_RecvData[13]=0x00;
@@ -1030,8 +1046,8 @@ void CPage4::Endtrack()
 	szDemodCmd_RecvData[17]=0x00;
 	szDemodCmd_RecvData[18]=0x01;
 	szDemodCmd_RecvData[19]=0x00;
-	TRACE("c1delta = %u\n", c1delta);
-	TRACE("c2delta = %u\n", c2delta);
+	TRACE("c1delta = %u\n", m_c1delta);
+	TRACE("c2delta = %u\n", m_c2delta);
 	for(int i=0;i<19;i++)
 	{
 		szDemodCmd_RecvData[19]=szDemodCmd_RecvData[19]+szDemodCmd_RecvData[i];
@@ -1040,7 +1056,7 @@ void CPage4::Endtrack()
 }
 
 
-void CPage4::Beginoffset()
+void CPage4::OnBnClickedBeginoffset()
 {
 	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼þÍ¨Öª´¦Àí³ÌÐò´úÂë
 	UpdateData(TRUE);
@@ -1055,8 +1071,8 @@ void CPage4::Beginoffset()
 	szDemodCmd_RecvData[6]=0x0f;
 	szDemodCmd_RecvData[7]=0x00;
 	szDemodCmd_RecvData[8]=0x01;            //开始去偏置标志
-	szDemodCmd_RecvData[9]=(short)offsetvalue >> 8;
-	szDemodCmd_RecvData[10]=(short)offsetvalue;
+	szDemodCmd_RecvData[9]=(short)m_offsetvalue >> 8;
+	szDemodCmd_RecvData[10]=(short)m_offsetvalue;
 	szDemodCmd_RecvData[11]=0x00;
 	szDemodCmd_RecvData[12]=0x00;
 	szDemodCmd_RecvData[13]=0x00;
@@ -1076,7 +1092,7 @@ void CPage4::Beginoffset()
 }
 
 
-void CPage4::Endoffset()
+void CPage4::OnBnClickedEndoffset()
 {
 	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼þÍ¨Öª´¦Àí³ÌÐò´úÂë
 	GetDlgItem(IDB_BEGINOFFSET)->EnableWindow(TRUE);
@@ -1092,102 +1108,6 @@ void CPage4::Endoffset()
 	szDemodCmd_RecvData[6]=0x0f;
 	szDemodCmd_RecvData[7]=0x00;
 	szDemodCmd_RecvData[8]=0x00;            //停止去偏置标志
-	szDemodCmd_RecvData[9]=0x00;
-	szDemodCmd_RecvData[10]=0x00;
-	szDemodCmd_RecvData[11]=0x00;
-	szDemodCmd_RecvData[12]=0x00;
-	szDemodCmd_RecvData[13]=0x00;
-	szDemodCmd_RecvData[14]=0x00;
-	szDemodCmd_RecvData[15]=0x00;
-	szDemodCmd_RecvData[16]=0x00;
-	szDemodCmd_RecvData[17]=0x00;
-	szDemodCmd_RecvData[18]=0x01;
-	szDemodCmd_RecvData[19]=0x00;
-	for(int i=0;i<19;i++)
-	{
-		szDemodCmd_RecvData[19]=szDemodCmd_RecvData[19]+szDemodCmd_RecvData[i];
-	}
-	pGEDevice->SendTo(szDemodCmd_RecvData,nDemodCmdSize_RecvData);
-}
-
-
-void CPage4::Channelize()
-{
-	int nDemodCmdSize_RecvData =20;
-	char *szDemodCmd_RecvData=new char[nDemodCmdSize_RecvData];
-	szDemodCmd_RecvData[0]=0x17;
-	szDemodCmd_RecvData[1]=0x57;
-	szDemodCmd_RecvData[2]=0x90;
-	szDemodCmd_RecvData[3]=0xeb;
-	szDemodCmd_RecvData[4]=0x83;
-	szDemodCmd_RecvData[5]=0x00;
-	szDemodCmd_RecvData[6]=0x0f;
-	szDemodCmd_RecvData[7]=bandwidth >> 8;
-	szDemodCmd_RecvData[8]=bandwidth;         
-	szDemodCmd_RecvData[9]=directpull >> 8;
-	szDemodCmd_RecvData[10]=directpull;
-	szDemodCmd_RecvData[11]=downsample1 >> 8;
-	szDemodCmd_RecvData[12]=downsample1;
-	szDemodCmd_RecvData[13]=downsample2 >> 8;
-	szDemodCmd_RecvData[14]=downsample2;
-	szDemodCmd_RecvData[15]=0x00;
-	szDemodCmd_RecvData[16]=0x00;
-	szDemodCmd_RecvData[17]=0x00;
-	szDemodCmd_RecvData[18]=0x01;
-	szDemodCmd_RecvData[19]=0x00;
-	for(int i=0;i<19;i++)
-	{
-		szDemodCmd_RecvData[19]=szDemodCmd_RecvData[19]+szDemodCmd_RecvData[i];
-	}
-	pGEDevice->SendTo(szDemodCmd_RecvData,nDemodCmdSize_RecvData);
-}
-
-
-void CPage4::SpectrumAnalyse()
-{
-	int nDemodCmdSize_RecvData =20;
-	char *szDemodCmd_RecvData=new char[nDemodCmdSize_RecvData];
-	szDemodCmd_RecvData[0]=0x17;
-	szDemodCmd_RecvData[1]=0x57;
-	szDemodCmd_RecvData[2]=0x90;
-	szDemodCmd_RecvData[3]=0xeb;
-	szDemodCmd_RecvData[4]=0x82;
-	szDemodCmd_RecvData[5]=0x00;
-	szDemodCmd_RecvData[6]=0x0f;
-	szDemodCmd_RecvData[7]=0x7A;
-	szDemodCmd_RecvData[8]=0xE1;         
-	szDemodCmd_RecvData[9]=0x01;
-	szDemodCmd_RecvData[10]=0x17;
-	szDemodCmd_RecvData[11]=0x00;
-	szDemodCmd_RecvData[12]=0x05;
-	szDemodCmd_RecvData[13]=0x00;
-	szDemodCmd_RecvData[14]=0x00;
-	szDemodCmd_RecvData[15]=0x00;
-	szDemodCmd_RecvData[16]=0x00;
-	szDemodCmd_RecvData[17]=0x00;
-	szDemodCmd_RecvData[18]=0x01;
-	szDemodCmd_RecvData[19]=0x00;
-	for(int i=0;i<19;i++)
-	{
-		szDemodCmd_RecvData[19]=szDemodCmd_RecvData[19]+szDemodCmd_RecvData[i];
-	}
-	pGEDevice->SendTo(szDemodCmd_RecvData,nDemodCmdSize_RecvData);
-}
-
-
-void CPage4::DataUpload()
-{
-	int nDemodCmdSize_RecvData =20;
-	char *szDemodCmd_RecvData=new char[nDemodCmdSize_RecvData];
-	szDemodCmd_RecvData[0]=0x17;
-	szDemodCmd_RecvData[1]=0x57;
-	szDemodCmd_RecvData[2]=0x90;
-	szDemodCmd_RecvData[3]=0xeb;
-	szDemodCmd_RecvData[4]=0x84;
-	szDemodCmd_RecvData[5]=0x00;
-	szDemodCmd_RecvData[6]=0x0f;
-	szDemodCmd_RecvData[7]=0x00;
-	szDemodCmd_RecvData[8]=0x00;         
 	szDemodCmd_RecvData[9]=0x00;
 	szDemodCmd_RecvData[10]=0x00;
 	szDemodCmd_RecvData[11]=0x00;
@@ -1224,17 +1144,25 @@ afx_msg LRESULT CPage4::OnButtonChanged(WPARAM wParam, LPARAM lParam)
 			m_buttons[i] = new CButton();
 		}
 		m_buttons[0]->Create(_T("配置"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, rect_button[0], this, IDB_CONFIGURE);
-		m_buttons[1]->Create(_T("接收数据"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, rect_button[1], this, IDB_RECVDATA);
-		m_buttons[2]->Create(_T("比对"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, rect_button[2], this, IDB_COMPAR);
-		m_buttons[3]->Create(_T("千兆网复位"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, rect_button[3], this, IDB_RESET);
-		m_buttons[4]->Create(_T("停止接收"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, rect_button[4], this, IDB_STOP_RECV);
-		m_buttons[5]->Create(_T("调制器"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, rect_button[5], this, IDB_MODULATOR);
+		m_buttons[1]->Create(_T("千兆网复位"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, rect_button[1], this, IDB_RESET);
+		m_buttons[2]->Create(_T("接收数据"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, rect_button[2], this, IDB_RECVDATA);
+		m_buttons[3]->Create(_T("停止接收"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, rect_button[3], this, IDB_STOP_RECV);
+		m_buttons[4]->Create(_T("调制器"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, rect_button[4], this, IDB_MODULATOR);
+		m_buttons[5]->Create(_T("开始去偏置"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, rect_button[5], this, IDB_BEGINOFFSET);
+		m_buttons[6]->Create(_T("停止去偏置"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, rect_button[6], this, IDB_ENDOFFSET);
+		m_buttons[7]->Create(_T("比对"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, rect_button[7], this, IDB_COMPAR);
+		m_buttons[8]->Create(_T("开始跟踪"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, rect_button[8], this, IDB_BEGINTRACK);
+		m_buttons[9]->Create(_T("停止跟踪"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, rect_button[9], this, IDB_ENDTRACK);
 		m_buttons[0]->SetFont(GetFont());
 		m_buttons[1]->SetFont(GetFont());
 		m_buttons[2]->SetFont(GetFont());
 		m_buttons[3]->SetFont(GetFont());
 		m_buttons[4]->SetFont(GetFont());
 		m_buttons[5]->SetFont(GetFont());
+		m_buttons[6]->SetFont(GetFont());
+		m_buttons[7]->SetFont(GetFont());
+		m_buttons[8]->SetFont(GetFont());
+		m_buttons[9]->SetFont(GetFont());
 		break;
 	}
 	case 1:               //离线模式
@@ -1284,36 +1212,4 @@ void CPage4::OnBnClickedCallsimulink()
 	engEvalString(pMainDlg->en, _T("plot(result.time, result.signals(1).values);"));
 	engEvalString(pMainDlg->en, _T("subplot(2,1,2);"));
 	engEvalString(pMainDlg->en, _T("plot(result.time, result.signals(2).values);"));
-}
-
-void CPage4::OnBnClickedTransfer()
-{
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼þÍ¨Öª´¦Àí³ÌÐò´úÂë
-	CPropertySheet CConfig(_T("发送参数"));
-	CCOMM1 firstpage;
-	CCOMM2 secondpage;
-
-	firstpage.m_offsetvalue = offsetvalue;
-	firstpage.m_c1delta = c1delta;
-	firstpage.m_c2delta = c2delta;
-	secondpage.bandwidth = bandwidth;
-	secondpage.m_directpull = directpull;
-	secondpage.m_downsample1 = downsample1;
-	secondpage.m_downsample2 = downsample2;
-
-	CConfig.m_psh.dwFlags  |= PSH_NOAPPLYNOW;
-	CConfig.m_psh.dwFlags &= ~PSH_HASHELP;
-	CConfig.AddPage(&firstpage);
-	CConfig.AddPage(&secondpage);
-
-	if (CConfig.DoModal() == IDOK)
-	{
-		offsetvalue = firstpage.m_offsetvalue;
-		c1delta = firstpage.m_c1delta;
-		c2delta = firstpage.m_c2delta;
-		bandwidth = secondpage.bandwidth;
-		directpull = secondpage.m_directpull;
-		downsample1 = secondpage.m_downsample1;
-		downsample2 = secondpage.m_downsample2;
-	}
 }

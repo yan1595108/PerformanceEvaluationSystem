@@ -21,6 +21,8 @@ CPageBase::~CPageBase()
 {
 }
 
+CGigabitEthernetDevice * CPageBase::pGEDevice(NULL);
+
 void CPageBase::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);

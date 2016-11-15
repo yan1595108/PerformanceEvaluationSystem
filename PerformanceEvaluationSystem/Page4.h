@@ -1,9 +1,8 @@
 #pragma once
 #include "PageBase.h"
-#include "GigabitEthernetDevice.h"
 #include "afxwin.h"
 
-#define BUTTON_NUM_ONLINE 6
+#define BUTTON_NUM_ONLINE 10
 #define BUTTON_NUM_OFFLINE 1
 
 extern const int nLenFrame;
@@ -30,7 +29,6 @@ public:
 
 public:
 	LPVOID pTempMainDlg;				//主对界面指针
-	CGigabitEthernetDevice *pGEDevice;	//千兆网接口设备
 
 public:
 	volatile BOOL bThreadStopRecv;		//停止接收标志
@@ -54,14 +52,14 @@ public:
 	CComboBox m_UploadDataType;			//上传数据类型
 	int m_C1;							//滤波系数C1
 	int m_C2;							//滤波系数C2
-	int c1delta;
-	int c2delta;
-	double offsetvalue;
 	double m_modulatedeep;
 	short bandwidth;
 	short directpull;						//直抽倍数
 	short downsample1;					//第一级CIC下抽倍数
 	short downsample2;					//第二级CIC下抽倍数
+	double m_offsetvalue;
+	double m_c1delta;
+	double m_c2delta;
 	
 private:
 	CButton *m_buttons[BUTTON_NUM_ONLINE];      //所有的按钮
@@ -84,12 +82,8 @@ public:
 	afx_msg void OnBnClickedButtonModulator();
 	afx_msg LRESULT OnButtonChanged(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnBnClickedCallsimulink();
-	void Begintrack();
-	void Endtrack();
-	void Beginoffset();
-	void Endoffset();
-	void Channelize();
-	void SpectrumAnalyse();
-	void DataUpload();
-	afx_msg void OnBnClickedTransfer();
+	afx_msg void OnBnClickedBeginoffset();
+	afx_msg void OnBnClickedEndoffset();
+	afx_msg void OnBnClickedBegintrack();
+	afx_msg void OnBnClickedEndtrack();
 };
