@@ -37,7 +37,7 @@ public:
 	volatile BOOL bThreadStopPlot;		//停止绘图标志
 	HANDLE hThreadPlot;					//绘图线程
 	DWORD dwThreadPlotID;				//绘图线程ID
-	CRect rect_button[6];               //存放几个按钮的位置
+	CRect rect_button[BUTTON_NUM_ONLINE];//存放几个按钮的位置
 
 	THREADPARAM ThreadRecvParam;		//线程参数
 
