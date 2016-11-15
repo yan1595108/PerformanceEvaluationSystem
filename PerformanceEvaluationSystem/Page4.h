@@ -2,7 +2,7 @@
 #include "PageBase.h"
 #include "afxwin.h"
 
-#define BUTTON_NUM_ONLINE 10
+#define BUTTON_NUM_ONLINE 11
 #define BUTTON_NUM_OFFLINE 1
 
 extern const int nLenFrame;
@@ -86,4 +86,6 @@ public:
 	afx_msg void OnBnClickedEndoffset();
 	afx_msg void OnBnClickedBegintrack();
 	afx_msg void OnBnClickedEndtrack();
+	afx_msg void OnBnClickedGmskifdelay();
+	unsigned char m_ifdelay;
 };

@@ -32,5 +32,6 @@ _ReSharper*/
 ipch/
 *.opensdf
 *.mdl
+*.orig
 *.asv
 *.mat

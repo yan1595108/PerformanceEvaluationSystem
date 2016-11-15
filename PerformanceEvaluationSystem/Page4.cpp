@@ -25,6 +25,7 @@ CPage4::CPage4(CWnd* pParent /*=NULL*/)
 	, m_nRecvSize(1000000),m_nFramesPerPackage(255)
 	, m_Carrier(70.0),m_SymbolRateVal(100),m_C1(12),m_C2(20)
 	, m_modulatedeep(0)
+	, m_ifdelay(0)
 {
 	m_c1delta = 0;
 	m_c2delta = 0;
@@ -952,6 +953,7 @@ BOOL CPage4::OnInitDialog()
 	GetDlgItem(IDB_COMPAR)->GetWindowRect(rect_button[7]);
 	GetDlgItem(IDB_BEGINTRACK)->GetWindowRect(rect_button[8]);
 	GetDlgItem(IDB_ENDTRACK)->GetWindowRect(rect_button[9]);
+	GetDlgItem(IDB_GMSKIFDELAY)->GetWindowRect(rect_button[10]);
 	ScreenToClient(rect_button[0]);
 	ScreenToClient(rect_button[1]);
 	ScreenToClient(rect_button[2]);
@@ -962,6 +964,7 @@ BOOL CPage4::OnInitDialog()
 	ScreenToClient(rect_button[7]);
 	ScreenToClient(rect_button[8]);
 	ScreenToClient(rect_button[9]);
+	ScreenToClient(rect_button[10]);
 
 	m_buttons[0] = static_cast<CButton *>(GetDlgItem(IDB_CONFIGURE));
 	m_buttons[1] = static_cast<CButton *>(GetDlgItem(IDB_RESET));
@@ -973,6 +976,7 @@ BOOL CPage4::OnInitDialog()
 	m_buttons[7] = static_cast<CButton *>(GetDlgItem(IDB_COMPAR));
 	m_buttons[8] = static_cast<CButton *>(GetDlgItem(IDB_BEGINTRACK));
 	m_buttons[9] = static_cast<CButton *>(GetDlgItem(IDB_ENDTRACK));
+	m_buttons[10] = static_cast<CButton *>(GetDlgItem(IDB_GMSKIFDELAY));
 	TRACE("Page4初始化完成！\n");
 	return TRUE;  
 	// return TRUE unless you set the focus to a control
@@ -1153,6 +1157,7 @@ afx_msg LRESULT CPage4::OnButtonChanged(WPARAM wParam, LPARAM lParam)
 		m_buttons[7]->Create(_T("比对"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, rect_button[7], this, IDB_COMPAR);
 		m_buttons[8]->Create(_T("开始跟踪"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, rect_button[8], this, IDB_BEGINTRACK);
 		m_buttons[9]->Create(_T("停止跟踪"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, rect_button[9], this, IDB_ENDTRACK);
+		m_buttons[10]->Create(_T("GMSK中频时延"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, rect_button[9], this, IDB_ENDTRACK);
 		m_buttons[0]->SetFont(GetFont());
 		m_buttons[1]->SetFont(GetFont());
 		m_buttons[2]->SetFont(GetFont());
@@ -1163,6 +1168,7 @@ afx_msg LRESULT CPage4::OnButtonChanged(WPARAM wParam, LPARAM lParam)
 		m_buttons[7]->SetFont(GetFont());
 		m_buttons[8]->SetFont(GetFont());
 		m_buttons[9]->SetFont(GetFont());
+		m_buttons[10]->SetFont(GetFont());
 		break;
 	}
 	case 1:               //离线模式
@@ -1212,4 +1218,39 @@ void CPage4::OnBnClickedCallsimulink()
 	engEvalString(pMainDlg->en, _T("plot(result.time, result.signals(1).values);"));
 	engEvalString(pMainDlg->en, _T("subplot(2,1,2);"));
 	engEvalString(pMainDlg->en, _T("plot(result.time, result.signals(2).values);"));
+}
+
+
+void CPage4::OnBnClickedGmskifdelay()
+{
+	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼þÍ¨Öª´¦Àí³ÌÐò´úÂë
+	UpdateData(TRUE);
+	int nDemodCmdSize_RecvData =20;
+	char *szDemodCmd_RecvData=new char[nDemodCmdSize_RecvData];
+	szDemodCmd_RecvData[0]=0x17;
+	szDemodCmd_RecvData[1]=0x57;
+	szDemodCmd_RecvData[2]=0x90;
+	szDemodCmd_RecvData[3]=0xeb;
+	szDemodCmd_RecvData[4]=0x11;
+	szDemodCmd_RecvData[5]=0x00;
+	szDemodCmd_RecvData[6]=0x0f;
+	szDemodCmd_RecvData[7]=0x00;
+	szDemodCmd_RecvData[8]=m_ifdelay;
+	szDemodCmd_RecvData[9]=0x00;
+	szDemodCmd_RecvData[10]=0x00;
+	szDemodCmd_RecvData[11]=0x00;
+	szDemodCmd_RecvData[12]=0x00;
+	szDemodCmd_RecvData[13]=0x00;
+	szDemodCmd_RecvData[14]=0x00;
+	szDemodCmd_RecvData[15]=0x00;
+	szDemodCmd_RecvData[16]=0x00;
+	szDemodCmd_RecvData[17]=0x00;
+	szDemodCmd_RecvData[18]=0x01;
+	szDemodCmd_RecvData[19]=0x00;
+	TRACE("IF_delay_sel = %u\n", m_ifdelay);
+	for(int i=0;i<19;i++)
+	{
+		szDemodCmd_RecvData[19]=szDemodCmd_RecvData[19]+szDemodCmd_RecvData[i];
+	}
+	pGEDevice->SendTo(szDemodCmd_RecvData,nDemodCmdSize_RecvData);
 }
