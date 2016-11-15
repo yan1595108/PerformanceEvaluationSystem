@@ -70,7 +70,7 @@ CPerformanceEvaluationSystemDlg::CPerformanceEvaluationSystemDlg(CWnd* pParent /
 	hDll(NULL),
 	pGEDevice(NULL)
 {
-	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+	m_hIcon = AfxGetApp()->LoadIcon(IDI_APPICON);
 	position_file_plot = 0;
 	CurrentX = 0;
 	average = 0;

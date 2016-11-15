@@ -22,6 +22,9 @@
     <None Include="res\PerformanceEvaluationSystem.ico">
       <Filter>资源文件</Filter>
     </None>
+    <None Include="res\appicon2.ico">
+      <Filter>资源文件</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PerformanceEvaluationSystem.h">
