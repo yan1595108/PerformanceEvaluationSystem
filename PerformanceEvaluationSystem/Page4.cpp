@@ -58,6 +58,7 @@ void CPage4::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDE_OFFSETVALUE, m_offsetvalue);
 	DDX_Text(pDX, IDE_C1DELTA, m_c1delta);
 	DDX_Text(pDX, IDE_C2DELTA, m_c2delta);
+	DDX_Text(pDX, IDE_IFDELAY, m_ifdelay);
 }
 
 
@@ -75,6 +76,7 @@ BEGIN_MESSAGE_MAP(CPage4, CPageBase)
 	ON_BN_CLICKED(IDB_ENDOFFSET, &CPage4::OnBnClickedEndoffset)
 	ON_BN_CLICKED(IDB_BEGINTRACK, &CPage4::OnBnClickedBegintrack)
 	ON_BN_CLICKED(IDB_ENDTRACK, &CPage4::OnBnClickedEndtrack)
+	ON_BN_CLICKED(IDB_GMSKIFDELAY, &CPage4::OnBnClickedGmskifdelay)
 END_MESSAGE_MAP()
 
 
