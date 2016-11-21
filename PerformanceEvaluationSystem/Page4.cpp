@@ -47,10 +47,10 @@ void CPage4::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDE_RECVSIZE, m_nRecvSize);
 	DDX_Text(pDX, IDE_PACKAGESIZE, m_nFramesPerPackage);
 	DDX_Text(pDX,IDE_CARRIER,m_Carrier);
-	DDX_Control(pDX,IDC_COMBO_MODULATE_MODE,m_ModulateMode);
+	DDX_Control(pDX,IDC_MODULATE_MODE,m_ModulateMode);
 	DDX_Text(pDX,IDE_SYMBOL_RATE_VAL,m_SymbolRateVal);
-	DDX_Control(pDX,IDC_COMBO_SYMBOL_RATE_UNIT,m_SymbolRateUnit);
-	DDX_Control(pDX,IDC_COMBO_UPLOAD_DATA_TYPE,m_UploadDataType);
+	DDX_Control(pDX,IDC_SYMBOL_RATE_UNIT,m_SymbolRateUnit);
+	DDX_Control(pDX,IDC_UPLOAD_DATA_TYPE,m_UploadDataType);
 	DDX_Text(pDX,IDE_C1,m_C1);
 	DDX_Text(pDX,IDE_C2,m_C2);
 	DDV_MinMaxInt(pDX, m_nFramesPerPackage, 1, 255);

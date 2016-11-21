@@ -88,8 +88,8 @@ void CPerformanceEvaluationSystemDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_IPLOTX,m_iPlotX);
-	DDX_Control(pDX, IDC_COMBO_WORKMODE, m_WorkMode);
-	DDX_Control(pDX, IDC_COMBO_SIGNALTYPE, m_SignalType);
+	DDX_Control(pDX, IDC_WORKMODE, m_WorkMode);
+	DDX_Control(pDX, IDC_SIGNALTYPE, m_SignalType);
 }
 
 BEGIN_MESSAGE_MAP(CPerformanceEvaluationSystemDlg, CDialogEx)
@@ -98,12 +98,12 @@ BEGIN_MESSAGE_MAP(CPerformanceEvaluationSystemDlg, CDialogEx)
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDB_BAND_SPECTRUM_SCANNING, &CPerformanceEvaluationSystemDlg::OnBnClickedBtnBandSpectrumScanning)
 	ON_BN_CLICKED(IDB_BAND_CHANNELIZATION, &CPerformanceEvaluationSystemDlg::OnBnClickedBtnBandChannelization)
-	ON_BN_CLICKED(IDB_PARAMETER_MEASUREMENT, &CPerformanceEvaluationSystemDlg::OnBnClickedBtnParameterMeasurement)
+	ON_BN_CLICKED(IDB_PREPROCESS, &CPerformanceEvaluationSystemDlg::OnBnClickedBtnParameterMeasurement)
 	ON_BN_CLICKED(IDB_CHANNELIZATION_DEMODULATION, &CPerformanceEvaluationSystemDlg::OnBnClickedBtnChannelizationDemodulation)
 	ON_BN_CLICKED(IDB_REMOTE_SENSING_CONTROL, &CPerformanceEvaluationSystemDlg::OnBnClickedBtnRemoteSensingControl)
 	ON_WM_DESTROY()
-	ON_CBN_SELCHANGE(IDC_COMBO_SIGNALTYPE, &CPerformanceEvaluationSystemDlg::OnCbnSelchangeComboSignaltype)
-	ON_CBN_SELCHANGE(IDC_COMBO_WORKMODE, &CPerformanceEvaluationSystemDlg::OnCbnSelchangeComboWorkmode)
+	ON_CBN_SELCHANGE(IDC_SIGNALTYPE, &CPerformanceEvaluationSystemDlg::OnCbnSelchangeComboSignaltype)
+	ON_CBN_SELCHANGE(IDC_WORKMODE, &CPerformanceEvaluationSystemDlg::OnCbnSelchangeComboWorkmode)
 	ON_BN_CLICKED(IDB_TEST1, &CPerformanceEvaluationSystemDlg::OnBnClickedButtonTest1)
 	ON_BN_CLICKED(IDB_TEST2, &CPerformanceEvaluationSystemDlg::OnBnClickedButtonTest2)
 	ON_MESSAGE(WM_PLOTDATA, PlotData)
@@ -1528,14 +1528,14 @@ void CPerformanceEvaluationSystemDlg::OnCbnSelchangeComboSignaltype()
 	{
 		GetDlgItem(IDB_BAND_SPECTRUM_SCANNING)->EnableWindow(TRUE);
 		GetDlgItem(IDB_BAND_CHANNELIZATION)->EnableWindow(TRUE);
-		GetDlgItem(IDB_PARAMETER_MEASUREMENT)->EnableWindow(TRUE);
+		GetDlgItem(IDB_PREPROCESS)->EnableWindow(TRUE);
 		GetDlgItem(IDB_CHANNELIZATION_DEMODULATION)->EnableWindow(TRUE);
 	} 
 	else
 	{
 		GetDlgItem(IDB_BAND_SPECTRUM_SCANNING)->EnableWindow(TRUE);
 		GetDlgItem(IDB_BAND_CHANNELIZATION)->EnableWindow(TRUE);
-		GetDlgItem(IDB_PARAMETER_MEASUREMENT)->EnableWindow(FALSE);
+		GetDlgItem(IDB_PREPROCESS)->EnableWindow(FALSE);
 		GetDlgItem(IDB_CHANNELIZATION_DEMODULATION)->EnableWindow(FALSE);
 	}
 }

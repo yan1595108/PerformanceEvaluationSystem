@@ -30,16 +30,16 @@ CPage1::~CPage1()
 void CPage1::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
-	DDX_Control(pDX, IDC_COMBO_CENTER_FREQ_UNIT, m_UnitCenterFreq);
-	DDX_Control(pDX, IDC_COMBO_BAND_WIDTH_UNIT, m_UnitBandWidth);
-	DDX_Control(pDX, IDC_COMBO_REFERENCE_LEVEL_UNIT, m_UnitReferenceLevel);
-	DDX_Control(pDX, IDC_COMBO_REFERENCE_LEVEL_DIV_UNIT, m_UnitReferenceLevelDiv);
+	DDX_Control(pDX, IDC_CENTER_FREQ_UNIT, m_UnitCenterFreq);
+	DDX_Control(pDX, IDC_BAND_WIDTH_UNIT, m_UnitBandWidth);
+	DDX_Control(pDX, IDC_REFERENCE_LEVEL_UNIT, m_UnitReferenceLevel);
+	DDX_Control(pDX, IDC_REFERENCE_LEVEL_DIV_UNIT, m_UnitReferenceLevelDiv);
 	DDX_Text(pDX, IDE_CENTER_FREQ, m_CenterFreq);
 	DDX_Text(pDX, IDE_BAND_WIDTH, m_BandWidth);
 	DDX_Text(pDX, IDE_REFERENCE_LEVEL, m_ReferenceLevel);
 	DDX_Text(pDX, IDE_REFERENCE_LEVEL_DIV, m_ReferenceLevelDiv);
 	DDX_Text(pDX, IDE_FFT_POINTS, m_nNumFFTPoints);
-	DDX_Control(pDX, IDC_COMBO_BANDWIDTH, m_bandwidth);
+	DDX_Control(pDX, IDC_BANDWIDTH, m_bandwidth);
 	DDX_Text(pDX, IDE_DIRECTPULL, m_directpull);
 	DDX_Text(pDX, IDE_DOWNSAMPLE1, m_downsample1);
 	DDX_Text(pDX, IDE_DOWNSAMPLE2, m_downsample2);
@@ -48,7 +48,7 @@ void CPage1::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CPage1, CPageBase)
 	ON_BN_CLICKED(IDB_SET, &CPage1::OnBnClickedButtonSet)
-	ON_CBN_SELCHANGE(IDC_COMBO_BANDWIDTH, &CPage1::OnCbnSelchangeComboBandwidth)
+	ON_CBN_SELCHANGE(IDC_BANDWIDTH, &CPage1::OnCbnSelchangeComboBandwidth)
 	ON_BN_CLICKED(IDB_SPECTRUM, &CPage1::OnBnClickedSpectrum)
 	ON_BN_CLICKED(IDB_CHANNELIZE, &CPage1::OnBnClickedChannelize)
 	ON_BN_CLICKED(IDB_UPLOAD, &CPage1::OnBnClickedUpload)
@@ -80,7 +80,6 @@ BOOL CPage1::OnInitDialog()
 {
 	CPageBase::OnInitDialog();
 
-	// TODO:  在此添加额外的初始化
 	m_UnitCenterFreq.Clear();
 	m_UnitCenterFreq.AddString(_T("GHz"));
 	m_UnitCenterFreq.AddString(_T("MHz"));
@@ -108,8 +107,7 @@ BOOL CPage1::OnInitDialog()
 	m_bandwidth.AddString(_T("5M"));
 	m_bandwidth.AddString(_T("30M"));
 
-	return TRUE;  // return TRUE unless you set the focus to a control
-	// 异常: OCX 属性页应返回 FALSE
+	return TRUE; 
 }
 
 
@@ -150,14 +148,12 @@ void CPage1::UpdateControls(int index_bandwidth)
 
 void CPage1::OnCbnSelchangeComboBandwidth()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼þÍ¨Öª´¦Àí³ÌÐò´úÂë
 	UpdateControls(m_bandwidth.GetCurSel());
 }
 
 
 void CPage1::OnBnClickedSpectrum()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼þÍ¨Öª´¦Àí³ÌÐò´úÂë
 	int nDemodCmdSize_RecvData =20;
 	char *szDemodCmd_RecvData=new char[nDemodCmdSize_RecvData];
 	szDemodCmd_RecvData[0]=0x17;
