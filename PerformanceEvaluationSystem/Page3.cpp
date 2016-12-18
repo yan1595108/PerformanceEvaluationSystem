@@ -275,6 +275,14 @@ CPage3::CPage3(CWnd* pParent /*=NULL*/)
 	analog_bandwidth[48] = 5000000;
 	analog_bandwidth[49] = 5000000;
 	analog_bandwidth[50] = 5000000;
+
+	m_mode = 0;
+	m_fcw0 = 0;
+	m_int4351 = 0;
+	m_frac4351 = 0;
+	m_divide4351 = 0;
+	m_analogbandwidth = 0;
+	m_fs = 0;
 }
 
 CPage3::~CPage3()
@@ -288,6 +296,13 @@ void CPage3::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDE_DOWNSAMPLE3, m_downsample1);
 	DDX_Text(pDX, IDE_DOWNSAMPLE4, m_downsample2);
 	DDX_Text(pDX, IDE_DIRECTPULL2, m_directpull);
+	DDX_Text(pDX, IDE_MODE, m_mode);
+	DDX_Text(pDX, IDE_FCW0, m_fcw0);
+	DDX_Text(pDX, IDE_INT4351, m_int4351);
+	DDX_Text(pDX, IDE_FRAC4351, m_frac4351);
+	DDX_Text(pDX, IDE_DIVIDE4351, m_divide4351);
+	DDX_Text(pDX, IDE_ANALOGBANDWIDTH, m_analogbandwidth);
+	DDX_Text(pDX, IDE_FS, m_fs);
 }
 
 
@@ -295,6 +310,7 @@ BEGIN_MESSAGE_MAP(CPage3, CPageBase)
 	ON_CBN_SELCHANGE(IDC_SIGNALBANDWIDTH, &CPage3::OnCbnSelchangeSignalbandwidth)
 	ON_BN_CLICKED(IDB_SPECTRUM2, &CPage3::OnBnClickedSpectrum2)
 	ON_BN_CLICKED(IDB_PREPROCESSPARA, &CPage3::OnBnClickedPreprocesspara)
+	ON_BN_CLICKED(IDB_CHANNELIZE2, &CPage3::OnBnClickedChannelize2)
 END_MESSAGE_MAP()
 
 BOOL CPage3::OnInitDialog()
@@ -335,6 +351,7 @@ void CPage3::OnCbnSelchangeSignalbandwidth()
 }
 
 
+//频谱分析参数配置
 void CPage3::OnBnClickedSpectrum2()
 {
 	int nDemodCmdSize_RecvData =20;
@@ -347,19 +364,23 @@ void CPage3::OnBnClickedSpectrum2()
 	szDemodCmd_RecvData[4]=0x82;
 	szDemodCmd_RecvData[5]=0x00;
 	szDemodCmd_RecvData[6]=0x0f;
-	szDemodCmd_RecvData[7]=0x7A;
-	szDemodCmd_RecvData[8]=0xE1;         
-	szDemodCmd_RecvData[9]=0x01;
-	szDemodCmd_RecvData[10]=0x17;
-	szDemodCmd_RecvData[11]=0x00;
-	szDemodCmd_RecvData[12]=0x05;
-	szDemodCmd_RecvData[13]=cur_analog_bandwidth >> 24;
-	szDemodCmd_RecvData[14]=cur_analog_bandwidth >> 16;
-	szDemodCmd_RecvData[15]=cur_analog_bandwidth >> 8;
-	szDemodCmd_RecvData[16]=cur_analog_bandwidth;
+	szDemodCmd_RecvData[7]=m_int4351 >> 8;
+	szDemodCmd_RecvData[8]=m_int4351;         
+	szDemodCmd_RecvData[9]=m_frac4351 >> 8;
+	szDemodCmd_RecvData[10]=m_frac4351;
+	szDemodCmd_RecvData[11]=m_divide4351 >> 8;
+	szDemodCmd_RecvData[12]=m_divide4351;
+	szDemodCmd_RecvData[13]=cur_analog_bandwidth >> 8;
+	szDemodCmd_RecvData[14]=cur_analog_bandwidth;
+	szDemodCmd_RecvData[15]=0;
+	szDemodCmd_RecvData[16]=0;
 	szDemodCmd_RecvData[17]=0x00;
 	szDemodCmd_RecvData[18]=0x01;
 	szDemodCmd_RecvData[19]=0x00;
+	TRACE("m_int4351 = %d\n", m_int4351);
+	TRACE("m_frac4351 = %d\n", m_frac4351);
+	TRACE("m_divide4351 = %d\n", m_divide4351);
+	TRACE("模拟带宽 = %d\n", cur_analog_bandwidth);
 	for(int i=0;i<19;i++)
 	{
 		szDemodCmd_RecvData[19]=szDemodCmd_RecvData[19]+szDemodCmd_RecvData[i];
@@ -368,8 +389,47 @@ void CPage3::OnBnClickedSpectrum2()
 }
 
 
+//预处理参数配置
 void CPage3::OnBnClickedPreprocesspara()
 {
+	UpdateData(TRUE);
+	int nDemodCmdSize_RecvData =20;
+	char *szDemodCmd_RecvData=new char[nDemodCmdSize_RecvData];
+	szDemodCmd_RecvData[0]=0x17;
+	szDemodCmd_RecvData[1]=0x57;
+	szDemodCmd_RecvData[2]=0x90;
+	szDemodCmd_RecvData[3]=0xeb;
+	szDemodCmd_RecvData[4]=0x81;
+	szDemodCmd_RecvData[5]=0x00;
+	szDemodCmd_RecvData[6]=0x0f;
+	szDemodCmd_RecvData[7]=m_mode >> 8;
+	szDemodCmd_RecvData[8]=m_mode;         
+	szDemodCmd_RecvData[9]=m_fcw0 >> 24;
+	szDemodCmd_RecvData[10]=m_fcw0 >> 16;
+	szDemodCmd_RecvData[11]=m_fcw0 >> 8;
+	szDemodCmd_RecvData[12]=m_fcw0;
+	szDemodCmd_RecvData[13]=m_fs >> 24;
+	szDemodCmd_RecvData[14]=m_fs >> 16;
+	szDemodCmd_RecvData[15]=m_fs >> 8;
+	szDemodCmd_RecvData[16]=m_fs;
+	szDemodCmd_RecvData[17]=0x00;
+	szDemodCmd_RecvData[18]=0x01;
+	szDemodCmd_RecvData[19]=0x00;
+	TRACE("m_mode = %d\n", m_mode);
+	TRACE("m_fcw0 = %d\n", m_fcw0);
+	TRACE("m_fs = %d\n", m_fs);
+	for(int i=0;i<19;i++)
+	{
+		szDemodCmd_RecvData[19]=szDemodCmd_RecvData[19]+szDemodCmd_RecvData[i];
+	}
+	pGEDevice->SendTo(szDemodCmd_RecvData,nDemodCmdSize_RecvData);
+}
+
+
+//信道化参数
+void CPage3::OnBnClickedChannelize2()
+{
+	// TODO: 在此添加控件通知处理程序代码
 	UpdateData(TRUE);
 	int nDemodCmdSize_RecvData =20;
 	char *szDemodCmd_RecvData=new char[nDemodCmdSize_RecvData];
@@ -378,22 +438,26 @@ void CPage3::OnBnClickedPreprocesspara()
 	szDemodCmd_RecvData[1]=0x57;
 	szDemodCmd_RecvData[2]=0x90;
 	szDemodCmd_RecvData[3]=0xeb;
-	szDemodCmd_RecvData[4]=0x81;
+	szDemodCmd_RecvData[4]=0x83;
 	szDemodCmd_RecvData[5]=0x00;
 	szDemodCmd_RecvData[6]=0x0f;
-	szDemodCmd_RecvData[7]=m_directpull >> 8;
-	szDemodCmd_RecvData[8]=m_directpull;         
-	szDemodCmd_RecvData[9]=m_downsample1 >> 8;
-	szDemodCmd_RecvData[10]=m_downsample1;
-	szDemodCmd_RecvData[11]=m_downsample2 >> 8;
-	szDemodCmd_RecvData[12]=m_downsample2;
-	szDemodCmd_RecvData[13]=0;
-	szDemodCmd_RecvData[14]=0;
+	szDemodCmd_RecvData[7]=cur_analog_bandwidth >> 8;
+	szDemodCmd_RecvData[8]=cur_analog_bandwidth;         
+	szDemodCmd_RecvData[9]=m_directpull >> 8;
+	szDemodCmd_RecvData[10]=m_directpull;
+	szDemodCmd_RecvData[11]=m_downsample1 >> 8;
+	szDemodCmd_RecvData[12]=m_downsample1;
+	szDemodCmd_RecvData[13]=m_downsample2 >> 8;
+	szDemodCmd_RecvData[14]=m_downsample2;
 	szDemodCmd_RecvData[15]=0;
 	szDemodCmd_RecvData[16]=0;
 	szDemodCmd_RecvData[17]=0x00;
 	szDemodCmd_RecvData[18]=0x01;
 	szDemodCmd_RecvData[19]=0x00;
+	TRACE("信道带宽 = %d\n", cur_analog_bandwidth);
+	TRACE("直抽系数 = %d\n", m_directpull);
+	TRACE("第一级CIC下抽系数 = %d\n", m_downsample1);
+	TRACE("第二级CIC下抽系数 = %d\n", m_downsample2);
 	for(int i=0;i<19;i++)
 	{
 		szDemodCmd_RecvData[19]=szDemodCmd_RecvData[19]+szDemodCmd_RecvData[i];

@@ -30,8 +30,17 @@ public:
 	short downsample1[51];
 	short downsample2[51];
 	int analog_bandwidth[51];
+	short m_mode;
+	int m_fcw0;
+	short m_int4351;
+	short m_frac4351;
+	short m_divide4351;
+	short m_analogbandwidth;
+	short m_singalbandwidth;
+	int m_fs;
 	virtual BOOL OnInitDialog();
 	afx_msg void OnCbnSelchangeSignalbandwidth();
 	afx_msg void OnBnClickedSpectrum2();
 	afx_msg void OnBnClickedPreprocesspara();
+	afx_msg void OnBnClickedChannelize2();
 };
