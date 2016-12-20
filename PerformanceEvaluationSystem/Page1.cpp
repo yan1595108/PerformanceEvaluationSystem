@@ -233,7 +233,7 @@ void CPage1::OnBnClickedUpload()
 	szDemodCmd_RecvData[7]=0x00;
 	szDemodCmd_RecvData[8]=0x00;         
 	szDemodCmd_RecvData[9]=0x00;
-	szDemodCmd_RecvData[10]=0x00;
+	szDemodCmd_RecvData[10]=0x01;
 	szDemodCmd_RecvData[11]=0x00;
 	szDemodCmd_RecvData[12]=0x00;
 	szDemodCmd_RecvData[13]=0x00;
