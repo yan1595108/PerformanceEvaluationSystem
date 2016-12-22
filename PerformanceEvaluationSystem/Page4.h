@@ -88,4 +88,6 @@ public:
 	afx_msg void OnBnClickedEndtrack();
 	afx_msg void OnBnClickedGmskifdelay();
 	unsigned char m_ifdelay;
+	afx_msg void OnBnClickedFlash1();
+	afx_msg void OnBnClickedFlash2();
 };

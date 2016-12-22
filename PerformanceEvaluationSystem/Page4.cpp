@@ -77,6 +77,8 @@ BEGIN_MESSAGE_MAP(CPage4, CPageBase)
 	ON_BN_CLICKED(IDB_BEGINTRACK, &CPage4::OnBnClickedBegintrack)
 	ON_BN_CLICKED(IDB_ENDTRACK, &CPage4::OnBnClickedEndtrack)
 	ON_BN_CLICKED(IDB_GMSKIFDELAY, &CPage4::OnBnClickedGmskifdelay)
+	ON_BN_CLICKED(IDB_FLASH1, &CPage4::OnBnClickedFlash1)
+	ON_BN_CLICKED(IDB_FLASH2, &CPage4::OnBnClickedFlash2)
 END_MESSAGE_MAP()
 
 
@@ -979,6 +981,8 @@ BOOL CPage4::OnInitDialog()
 	m_buttons[8] = static_cast<CButton *>(GetDlgItem(IDB_BEGINTRACK));
 	m_buttons[9] = static_cast<CButton *>(GetDlgItem(IDB_ENDTRACK));
 	m_buttons[10] = static_cast<CButton *>(GetDlgItem(IDB_GMSKIFDELAY));
+
+	GetDlgItem(IDE_FLASHSTATE)->SetWindowText(_T("1"));
 	TRACE("Page4初始化完成！\n");
 	return TRUE;  
 	// return TRUE unless you set the focus to a control
@@ -1255,4 +1259,71 @@ void CPage4::OnBnClickedGmskifdelay()
 		szDemodCmd_RecvData[19]=szDemodCmd_RecvData[19]+szDemodCmd_RecvData[i];
 	}
 	pGEDevice->SendTo(szDemodCmd_RecvData,nDemodCmdSize_RecvData);
+}
+
+void CPage4::OnBnClickedFlash1()
+{
+	UpdateData(TRUE);
+	int nDemodCmdSize_RecvData =20;
+	char *szDemodCmd_RecvData=new char[nDemodCmdSize_RecvData];
+	szDemodCmd_RecvData[0]=0x17;
+	szDemodCmd_RecvData[1]=0x57;
+	szDemodCmd_RecvData[2]=0x90;
+	szDemodCmd_RecvData[3]=0xeb;
+	szDemodCmd_RecvData[4]=0x66;
+	szDemodCmd_RecvData[5]=0x00;
+	szDemodCmd_RecvData[6]=0x0f;
+	szDemodCmd_RecvData[7]=0x00;
+	szDemodCmd_RecvData[8]=0x00;
+	szDemodCmd_RecvData[9]=0x00;
+	szDemodCmd_RecvData[10]=0x00;
+	szDemodCmd_RecvData[11]=0x00;
+	szDemodCmd_RecvData[12]=0x00;
+	szDemodCmd_RecvData[13]=0x00;
+	szDemodCmd_RecvData[14]=0x00;
+	szDemodCmd_RecvData[15]=0x00;
+	szDemodCmd_RecvData[16]=0x00;
+	szDemodCmd_RecvData[17]=0x00;
+	szDemodCmd_RecvData[18]=0x01;
+	szDemodCmd_RecvData[19]=0x00;
+	for(int i=0;i<19;i++)
+	{
+		szDemodCmd_RecvData[19]=szDemodCmd_RecvData[19]+szDemodCmd_RecvData[i];
+	}
+	pGEDevice->SendTo(szDemodCmd_RecvData,nDemodCmdSize_RecvData);
+	GetDlgItem(IDE_FLASHSTATE)->SetWindowText(_T("1"));
+}
+
+
+void CPage4::OnBnClickedFlash2()
+{
+	UpdateData(TRUE);
+	int nDemodCmdSize_RecvData =20;
+	char *szDemodCmd_RecvData=new char[nDemodCmdSize_RecvData];
+	szDemodCmd_RecvData[0]=0x17;
+	szDemodCmd_RecvData[1]=0x57;
+	szDemodCmd_RecvData[2]=0x90;
+	szDemodCmd_RecvData[3]=0xeb;
+	szDemodCmd_RecvData[4]=0x77;
+	szDemodCmd_RecvData[5]=0x00;
+	szDemodCmd_RecvData[6]=0x0f;
+	szDemodCmd_RecvData[7]=0x00;
+	szDemodCmd_RecvData[8]=0x00;
+	szDemodCmd_RecvData[9]=0x00;
+	szDemodCmd_RecvData[10]=0x00;
+	szDemodCmd_RecvData[11]=0x00;
+	szDemodCmd_RecvData[12]=0x00;
+	szDemodCmd_RecvData[13]=0x00;
+	szDemodCmd_RecvData[14]=0x00;
+	szDemodCmd_RecvData[15]=0x00;
+	szDemodCmd_RecvData[16]=0x00;
+	szDemodCmd_RecvData[17]=0x00;
+	szDemodCmd_RecvData[18]=0x01;
+	szDemodCmd_RecvData[19]=0x00;
+	for(int i=0;i<19;i++)
+	{
+		szDemodCmd_RecvData[19]=szDemodCmd_RecvData[19]+szDemodCmd_RecvData[i];
+	}
+	pGEDevice->SendTo(szDemodCmd_RecvData,nDemodCmdSize_RecvData);
+	GetDlgItem(IDE_FLASHSTATE)->SetWindowText(_T("2"));
 }
