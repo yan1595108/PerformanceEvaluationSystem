@@ -277,7 +277,7 @@ CPage3::CPage3(CWnd* pParent /*=NULL*/)
 	analog_bandwidth[50] = 5000000;
 
 	m_mode = 0;
-	m_fcw0 = 0;
+	fcw0 = 0;
 	m_int4351 = 0;
 	m_frac4351 = 0;
 	m_divide4351 = 0;
@@ -297,7 +297,6 @@ void CPage3::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDE_DOWNSAMPLE4, m_downsample2);
 	DDX_Text(pDX, IDE_DIRECTPULL2, m_directpull);
 	DDX_Text(pDX, IDE_MODE, m_mode);
-	DDX_Text(pDX, IDE_FCW0, m_fcw0);
 	DDX_Text(pDX, IDE_INT4351, m_int4351);
 	DDX_Text(pDX, IDE_FRAC4351, m_frac4351);
 	DDX_Text(pDX, IDE_DIVIDE4351, m_divide4351);
@@ -403,11 +402,13 @@ void CPage3::OnBnClickedPreprocesspara()
 	szDemodCmd_RecvData[5]=0x00;
 	szDemodCmd_RecvData[6]=0x0f;
 	szDemodCmd_RecvData[7]=m_mode >> 8;
-	szDemodCmd_RecvData[8]=m_mode;         
-	szDemodCmd_RecvData[9]=m_fcw0 >> 24;
-	szDemodCmd_RecvData[10]=m_fcw0 >> 16;
-	szDemodCmd_RecvData[11]=m_fcw0 >> 8;
-	szDemodCmd_RecvData[12]=m_fcw0;
+	szDemodCmd_RecvData[8]=m_mode;
+	double clock_adf = (m_int4351 + (double)m_frac4351 / 1000) * 10 / m_divide4351;
+	int fcw0_send = pow(2.0, 32) * fcw0 / clock_adf;
+	szDemodCmd_RecvData[9]=fcw0_send >> 24;
+	szDemodCmd_RecvData[10]=fcw0_send >> 16;
+	szDemodCmd_RecvData[11]=fcw0_send >> 8;
+	szDemodCmd_RecvData[12]=fcw0_send;
 	szDemodCmd_RecvData[13]=m_fs >> 24;
 	szDemodCmd_RecvData[14]=m_fs >> 16;
 	szDemodCmd_RecvData[15]=m_fs >> 8;
@@ -416,7 +417,7 @@ void CPage3::OnBnClickedPreprocesspara()
 	szDemodCmd_RecvData[18]=0x01;
 	szDemodCmd_RecvData[19]=0x00;
 	TRACE("m_mode = %d\n", m_mode);
-	TRACE("m_fcw0 = %d\n", m_fcw0);
+	TRACE("fcw0 = %d\n", fcw0);
 	TRACE("m_fs = %d\n", m_fs);
 	for(int i=0;i<19;i++)
 	{

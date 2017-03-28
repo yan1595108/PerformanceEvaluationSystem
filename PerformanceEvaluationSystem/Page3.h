@@ -31,7 +31,7 @@ public:
 	short downsample2[51];
 	int analog_bandwidth[51];
 	short m_mode;
-	int m_fcw0;
+	int fcw0;
 	short m_int4351;
 	short m_frac4351;
 	short m_divide4351;

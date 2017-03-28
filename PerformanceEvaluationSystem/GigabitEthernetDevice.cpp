@@ -6,7 +6,7 @@
 
 //int nNumFramesInOnePackage = 255;
 const int nLenCmd = 2;
-const int nLenFrame = 1026;
+const int nLenFrame = 1026;    //每一帧中包含1字节包编号、1字节帧编号、1024字节数据
 CString str_SystemMes("");
 
 //全局函数声明
@@ -70,6 +70,7 @@ CGigabitEthernetDevice::CGigabitEthernetDevice(HWND hDlg = NULL)
 	nPackageIndexLastStore(0),nNumPackets2Store(1),llPackagesRecv(0),
 	strFileStorePath("F:\\Recv\\")
 {
+	nNumFramesInOnePackage = 255;
 	//初始化套接字地址结构体
 	ZeroMemory(&saFPGA,sizeof(SOCKADDR_IN));
 	ZeroMemory(&saPC,sizeof(SOCKADDR_IN));
@@ -509,6 +510,11 @@ int CGigabitEthernetDevice::RecvFrom(char *pBufRecvPackage,int nSizeBufRecv,int 
 			//将接收到的数据保存到缓存中
 			memcpy(pBufRecvPackage+(nFrameIndexReal-1)*(nLenBufRecv-2),pBufRecv+2,nLenBufRecv-2);
 			receivebytes += (nLenBufRecv-2);
+			if (receivebytes == nSizeBufRecv)
+			{
+				TRACE(_T("数据接收完成\n"));
+				break;
+			}
 			/*memcpy(pBufRecvPackage+(nFrameIndexReal-1)*(nLenBufRecv),pBufRecv,nLenBufRecv);
 			receivebytes += (nLenBufRecv);*/
 

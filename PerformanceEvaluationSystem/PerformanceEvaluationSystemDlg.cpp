@@ -1392,6 +1392,7 @@ void CPerformanceEvaluationSystemDlg::GetCarrierFreqAndBW(double pdSpectrumData[
 	{
 		TRACE("%lf  ",pdSpectrumDataTemp[nLenSpectrumData-i-1]);
 	}*/
+	//进行均值滤波
 	for (int i=nLenMeanFliter/2;i<nLenSpectrumData-nLenMeanFliter/2;i++)
 	{
 		double sum = 0.0;

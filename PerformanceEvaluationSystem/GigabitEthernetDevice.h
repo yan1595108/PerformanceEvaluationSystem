@@ -95,7 +95,7 @@ public:
 	BOOL	SetPCAddress(char *addr,short nPort);
 	BOOL	SetStorePath(CString strPath);
 	BOOL	SetFramesInOnePackage(int nNumFrames);
-	BOOL	SetRecvSize(int size);
+	BOOL	SetRecvSize(int size);   //此函数无意义
 	int		ClearSocketBuffer();
 	int GetReceivedPackage(void);
 };

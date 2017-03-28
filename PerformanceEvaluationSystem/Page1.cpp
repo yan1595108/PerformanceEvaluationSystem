@@ -3,10 +3,12 @@
 
 #include "stdafx.h"
 #include "PerformanceEvaluationSystem.h"
+#include "PerformanceEvaluationSystemDlg.h"
 #include "Page1.h"
 #include "afxdialogex.h"
 #include "math.h"
 
+extern const int nLenFrame;
 
 // CPage1 对话框
 
@@ -221,31 +223,68 @@ void CPage1::OnBnClickedChannelize()
 void CPage1::OnBnClickedUpload()
 {
 	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼þÍ¨Öª´¦Àí³ÌÐò´úÂë
-	int nDemodCmdSize_RecvData =20;
-	char *szDemodCmd_RecvData=new char[nDemodCmdSize_RecvData];
-	szDemodCmd_RecvData[0]=0x17;
-	szDemodCmd_RecvData[1]=0x57;
-	szDemodCmd_RecvData[2]=0x90;
-	szDemodCmd_RecvData[3]=0xeb;
-	szDemodCmd_RecvData[4]=0x84;
-	szDemodCmd_RecvData[5]=0x00;
-	szDemodCmd_RecvData[6]=0x0f;
-	szDemodCmd_RecvData[7]=0x00;
-	szDemodCmd_RecvData[8]=0x00;         
-	szDemodCmd_RecvData[9]=0x00;
-	szDemodCmd_RecvData[10]=0x01;
-	szDemodCmd_RecvData[11]=0x00;
-	szDemodCmd_RecvData[12]=0x00;
-	szDemodCmd_RecvData[13]=0x00;
-	szDemodCmd_RecvData[14]=0x00;
-	szDemodCmd_RecvData[15]=0x00;
-	szDemodCmd_RecvData[16]=0x00;
-	szDemodCmd_RecvData[17]=0x00;
-	szDemodCmd_RecvData[18]=0x01;
-	szDemodCmd_RecvData[19]=0x00;
+	UpdateData(TRUE);
+	int nDemodCmdSize_SendData =20;
+	char *szDemodCmd_SendData=new char[nDemodCmdSize_SendData];
+	szDemodCmd_SendData[0]=0x17;
+	szDemodCmd_SendData[1]=0x57;
+	szDemodCmd_SendData[2]=0x90;
+	szDemodCmd_SendData[3]=0xeb;
+	szDemodCmd_SendData[4]=0x84;
+	szDemodCmd_SendData[5]=0x00;
+	szDemodCmd_SendData[6]=0x0f;
+	szDemodCmd_SendData[7]=0x00;
+	szDemodCmd_SendData[8]=0x00;         
+	szDemodCmd_SendData[9]=0x00;
+	szDemodCmd_SendData[10]=0x01;
+	szDemodCmd_SendData[11]=0x00;
+	szDemodCmd_SendData[12]=0x00;
+	szDemodCmd_SendData[13]=0x00;
+	szDemodCmd_SendData[14]=0x00;
+	szDemodCmd_SendData[15]=0x00;
+	szDemodCmd_SendData[16]=0x00;
+	szDemodCmd_SendData[17]=0x00;
+	szDemodCmd_SendData[18]=0x01;
+	szDemodCmd_SendData[19]=0x00;
 	for(int i=0;i<19;i++)
 	{
-		szDemodCmd_RecvData[19]=szDemodCmd_RecvData[19]+szDemodCmd_RecvData[i];
+		szDemodCmd_SendData[19]=szDemodCmd_SendData[19]+szDemodCmd_SendData[i];
 	}
-	pGEDevice->SendTo(szDemodCmd_RecvData,nDemodCmdSize_RecvData);
+	pGEDevice->SendTo(szDemodCmd_SendData,nDemodCmdSize_SendData);
+	pGEDevice->Open();							//打开千兆网设备
+	pGEDevice->SetStorePath(_T("C:\\Recv\\"));
+	float *pBufReceive = new float[80 * 1024];
+	pGEDevice->RecvFrom((char *)pBufReceive, 320 * 1024, 10000);//接收320K字节数据
+	double *pfftdata = new double[50 * 1024];
+	for (int j = 0; j < 10; j++)   //提取出正确的fft数据
+	{
+		for (int i = 0; i < 10000; i++)
+		{
+			pfftdata[j * 20000 + i] = pBufReceive[j * 32768 + 16383 - i];
+			pfftdata[j * 20000 + 10000 + i] = pBufReceive[j * 32768 + 32767 - i];
+		}
+	}
+	CPerformanceEvaluationSystemDlg *pParent = (CPerformanceEvaluationSystemDlg *)GetParent();
+	double carrier_frequency, signal_bandwith;
+	int cursel = m_bandwidth.GetCurSel();
+	double bandwidth;
+	switch (cursel)
+	{
+	case 0:
+		bandwidth = 0.2;
+		break;
+	case 1:
+		bandwidth = 1;
+		break;
+	case 2:
+		bandwidth = 5;
+		break;
+	case 3:
+		bandwidth = 30;
+		break;
+	default:
+		break;
+	}
+	pParent->GetCarrierFreqAndBW(pfftdata, 50 * 1024, bandwidth, carrier_frequency, signal_bandwith);
+	pParent->m_Page3.fcw0 = carrier_frequency; 
 }
