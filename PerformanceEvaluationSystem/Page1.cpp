@@ -75,6 +75,51 @@ void CPage1::OnBnClickedButtonSet()
 	TRACE("mPage1_dReferenceLevel:%lf\n",mPage1_dReferenceLevel);
 	TRACE("mPage1_dReferenceLevelDiv:%lf\n",mPage1_dReferenceLevelDiv);
 	TRACE("mPage1_nNumFFTPoints:%d\n",mPage1_nNumFFTPoints);
+
+	//发送adf4351相关参数
+	double adsample = 102.4;
+	int R_4351=0;
+	int INT_4351=0;
+	int FRAC_4351=0;
+	double adf4351_out=0;
+	adf4351_out=adsample/1000000;
+	while(adf4351_out<2200.0)
+	{
+		adf4351_out=adf4351_out*2;
+		R_4351++;
+	}
+	adf4351_out=adf4351_out*10.0;
+	INT_4351 =adf4351_out;
+	FRAC_4351 =(adf4351_out-INT_4351)*1000.0;
+
+	UpdateData(TRUE);
+	int nDemodCmdSize_RecvData =20;
+	char *szDemodCmd_RecvData=new char[nDemodCmdSize_RecvData];
+	szDemodCmd_RecvData[0]=0x17;
+	szDemodCmd_RecvData[1]=0x57;
+	szDemodCmd_RecvData[2]=0x90;
+	szDemodCmd_RecvData[3]=0xeb;
+	szDemodCmd_RecvData[4]=0x82;
+	szDemodCmd_RecvData[5]=0x00;
+	szDemodCmd_RecvData[6]=0x0f;
+	szDemodCmd_RecvData[7]=INT_4351 >> 8;
+	szDemodCmd_RecvData[8]=INT_4351;         
+	szDemodCmd_RecvData[9]=FRAC_4351 >> 8;
+	szDemodCmd_RecvData[10]=FRAC_4351;
+	szDemodCmd_RecvData[11]=R_4351 >> 8;
+	szDemodCmd_RecvData[12]=R_4351;
+	szDemodCmd_RecvData[13]=0;
+	szDemodCmd_RecvData[14]=0;
+	szDemodCmd_RecvData[15]=0;
+	szDemodCmd_RecvData[16]=0;
+	szDemodCmd_RecvData[17]=0x00;
+	szDemodCmd_RecvData[18]=0x01;
+	szDemodCmd_RecvData[19]=0x00;
+	for(int i=0;i<19;i++)
+	{
+		szDemodCmd_RecvData[19]=szDemodCmd_RecvData[19]+szDemodCmd_RecvData[i];
+	}
+	pGEDevice->SendTo(szDemodCmd_RecvData,nDemodCmdSize_RecvData);
 }
 
 
