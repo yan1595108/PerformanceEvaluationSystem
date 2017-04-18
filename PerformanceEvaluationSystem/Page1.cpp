@@ -298,15 +298,15 @@ void CPage1::OnBnClickedUpload()
 	pGEDevice->SendTo(szDemodCmd_SendData,nDemodCmdSize_SendData);
 	pGEDevice->Open();							//打开千兆网设备
 	pGEDevice->SetStorePath(_T("C:\\Recv\\"));
-	float *pBufReceive = new float[80 * 1024];
-	pGEDevice->RecvFrom((char *)pBufReceive, 320 * 1024, 10000);//接收320K字节数据
-	double *pfftdata = new double[50 * 1024];
+	float *pBufReceive = new float[320 * 1024];
+	pGEDevice->RecvFrom((char *)pBufReceive, 320 * 1024 * 4, 10000);//接收320K字节数据
+	double *pfftdata = new double[200 * 1024];
 	for (int j = 0; j < 10; j++)   //提取出正确的fft数据
 	{
 		for (int i = 0; i < 10000; i++)
 		{
-			pfftdata[j * 20000 + i] = pBufReceive[j * 32768 + 16383 - i];
-			pfftdata[j * 20000 + 10000 + i] = pBufReceive[j * 32768 + 32767 - i];
+			pfftdata[j * 20480 + i] = pBufReceive[j * 32768 + 16383 - i];
+			pfftdata[j * 20480 + 10240 + i] = pBufReceive[j * 32768 + 32767 - i];
 		}
 	}
 	CPerformanceEvaluationSystemDlg *pParent = (CPerformanceEvaluationSystemDlg *)GetParent();
