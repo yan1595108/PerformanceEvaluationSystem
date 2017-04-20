@@ -72,7 +72,7 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 public:
-	virtual BOOL Create(UINT nIDTemplate, CWnd* pParentWnd = NULL);
+	//virtual BOOL Create(UINT nIDTemplate, CWnd* pParentWnd = NULL);
 	virtual BOOL OnInitDialog();
 	afx_msg void OnBnClickedButtonConfigure();
 	afx_msg void OnBnClickedButtonRecvdata();

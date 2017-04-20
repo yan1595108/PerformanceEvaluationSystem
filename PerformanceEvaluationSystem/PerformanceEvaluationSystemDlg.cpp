@@ -68,7 +68,8 @@ END_MESSAGE_MAP()
 CPerformanceEvaluationSystemDlg::CPerformanceEvaluationSystemDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CPerformanceEvaluationSystemDlg::IDD, pParent),
 	hDll(NULL),
-	pGEDevice(NULL)
+	pGEDevice(NULL),
+	m_Page4(this)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDI_APPICON);
 	position_file_plot = 0;
@@ -149,6 +150,7 @@ BOOL CPerformanceEvaluationSystemDlg::OnInitDialog()
 		pGEDevice = new CGigabitEthernetDevice(m_hWnd);
 	}
 
+	CPageBase::SetGEDevice(pGEDevice);
 	InitialPages();				//初始化不同模式设置页面
 	InitialControls();			//初始化界面控件
 	InitialiPlotX();			//初始化绘图控件
@@ -716,16 +718,20 @@ void CPerformanceEvaluationSystemDlg::InitialPages()
 	m_Page4.DlgPosition = DialogBoundaryRect;
 	m_Page5.DlgPosition = DialogBoundaryRect;
 
+	m_sheet4 = new CPropertySheet(_T("在线"), this, 0);
+	m_sheet4->AddPage(&m_Page4);
+	m_sheet4->AddPage(&m_Page4Offline);
 	m_Page1.Create(IDD_PAGE1,this);
 	m_Page2.Create(IDD_PAGE2,this);
 	m_Page3.Create(IDD_PAGE3,this);
-	m_Page4.Create(IDD_PAGE4,this);
+	m_sheet4->Create(this, WS_CHILD);
+	m_sheet4->MoveWindow(&DialogBoundaryRect);
 	m_Page5.Create(IDD_PAGE5,this);
-
-	m_Page1.ShowWindow(SW_SHOW);
+	
+	m_Page1.ShowWindow(SW_HIDE);
 	m_Page2.ShowWindow(SW_HIDE);
 	m_Page3.ShowWindow(SW_HIDE);
-	m_Page4.ShowWindow(SW_HIDE);
+	m_sheet4->ShowWindow(SW_SHOW);
 	m_Page5.ShowWindow(SW_HIDE);
 }
 
@@ -737,7 +743,7 @@ void CPerformanceEvaluationSystemDlg::SwitchPages(int nPageIndex)
 		m_Page1.ShowWindow(SW_SHOW);
 		m_Page2.ShowWindow(SW_HIDE);
 		m_Page3.ShowWindow(SW_HIDE);
-		m_Page4.ShowWindow(SW_HIDE);
+		m_sheet4->ShowWindow(SW_HIDE);
 		m_Page5.ShowWindow(SW_HIDE);
 	}
 	else if (nPageIndex == PAGE2)
@@ -745,7 +751,7 @@ void CPerformanceEvaluationSystemDlg::SwitchPages(int nPageIndex)
 		m_Page1.ShowWindow(SW_HIDE);
 		m_Page2.ShowWindow(SW_SHOW);
 		m_Page3.ShowWindow(SW_HIDE);
-		m_Page4.ShowWindow(SW_HIDE);
+		m_sheet4->ShowWindow(SW_HIDE);
 		m_Page5.ShowWindow(SW_HIDE);
 	}
 	else if (nPageIndex == PAGE3)
@@ -753,7 +759,7 @@ void CPerformanceEvaluationSystemDlg::SwitchPages(int nPageIndex)
 		m_Page1.ShowWindow(SW_HIDE);
 		m_Page2.ShowWindow(SW_HIDE);
 		m_Page3.ShowWindow(SW_SHOW);
-		m_Page4.ShowWindow(SW_HIDE);
+		m_sheet4->ShowWindow(SW_HIDE);
 		m_Page5.ShowWindow(SW_HIDE);
 	}
 	else if (nPageIndex == PAGE4)
@@ -763,7 +769,7 @@ void CPerformanceEvaluationSystemDlg::SwitchPages(int nPageIndex)
 		m_Page1.ShowWindow(SW_HIDE);
 		m_Page2.ShowWindow(SW_HIDE);
 		m_Page3.ShowWindow(SW_HIDE);
-		m_Page4.ShowWindow(SW_SHOW);
+		m_sheet4->ShowWindow(SW_SHOW);
 		m_Page5.ShowWindow(SW_HIDE);
 	}
 	else if (nPageIndex == PAGE5)
@@ -771,7 +777,7 @@ void CPerformanceEvaluationSystemDlg::SwitchPages(int nPageIndex)
 		m_Page1.ShowWindow(SW_HIDE);
 		m_Page2.ShowWindow(SW_HIDE);
 		m_Page3.ShowWindow(SW_HIDE);
-		m_Page4.ShowWindow(SW_HIDE);
+		m_sheet4->ShowWindow(SW_HIDE);
 		m_Page5.ShowWindow(SW_SHOW);
 	}
 	else
@@ -779,7 +785,7 @@ void CPerformanceEvaluationSystemDlg::SwitchPages(int nPageIndex)
 		m_Page1.ShowWindow(SW_SHOW);
 		m_Page2.ShowWindow(SW_HIDE);
 		m_Page3.ShowWindow(SW_HIDE);
-		m_Page4.ShowWindow(SW_HIDE);
+		m_sheet4->ShowWindow(SW_HIDE);
 		m_Page5.ShowWindow(SW_HIDE);
 	}
 }

@@ -125,6 +125,7 @@
     <ClInclude Include="Page2.h" />
     <ClInclude Include="Page3.h" />
     <ClInclude Include="Page4.h" />
+    <ClInclude Include="Page4Offline.h" />
     <ClInclude Include="Page5.h" />
     <ClInclude Include="PageBase.h" />
     <ClInclude Include="PerformanceEvaluationSystem.h" />
@@ -159,6 +160,7 @@
     <ClCompile Include="Page2.cpp" />
     <ClCompile Include="Page3.cpp" />
     <ClCompile Include="Page4.cpp" />
+    <ClCompile Include="Page4Offline.cpp" />
     <ClCompile Include="Page5.cpp" />
     <ClCompile Include="PageBase.cpp" />
     <ClCompile Include="PerformanceEvaluationSystem.cpp" />

@@ -18,7 +18,7 @@ IMPLEMENT_DYNAMIC(CPage4, CPageBase)
 
 CPage4::CPage4(CWnd* pParent /*=NULL*/)
 	: CPageBase(CPage4::IDD, pParent)
-	, pTempMainDlg(NULL)
+	, pTempMainDlg(pParent)
 	, bThreadStopRecv(TRUE),bThreadStopPlot(TRUE)
 	, hThreadRecv(INVALID_HANDLE_VALUE),hThreadPlot(INVALID_HANDLE_VALUE)
 	, dwThreadRecvID(0),dwThreadPlotID(0)
@@ -43,7 +43,7 @@ CPage4::~CPage4()
 
 void CPage4::DoDataExchange(CDataExchange* pDX)
 {
-	CDialogEx::DoDataExchange(pDX);
+	CPageBase::DoDataExchange(pDX);
 	DDX_Text(pDX, IDE_RECVSIZE, m_nRecvSize);
 	DDX_Text(pDX, IDE_PACKAGESIZE, m_nFramesPerPackage);
 	DDX_Text(pDX,IDE_CARRIER,m_Carrier);
@@ -85,14 +85,14 @@ END_MESSAGE_MAP()
 // CPage4 消息处理程序
 
 
-BOOL CPage4::Create(UINT nIDTemplate, CWnd* pParentWnd)
-{
-	// TODO: 在此添加专用代码和/或调用基类
-	pTempMainDlg = pParentWnd;
-	CPerformanceEvaluationSystemDlg *pMainDlg = static_cast<CPerformanceEvaluationSystemDlg*>(pTempMainDlg);
-	pGEDevice = pMainDlg->pGEDevice;
-	return CPageBase::Create(nIDTemplate, pParentWnd);
-}
+//BOOL CPage4::Create(UINT nIDTemplate, CWnd* pParentWnd)
+//{
+//	// TODO: 在此添加专用代码和/或调用基类
+//	pTempMainDlg = pParentWnd;
+//	CPerformanceEvaluationSystemDlg *pMainDlg = static_cast<CPerformanceEvaluationSystemDlg*>(pTempMainDlg);
+//	pGEDevice = pMainDlg->pGEDevice;
+//	return CPageBase::Create(nIDTemplate, pParentWnd);
+//}
 
 //信道化解调模式-配置
 void CPage4::OnBnClickedButtonConfigure()

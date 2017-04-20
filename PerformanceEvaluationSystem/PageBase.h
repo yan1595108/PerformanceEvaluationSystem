@@ -3,7 +3,7 @@
 
 // CPageBase 对话框
 
-class CPageBase : public CDialogEx
+class CPageBase : public CPropertyPage
 {
 	DECLARE_DYNAMIC(CPageBase)
 
@@ -14,6 +14,7 @@ public:
 public:
 	RECT DlgPosition;
 	static CGigabitEthernetDevice *pGEDevice;	//千兆网接口设备
+	static void SetGEDevice(CGigabitEthernetDevice *pDevice);
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 支持

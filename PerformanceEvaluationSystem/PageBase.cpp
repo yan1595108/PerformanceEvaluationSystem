@@ -9,10 +9,10 @@
 
 // CPageBase 对话框
 
-IMPLEMENT_DYNAMIC(CPageBase, CDialogEx)
+IMPLEMENT_DYNAMIC(CPageBase, CPropertyPage)
 
 CPageBase::CPageBase(UINT nDlgID,CWnd* pParent)
-	: CDialogEx(nDlgID, pParent)
+	: CPropertyPage(nDlgID)
 {
 
 }
@@ -25,11 +25,11 @@ CGigabitEthernetDevice * CPageBase::pGEDevice(NULL);
 
 void CPageBase::DoDataExchange(CDataExchange* pDX)
 {
-	CDialogEx::DoDataExchange(pDX);
+	CPropertyPage::DoDataExchange(pDX);
 }
 
 
-BEGIN_MESSAGE_MAP(CPageBase, CDialogEx)
+BEGIN_MESSAGE_MAP(CPageBase, CPropertyPage)
 END_MESSAGE_MAP()
 
 
@@ -38,7 +38,7 @@ END_MESSAGE_MAP()
 
 BOOL CPageBase::OnInitDialog()
 {
-	CDialogEx::OnInitDialog();
+	CPropertyPage::OnInitDialog();
 
 	// TODO:  在此添加额外的初始化
 	//CRect DialogBoundaryRect;
@@ -47,4 +47,10 @@ BOOL CPageBase::OnInitDialog()
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// 异常: OCX 属性页应返回 FALSE
+}
+
+
+void CPageBase::SetGEDevice(CGigabitEthernetDevice *pDevice)
+{
+	pGEDevice = pDevice;
 }

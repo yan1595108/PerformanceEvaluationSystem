@@ -23,7 +23,7 @@ CPage5::~CPage5()
 
 void CPage5::DoDataExchange(CDataExchange* pDX)
 {
-	CDialogEx::DoDataExchange(pDX);
+	CPageBase::DoDataExchange(pDX);
 }
 
 

@@ -291,7 +291,7 @@ CPage3::~CPage3()
 
 void CPage3::DoDataExchange(CDataExchange* pDX)
 {
-	CDialogEx::DoDataExchange(pDX);
+	CPageBase::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_SIGNALBANDWIDTH, m_bandwidth);
 	DDX_Text(pDX, IDE_DOWNSAMPLE3, m_downsample1);
 	DDX_Text(pDX, IDE_DOWNSAMPLE4, m_downsample2);

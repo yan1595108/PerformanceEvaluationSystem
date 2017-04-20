@@ -31,7 +31,7 @@ CPage1::~CPage1()
 
 void CPage1::DoDataExchange(CDataExchange* pDX)
 {
-	CDialogEx::DoDataExchange(pDX);
+	CPropertyPage::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_CENTER_FREQ_UNIT, m_UnitCenterFreq);
 	DDX_Control(pDX, IDC_BAND_WIDTH_UNIT, m_UnitBandWidth);
 	DDX_Control(pDX, IDC_REFERENCE_LEVEL_UNIT, m_UnitReferenceLevel);

@@ -9,7 +9,7 @@
 
 // CPage2 ¶Ô»°¿ò
 
-IMPLEMENT_DYNAMIC(CPage2, CDialogEx)
+IMPLEMENT_DYNAMIC(CPage2, CPageBase)
 
 CPage2::CPage2(CWnd* pParent /*=NULL*/)
 	: CPageBase(CPage2::IDD, pParent)
@@ -23,9 +23,9 @@ CPage2::~CPage2()
 
 void CPage2::DoDataExchange(CDataExchange* pDX)
 {
-	CDialogEx::DoDataExchange(pDX);
+	CPageBase::DoDataExchange(pDX);
 }
 
 
-BEGIN_MESSAGE_MAP(CPage2, CDialogEx)
+BEGIN_MESSAGE_MAP(CPage2, CPageBase)
 END_MESSAGE_MAP()
