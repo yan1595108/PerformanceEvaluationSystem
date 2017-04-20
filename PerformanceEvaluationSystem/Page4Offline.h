@@ -1,9 +1,9 @@
 #pragma once
-
+#include "PageBase.h"
 
 // CPage4Offline ¶Ô»°¿ò
 
-class CPage4Offline : public CPropertyPage
+class CPage4Offline : public CPageBase
 {
 	DECLARE_DYNAMIC(CPage4Offline)
 

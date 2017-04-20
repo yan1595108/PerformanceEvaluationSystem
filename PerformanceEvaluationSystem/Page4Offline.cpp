@@ -9,10 +9,10 @@
 
 // CPage4Offline ¶Ô»°¿ò
 
-IMPLEMENT_DYNAMIC(CPage4Offline, CPropertyPage)
+IMPLEMENT_DYNAMIC(CPage4Offline, CPageBase)
 
 CPage4Offline::CPage4Offline(CWnd* pParent /*=NULL*/)
-	: CPropertyPage(CPage4Offline::IDD)
+	: CPageBase(CPage4Offline::IDD)
 {
 
 }
@@ -23,11 +23,11 @@ CPage4Offline::~CPage4Offline()
 
 void CPage4Offline::DoDataExchange(CDataExchange* pDX)
 {
-	CPropertyPage::DoDataExchange(pDX);
+	CPageBase::DoDataExchange(pDX);
 }
 
 
-BEGIN_MESSAGE_MAP(CPage4Offline, CPropertyPage)
+BEGIN_MESSAGE_MAP(CPage4Offline, CPageBase)
 END_MESSAGE_MAP()
 
 

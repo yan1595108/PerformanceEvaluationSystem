@@ -90,4 +90,5 @@ public:
 	unsigned char m_ifdelay;
 	afx_msg void OnBnClickedFlash1();
 	afx_msg void OnBnClickedFlash2();
+	afx_msg void OnSize(UINT nType, int cx, int cy);
 };

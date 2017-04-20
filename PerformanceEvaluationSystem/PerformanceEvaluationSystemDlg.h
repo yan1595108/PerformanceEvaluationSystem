@@ -28,6 +28,7 @@
 #include "Page4.h"
 #include "Page5.h"
 #include "Page4Offline.h"
+#include "ProSheet.h"
 
 #include "GigabitEthernetDevice.h"
 
@@ -172,11 +173,11 @@ public:
 	CPage4 m_Page4;						//信道化解调模式
 	CPage5 m_Page5;						//遥测遥控
 	CPage4Offline m_Page4Offline;
-	CPropertySheet *m_sheet1;
-	CPropertySheet *m_sheet2;
-	CPropertySheet *m_sheet3;
-	CPropertySheet *m_sheet4;
-	CPropertySheet *m_sheet5;
+	CProSheet *m_sheet1;
+	CProSheet *m_sheet2;
+	CProSheet *m_sheet3;
+	CProSheet *m_sheet4;
+	CProSheet *m_sheet5;
 
 private:
 	CWinThread *m_pThreadSpectrumDisplay;

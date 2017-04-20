@@ -79,6 +79,7 @@ BEGIN_MESSAGE_MAP(CPage4, CPageBase)
 	ON_BN_CLICKED(IDB_GMSKIFDELAY, &CPage4::OnBnClickedGmskifdelay)
 	ON_BN_CLICKED(IDB_FLASH1, &CPage4::OnBnClickedFlash1)
 	ON_BN_CLICKED(IDB_FLASH2, &CPage4::OnBnClickedFlash2)
+	ON_WM_SIZE()
 END_MESSAGE_MAP()
 
 
@@ -982,6 +983,36 @@ BOOL CPage4::OnInitDialog()
 	m_buttons[9] = static_cast<CButton *>(GetDlgItem(IDB_ENDTRACK));
 	m_buttons[10] = static_cast<CButton *>(GetDlgItem(IDB_GMSKIFDELAY));
 
+	//获取控件占据属性页尺寸的比例
+	HWND hwndchild = ::GetWindow(m_hWnd, GW_CHILD);
+	CWnd *pWnd;
+	int ctrlID;
+	CRect dlgrect;
+	CRect sheetrect;
+	CWnd *p = GetParent();
+	p->GetWindowRect(&sheetrect);
+	p->ScreenToClient(&sheetrect);
+	GetWindowRect(&dlgrect);
+	ScreenToClient(&dlgrect);
+	while (hwndchild)
+	{
+		ctrlID = ::GetDlgCtrlID(hwndchild);
+		pWnd = GetDlgItem(ctrlID);
+		if (pWnd)
+		{
+			RectProportion prop;
+			CRect rect;
+			pWnd->GetWindowRect(&rect);
+			ScreenToClient(&rect);
+			prop.scale[0] = (double)rect.left / dlgrect.Width();
+			prop.scale[1] = (double)rect.right / dlgrect.Width();
+			prop.scale[2] = (double)rect.top / dlgrect.Height();
+			prop.scale[3] = (double)rect.bottom / dlgrect.Height();
+			rectprop.push_back(prop);
+		}
+		hwndchild = ::GetWindow(hwndchild, GW_HWNDNEXT);
+	}
+
 	GetDlgItem(IDE_FLASHSTATE)->SetWindowText(_T("1"));
 	TRACE("Page4初始化完成！\n");
 	return TRUE;  
@@ -1326,4 +1357,34 @@ void CPage4::OnBnClickedFlash2()
 	}
 	pGEDevice->SendTo(szDemodCmd_RecvData,nDemodCmdSize_RecvData);
 	GetDlgItem(IDE_FLASHSTATE)->SetWindowText(_T("2"));
+}
+
+
+void CPage4::OnSize(UINT nType, int cx, int cy)
+{
+	CPageBase::OnSize(nType, cx, cy);
+	HWND hwndchild = ::GetWindow(m_hWnd, GW_CHILD);
+	CWnd *pWnd;
+	int ctrlID;
+	int i = 0;
+	CRect dlgrect;
+	GetWindowRect(&dlgrect);
+	ScreenToClient(&dlgrect);
+	while (hwndchild)
+	{
+		ctrlID = ::GetDlgCtrlID(hwndchild);
+		pWnd = GetDlgItem(ctrlID);
+		if (pWnd && !rectprop.empty())
+		{
+			CRect rect;
+			rect.left = rectprop[i].scale[0] * cx;
+			rect.right = rectprop[i].scale[1] * cx;
+			rect.top = rectprop[i].scale[2] * cy;
+			rect.bottom = rectprop[i].scale[3] * cy;
+			pWnd->MoveWindow(&rect);
+			i++;
+		}
+		hwndchild = ::GetWindow(hwndchild, GW_HWNDNEXT);
+	}
+	// TODO: 在此处添加消息处理程序代码
 }

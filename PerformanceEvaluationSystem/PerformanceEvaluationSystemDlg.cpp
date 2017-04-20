@@ -718,13 +718,16 @@ void CPerformanceEvaluationSystemDlg::InitialPages()
 	m_Page4.DlgPosition = DialogBoundaryRect;
 	m_Page5.DlgPosition = DialogBoundaryRect;
 
-	m_sheet4 = new CPropertySheet(_T("在线"), this, 0);
+	m_sheet4 = new CProSheet(_T("在线"), this, 0);
 	m_sheet4->AddPage(&m_Page4);
 	m_sheet4->AddPage(&m_Page4Offline);
 	m_Page1.Create(IDD_PAGE1,this);
 	m_Page2.Create(IDD_PAGE2,this);
 	m_Page3.Create(IDD_PAGE3,this);
 	m_sheet4->Create(this, WS_CHILD);
+	CRect rectsheet;
+	m_sheet4->GetWindowRect(&rectsheet);
+	m_sheet4->ScreenToClient(&rectsheet);
 	m_sheet4->MoveWindow(&DialogBoundaryRect);
 	m_Page5.Create(IDD_PAGE5,this);
 	
