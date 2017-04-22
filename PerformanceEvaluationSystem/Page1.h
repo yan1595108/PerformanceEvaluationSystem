@@ -3,6 +3,7 @@
 #include "PageBase.h"
 #include "afxwin.h"
 
+
 typedef struct _Page1Param
 {
 	CPageBase *pPage1;
@@ -64,4 +65,6 @@ public:
 	afx_msg void OnBnClickedSpectrum();
 	afx_msg void OnBnClickedChannelize();
 	afx_msg void OnBnClickedUpload();
+	afx_msg LRESULT OnButtonChanged(WPARAM wParam, LPARAM lParam);
+	afx_msg void OnBnClickedAnalysis();
 };

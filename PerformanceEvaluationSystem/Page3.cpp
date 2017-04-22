@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "PerformanceEvaluationSystem.h"
+#include "PerformanceEvaluationSystemDlg.h"
 #include "Page3.h"
 #include "afxdialogex.h"
 
@@ -283,10 +284,25 @@ CPage3::CPage3(CWnd* pParent /*=NULL*/)
 	m_divide4351 = 0;
 	m_analogbandwidth = 0;
 	m_fs = 0;
+	dynamicbutton = false;
+	buttonnum_online = 3;
+	buttonnum_offline = 1;
 }
 
 CPage3::~CPage3()
 {
+	if (dynamicbutton)
+	{
+		for (int i = 0; i < buttonnum_online; i++)
+		{
+			if (m_buttons[i] != nullptr)
+			{
+				delete m_buttons[i];
+			}
+		}
+	}
+	delete[] m_buttons;
+	delete[] rect_button;
 }
 
 void CPage3::DoDataExchange(CDataExchange* pDX)
@@ -310,6 +326,8 @@ BEGIN_MESSAGE_MAP(CPage3, CPageBase)
 	ON_BN_CLICKED(IDB_SPECTRUM2, &CPage3::OnBnClickedSpectrum2)
 	ON_BN_CLICKED(IDB_PREPROCESSPARA, &CPage3::OnBnClickedPreprocesspara)
 	ON_BN_CLICKED(IDB_CHANNELIZE2, &CPage3::OnBnClickedChannelize2)
+	ON_MESSAGE(WM_CHANGEBUTTON, OnButtonChanged)
+	ON_BN_CLICKED(IDB_PREPROCESSOFFLINE, &CPage3::OnBnClickedPreprocess)
 END_MESSAGE_MAP()
 
 BOOL CPage3::OnInitDialog()
@@ -335,6 +353,18 @@ BOOL CPage3::OnInitDialog()
 	m_directpull = directpull[0];
 	m_downsample1 = downsample1[0];
 	m_downsample2 = downsample2[0];
+
+	rect_button = new CRect[buttonnum_online];
+	GetDlgItem(IDB_SPECTRUM2)->GetWindowRect(rect_button[0]);
+	GetDlgItem(IDB_CHANNELIZE2)->GetWindowRect(rect_button[1]);
+	GetDlgItem(IDB_PREPROCESSPARA)->GetWindowRect(rect_button[2]);
+	ScreenToClient(rect_button[0]);
+	ScreenToClient(rect_button[1]);
+	ScreenToClient(rect_button[2]);
+	m_buttons = new CButton *[buttonnum_online];
+	m_buttons[0] = static_cast<CButton *>(GetDlgItem(IDB_SPECTRUM2));
+	m_buttons[1] = static_cast<CButton *>(GetDlgItem(IDB_CHANNELIZE2));
+	m_buttons[2] = static_cast<CButton *>(GetDlgItem(IDB_PREPROCESSPARA));
 	UpdateData(FALSE);
 	return TRUE;  // return TRUE unless you set the focus to a control
 }
@@ -353,6 +383,7 @@ void CPage3::OnCbnSelchangeSignalbandwidth()
 //频谱分析参数配置
 void CPage3::OnBnClickedSpectrum2()
 {
+	UpdateData(TRUE);
 	int nDemodCmdSize_RecvData =20;
 	char *szDemodCmd_RecvData=new char[nDemodCmdSize_RecvData];
 	int cur_analog_bandwidth = analog_bandwidth[m_bandwidth.GetCurSel()];
@@ -464,4 +495,64 @@ void CPage3::OnBnClickedChannelize2()
 		szDemodCmd_RecvData[19]=szDemodCmd_RecvData[19]+szDemodCmd_RecvData[i];
 	}
 	pGEDevice->SendTo(szDemodCmd_RecvData,nDemodCmdSize_RecvData);
+}
+
+
+afx_msg LRESULT CPage3::OnButtonChanged(WPARAM wParam, LPARAM lParam)
+{
+	switch ((int)wParam)
+	{
+	case 0:               //在线模式
+		{
+			for (int i = 0; i < buttonnum_offline; i++)          //先销毁离线模式的按钮
+			{
+				m_buttons[i]->DestroyWindow();
+				delete m_buttons[i];
+				m_buttons[i] = nullptr;
+			}
+
+			for (int i = 0; i < buttonnum_online; i++)           //再新建在线模式的按钮
+			{
+				m_buttons[i] = new CButton();
+			}
+			m_buttons[0]->Create(_T("频谱分析参数"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, rect_button[0], this, IDB_SPECTRUM2);
+			m_buttons[1]->Create(_T("信道化参数"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, rect_button[1], this, IDB_CHANNELIZE2);
+			m_buttons[2]->Create(_T("预处理参数"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, rect_button[2], this, IDB_PREPROCESSPARA);
+			m_buttons[0]->SetFont(GetFont());
+			m_buttons[1]->SetFont(GetFont());
+			m_buttons[2]->SetFont(GetFont());
+			break;
+		}
+	case 1:               //离线模式
+		{
+			for (int i = 0; i < buttonnum_online; i++)
+			{
+				m_buttons[i]->DestroyWindow();
+				if (dynamicbutton)
+				{
+					delete m_buttons[i];
+				}
+				m_buttons[i] = nullptr;
+			}
+			dynamicbutton = true;
+
+			for (int i = 0; i < buttonnum_offline; i++)
+			{
+				m_buttons[i] = new CButton();
+			}
+			m_buttons[0]->Create(_T("预处理"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, rect_button[0], this, IDB_CALLSIMULINK);
+			m_buttons[0]->SetFont(GetFont());
+			break;
+		}
+
+	default:
+		break;
+	}
+	return 0;
+}
+
+
+void CPage3::OnBnClickedPreprocess()
+{
+
 }

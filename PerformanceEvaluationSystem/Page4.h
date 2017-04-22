@@ -2,9 +2,6 @@
 #include "PageBase.h"
 #include "afxwin.h"
 
-#define BUTTON_NUM_ONLINE 11
-#define BUTTON_NUM_OFFLINE 1
-
 extern const int nLenFrame;
 
 // CPage4 对话框
@@ -37,8 +34,6 @@ public:
 	volatile BOOL bThreadStopPlot;		//停止绘图标志
 	HANDLE hThreadPlot;					//绘图线程
 	DWORD dwThreadPlotID;				//绘图线程ID
-	CRect rect_button[BUTTON_NUM_ONLINE];//存放几个按钮的位置
-
 	THREADPARAM ThreadRecvParam;		//线程参数
 
 //控件相关变量
@@ -60,9 +55,7 @@ public:
 	double m_offsetvalue;
 	double m_c1delta;
 	double m_c2delta;
-	
-private:
-	CButton *m_buttons[BUTTON_NUM_ONLINE];      //所有的按钮
+	unsigned char m_ifdelay;
 
 // 对话框数据
 	enum { IDD = IDD_PAGE4 };
@@ -87,7 +80,6 @@ public:
 	afx_msg void OnBnClickedBegintrack();
 	afx_msg void OnBnClickedEndtrack();
 	afx_msg void OnBnClickedGmskifdelay();
-	unsigned char m_ifdelay;
 	afx_msg void OnBnClickedFlash1();
 	afx_msg void OnBnClickedFlash2();
 };

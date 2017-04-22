@@ -35,3 +35,7 @@ ipch/
 *.orig
 *.asv
 *.mat
+SignalRecognition/
+*.r2010b
+pinpu_analyse/
+Demodulation/

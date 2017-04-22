@@ -739,6 +739,7 @@ void CPerformanceEvaluationSystemDlg::SwitchPages(int nPageIndex)
 		m_Page3.ShowWindow(SW_HIDE);
 		m_Page4.ShowWindow(SW_HIDE);
 		m_Page5.ShowWindow(SW_HIDE);
+		pagestatus = 1;
 	}
 	else if (nPageIndex == PAGE2)
 	{
@@ -747,6 +748,7 @@ void CPerformanceEvaluationSystemDlg::SwitchPages(int nPageIndex)
 		m_Page3.ShowWindow(SW_HIDE);
 		m_Page4.ShowWindow(SW_HIDE);
 		m_Page5.ShowWindow(SW_HIDE);
+		pagestatus = 2;
 	}
 	else if (nPageIndex == PAGE3)
 	{
@@ -755,6 +757,7 @@ void CPerformanceEvaluationSystemDlg::SwitchPages(int nPageIndex)
 		m_Page3.ShowWindow(SW_SHOW);
 		m_Page4.ShowWindow(SW_HIDE);
 		m_Page5.ShowWindow(SW_HIDE);
+		pagestatus = 3;
 	}
 	else if (nPageIndex == PAGE4)
 	{
@@ -765,6 +768,7 @@ void CPerformanceEvaluationSystemDlg::SwitchPages(int nPageIndex)
 		m_Page3.ShowWindow(SW_HIDE);
 		m_Page4.ShowWindow(SW_SHOW);
 		m_Page5.ShowWindow(SW_HIDE);
+		pagestatus = 4;
 	}
 	else if (nPageIndex == PAGE5)
 	{
@@ -773,6 +777,7 @@ void CPerformanceEvaluationSystemDlg::SwitchPages(int nPageIndex)
 		m_Page3.ShowWindow(SW_HIDE);
 		m_Page4.ShowWindow(SW_HIDE);
 		m_Page5.ShowWindow(SW_SHOW);
+		pagestatus = 5;
 	}
 	else
 	{
@@ -781,6 +786,7 @@ void CPerformanceEvaluationSystemDlg::SwitchPages(int nPageIndex)
 		m_Page3.ShowWindow(SW_HIDE);
 		m_Page4.ShowWindow(SW_HIDE);
 		m_Page5.ShowWindow(SW_HIDE);
+		pagestatus = 1;
 	}
 }
 
@@ -1519,7 +1525,19 @@ void CPerformanceEvaluationSystemDlg::OnDestroy()
 void CPerformanceEvaluationSystemDlg::OnCbnSelchangeComboWorkmode()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	::SendMessage(m_Page4.GetSafeHwnd(), WM_CHANGEBUTTON, (WPARAM)m_WorkMode.GetCurSel(), 0);
+	if (pagestatus == 1)
+	{
+		::SendMessage(m_Page1.GetSafeHwnd(), WM_CHANGEBUTTON, (WPARAM)m_WorkMode.GetCurSel(), 0);
+	}
+	else if (pagestatus == 3)
+	{
+		::SendMessage(m_Page3.GetSafeHwnd(), WM_CHANGEBUTTON, (WPARAM)m_WorkMode.GetCurSel(), 0);
+	}
+	else if (pagestatus == 4)
+	{
+		::SendMessage(m_Page4.GetSafeHwnd(), WM_CHANGEBUTTON, (WPARAM)m_WorkMode.GetCurSel(), 0);
+	}
+	
 }
 
 void CPerformanceEvaluationSystemDlg::OnCbnSelchangeComboSignaltype()

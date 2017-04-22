@@ -3,6 +3,7 @@
 #include "PageBase.h"
 #include "afxwin.h"
 
+
 // CPage3 ¶Ô»°¿ò
 
 class CPage3 : public CPageBase
@@ -43,4 +44,6 @@ public:
 	afx_msg void OnBnClickedSpectrum2();
 	afx_msg void OnBnClickedPreprocesspara();
 	afx_msg void OnBnClickedChannelize2();
+	afx_msg LRESULT OnButtonChanged(WPARAM wParam, LPARAM lParam);
+	afx_msg void OnBnClickedPreprocess();
 };

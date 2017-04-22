@@ -507,6 +507,12 @@ int CGigabitEthernetDevice::RecvFrom(char *pBufRecvPackage,int nSizeBufRecv,int 
 			//	}
 			//}
 
+			if (nPackageIndexReal==0x00&&nFrameIndexReal==0x00)
+			{
+				TRACE("收到0帧\n");
+				continue;
+			}
+
 			//将接收到的数据保存到缓存中
 			memcpy(pBufRecvPackage+(nFrameIndexReal-1)*(nLenBufRecv-2),pBufRecv+2,nLenBufRecv-2);
 			receivebytes += (nLenBufRecv-2);
@@ -517,12 +523,6 @@ int CGigabitEthernetDevice::RecvFrom(char *pBufRecvPackage,int nSizeBufRecv,int 
 			}
 			/*memcpy(pBufRecvPackage+(nFrameIndexReal-1)*(nLenBufRecv),pBufRecv,nLenBufRecv);
 			receivebytes += (nLenBufRecv);*/
-
-			if (nPackageIndexReal==0x00&&nFrameIndexReal==0x00)
-			{
-				TRACE("收到0帧\n");
-				continue;
-			}
 
 			//判断帧编号是否异常
 			if ((nFrameIndexReal<1) || (nFrameIndexReal>nNumFramesInOnePackage))

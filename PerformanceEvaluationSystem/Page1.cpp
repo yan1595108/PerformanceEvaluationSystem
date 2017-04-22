@@ -23,10 +23,25 @@ CPage1::CPage1(CWnd* pParent /*=NULL*/)
 	m_downsample2 = 0;
 	m_directpull = 0;
 	bandwidth = 0;
+	buttonnum_online = 4;
+	buttonnum_offline = 1;
+	dynamicbutton = false;
 }
 
 CPage1::~CPage1()
 {
+	if (dynamicbutton)
+	{
+		for (int i = 0; i < buttonnum_online; i++)
+		{
+			if (m_buttons[i] != nullptr)
+			{
+				delete m_buttons[i];
+			}
+		}
+	}
+	delete[] m_buttons;
+	delete[] rect_button;
 }
 
 void CPage1::DoDataExchange(CDataExchange* pDX)
@@ -54,6 +69,8 @@ BEGIN_MESSAGE_MAP(CPage1, CPageBase)
 	ON_BN_CLICKED(IDB_SPECTRUM, &CPage1::OnBnClickedSpectrum)
 	ON_BN_CLICKED(IDB_CHANNELIZE, &CPage1::OnBnClickedChannelize)
 	ON_BN_CLICKED(IDB_UPLOAD, &CPage1::OnBnClickedUpload)
+	ON_MESSAGE(WM_CHANGEBUTTON, OnButtonChanged)
+	ON_BN_CLICKED(IDB_ANALYSIS, &CPage1::OnBnClickedAnalysis)
 END_MESSAGE_MAP()
 
 
@@ -108,6 +125,21 @@ BOOL CPage1::OnInitDialog()
 	m_bandwidth.AddString(_T("1M"));
 	m_bandwidth.AddString(_T("5M"));
 	m_bandwidth.AddString(_T("30M"));
+
+	rect_button = new CRect[buttonnum_online];
+	GetDlgItem(IDB_SET)->GetWindowRect(rect_button[0]);
+	GetDlgItem(IDB_CHANNELIZE)->GetWindowRect(rect_button[1]);
+	GetDlgItem(IDB_SPECTRUM)->GetWindowRect(rect_button[2]);
+	GetDlgItem(IDB_UPLOAD)->GetWindowRect(rect_button[3]);
+	ScreenToClient(rect_button[0]);
+	ScreenToClient(rect_button[1]);
+	ScreenToClient(rect_button[2]);
+	ScreenToClient(rect_button[3]);
+	m_buttons = new CButton *[buttonnum_online];
+	m_buttons[0] = static_cast<CButton *>(GetDlgItem(IDB_SET));
+	m_buttons[1] = static_cast<CButton *>(GetDlgItem(IDB_CHANNELIZE));
+	m_buttons[2] = static_cast<CButton *>(GetDlgItem(IDB_SPECTRUM));
+	m_buttons[3] = static_cast<CButton *>(GetDlgItem(IDB_UPLOAD));
 
 	return TRUE; 
 }
@@ -183,6 +215,7 @@ void CPage1::OnBnClickedSpectrum()
 		szDemodCmd_RecvData[19]=szDemodCmd_RecvData[19]+szDemodCmd_RecvData[i];
 	}
 	pGEDevice->SendTo(szDemodCmd_RecvData,nDemodCmdSize_RecvData);
+	delete[] szDemodCmd_RecvData;
 }
 
 
@@ -217,6 +250,7 @@ void CPage1::OnBnClickedChannelize()
 		szDemodCmd_RecvData[19]=szDemodCmd_RecvData[19]+szDemodCmd_RecvData[i];
 	}
 	pGEDevice->SendTo(szDemodCmd_RecvData,nDemodCmdSize_RecvData);
+	delete[] szDemodCmd_RecvData;
 }
 
 
@@ -253,15 +287,15 @@ void CPage1::OnBnClickedUpload()
 	pGEDevice->SendTo(szDemodCmd_SendData,nDemodCmdSize_SendData);
 	pGEDevice->Open();							//打开千兆网设备
 	pGEDevice->SetStorePath(_T("C:\\Recv\\"));
-	float *pBufReceive = new float[80 * 1024];
-	pGEDevice->RecvFrom((char *)pBufReceive, 320 * 1024, 10000);//接收320K字节数据
-	double *pfftdata = new double[50 * 1024];
+	float *pBufReceive = new float[320 * 1024];
+	pGEDevice->RecvFrom((char *)pBufReceive, 320 * 1024 * 4, 10000);//接收320K数据
+	double *pfftdata = new double[200 * 1024];
 	for (int j = 0; j < 10; j++)   //提取出正确的fft数据
 	{
-		for (int i = 0; i < 10000; i++)
+		for (int i = 0; i < 10240; i++)
 		{
-			pfftdata[j * 20000 + i] = pBufReceive[j * 32768 + 16383 - i];
-			pfftdata[j * 20000 + 10000 + i] = pBufReceive[j * 32768 + 32767 - i];
+			pfftdata[j * 20480 + i] = pBufReceive[j * 32768 + 16383 - i];
+			pfftdata[j * 20480 + 10240 + i] = pBufReceive[j * 32768 + 32767 - i];
 		}
 	}
 	CPerformanceEvaluationSystemDlg *pParent = (CPerformanceEvaluationSystemDlg *)GetParent();
@@ -287,4 +321,111 @@ void CPage1::OnBnClickedUpload()
 	}
 	pParent->GetCarrierFreqAndBW(pfftdata, 50 * 1024, bandwidth, carrier_frequency, signal_bandwith);
 	pParent->m_Page3.fcw0 = carrier_frequency; 
+	delete[] szDemodCmd_SendData;
+	delete[] pBufReceive;
+	delete[] pfftdata;
+}
+
+
+afx_msg LRESULT CPage1::OnButtonChanged(WPARAM wParam, LPARAM lParam)
+{
+	switch ((int)wParam)
+	{
+	case 0:               //在线模式
+		{
+			for (int i = 0; i < buttonnum_offline; i++)          //先销毁离线模式的按钮
+			{
+				m_buttons[i]->DestroyWindow();
+				delete m_buttons[i];
+				m_buttons[i] = nullptr;
+			}
+
+			for (int i = 0; i < buttonnum_online; i++)           //再新建在线模式的按钮
+			{
+				m_buttons[i] = new CButton();
+			}
+			m_buttons[0]->Create(_T("设置"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, rect_button[0], this, IDB_SET);
+			m_buttons[1]->Create(_T("信道化参数"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, rect_button[1], this, IDB_CHANNELIZE);
+			m_buttons[2]->Create(_T("预处理参数"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, rect_button[2], this, IDB_SPECTRUM);
+			m_buttons[3]->Create(_T("上传数据"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, rect_button[3], this, IDB_UPLOAD);
+			m_buttons[0]->SetFont(GetFont());
+			m_buttons[1]->SetFont(GetFont());
+			m_buttons[2]->SetFont(GetFont());
+			m_buttons[3]->SetFont(GetFont());
+			break;
+		}
+	case 1:               //离线模式
+		{
+			for (int i = 0; i < buttonnum_online; i++)
+			{
+				m_buttons[i]->DestroyWindow();
+				if (dynamicbutton)
+				{
+					delete m_buttons[i];
+				}
+				m_buttons[i] = nullptr;
+			}
+			dynamicbutton = true;
+
+			for (int i = 0; i < buttonnum_offline; i++)
+			{
+				m_buttons[i] = new CButton();
+			}
+			m_buttons[0]->Create(_T("频谱分析"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, rect_button[0], this, IDB_ANALYSIS);
+			m_buttons[0]->SetFont(GetFont());
+			break;
+		}
+
+	default:
+		break;
+	}
+	return 0;
+}
+
+
+void CPage1::OnBnClickedAnalysis()
+{
+	TCHAR path_execution[100];
+	CPerformanceEvaluationSystemDlg *pMainDlg = static_cast<CPerformanceEvaluationSystemDlg *>(GetParent());
+	GetModuleFileName(NULL, path_execution, 100);
+	CString path_simulink(path_execution);
+	path_simulink = path_simulink.Left(path_simulink.ReverseFind('\\'));
+	path_simulink = path_simulink.Left(path_simulink.ReverseFind('\\'));
+	path_simulink.Append(_T("\\MatlabFiles\\pinpu_analyse"));        //获取频谱分析simulink文件的路径
+	if (GetFileAttributes(path_simulink.GetBuffer()) == INVALID_FILE_ATTRIBUTES)
+	{
+		pMainDlg->DisplayRunningInfo(_T("路径pinpu_analyse不存在"));
+		return;
+	}
+	mxArray *mxPath = nullptr;
+	mxPath = mxCreateString(path_simulink.GetBuffer());
+	engPutVariable(pMainDlg->en, _T("simulinkpath"), mxPath);
+	engEvalString(pMainDlg->en, _T("cd(simulinkpath)"));
+	pMainDlg->DisplayRunningInfo(_T("开始频谱分析"));
+	engEvalString(pMainDlg->en, _T("channelfft"));               //进行子信道频谱分析
+	mxArray *mxfftdata = NULL;
+	if ((mxfftdata = engGetVariable(pMainDlg->en, _T("fftresult"))) == NULL)
+	{
+		TRACE(_T("获取fftresult失败\r\n"));
+		return;
+	}
+	int row = 0;
+	if ((row = mxGetM(mxfftdata)) == 0)
+	{
+		TRACE(_T("row = 0\r\n"));
+		return;
+	}
+	double *fftdata = new double[row];
+	memcpy((void *)fftdata, (void *)(mxGetPr(mxfftdata)), row * sizeof(double));             //获取频谱分析结果
+	double *spectrumjoint = new double[200 * 1024];
+	for (int j = 0; j < 10; j++)   //进行频谱拼接
+	{
+		for (int i = 0; i < 10240; i++)
+		{
+			spectrumjoint[j * 20480 + i] = fftdata[j * 32768 + 16383 - i];
+			spectrumjoint[j * 20480 + 10240 + i] = fftdata[j * 32768 + 32767 - i];
+		}
+	}
+	delete[] fftdata;
+	delete[] spectrumjoint;
 }

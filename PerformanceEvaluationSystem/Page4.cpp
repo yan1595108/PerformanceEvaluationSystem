@@ -1,5 +1,6 @@
 ﻿// Page4.cpp : 实现文件
 //
+#pragma warining(disable:4244)
 
 #include "stdafx.h"
 #include "PerformanceEvaluationSystem.h"
@@ -34,11 +35,25 @@ CPage4::CPage4(CWnd* pParent /*=NULL*/)
 	directpull = 0;
 	downsample1 = 0;
 	downsample2 = 0;
+	dynamicbutton = false;
+	buttonnum_online = 13;
+	buttonnum_offline = 1;
 }
 
 CPage4::~CPage4()
 {
-
+	if (dynamicbutton)
+	{
+		for (int i = 0; i < buttonnum_online; i++)
+		{
+			if (m_buttons[i] != nullptr)
+			{
+				delete m_buttons[i];
+			}
+		}
+	}
+	delete[] m_buttons;
+	delete[] rect_button;
 }
 
 void CPage4::DoDataExchange(CDataExchange* pDX)
@@ -947,6 +962,7 @@ BOOL CPage4::OnInitDialog()
 	m_UploadDataType.AddString(_T("中频数据"));
 	m_UploadDataType.SetCurSel(3);
 
+	rect_button = new CRect[buttonnum_online];
 	GetDlgItem(IDB_CONFIGURE)->GetWindowRect(rect_button[0]);
 	GetDlgItem(IDB_RESET)->GetWindowRect(rect_button[1]);
 	GetDlgItem(IDB_RECVDATA)->GetWindowRect(rect_button[2]);
@@ -958,6 +974,8 @@ BOOL CPage4::OnInitDialog()
 	GetDlgItem(IDB_BEGINTRACK)->GetWindowRect(rect_button[8]);
 	GetDlgItem(IDB_ENDTRACK)->GetWindowRect(rect_button[9]);
 	GetDlgItem(IDB_GMSKIFDELAY)->GetWindowRect(rect_button[10]);
+	GetDlgItem(IDB_FLASH1)->GetWindowRect(rect_button[11]);
+	GetDlgItem(IDB_FLASH2)->GetWindowRect(rect_button[12]);
 	ScreenToClient(rect_button[0]);
 	ScreenToClient(rect_button[1]);
 	ScreenToClient(rect_button[2]);
@@ -969,7 +987,10 @@ BOOL CPage4::OnInitDialog()
 	ScreenToClient(rect_button[8]);
 	ScreenToClient(rect_button[9]);
 	ScreenToClient(rect_button[10]);
+	ScreenToClient(rect_button[11]);
+	ScreenToClient(rect_button[12]);
 
+	m_buttons = new CButton *[buttonnum_online];
 	m_buttons[0] = static_cast<CButton *>(GetDlgItem(IDB_CONFIGURE));
 	m_buttons[1] = static_cast<CButton *>(GetDlgItem(IDB_RESET));
 	m_buttons[2] = static_cast<CButton *>(GetDlgItem(IDB_RECVDATA));
@@ -981,6 +1002,8 @@ BOOL CPage4::OnInitDialog()
 	m_buttons[8] = static_cast<CButton *>(GetDlgItem(IDB_BEGINTRACK));
 	m_buttons[9] = static_cast<CButton *>(GetDlgItem(IDB_ENDTRACK));
 	m_buttons[10] = static_cast<CButton *>(GetDlgItem(IDB_GMSKIFDELAY));
+	m_buttons[11] = static_cast<CButton *>(GetDlgItem(IDB_FLASH1));
+	m_buttons[12] = static_cast<CButton *>(GetDlgItem(IDB_FLASH2));
 
 	GetDlgItem(IDE_FLASHSTATE)->SetWindowText(_T("1"));
 	TRACE("Page4初始化完成！\n");
@@ -1025,6 +1048,7 @@ void CPage4::OnBnClickedBegintrack()
 		szDemodCmd_RecvData[19]=szDemodCmd_RecvData[19]+szDemodCmd_RecvData[i];
 	}
 	pGEDevice->SendTo(szDemodCmd_RecvData,nDemodCmdSize_RecvData);
+	delete[] szDemodCmd_RecvData;
 }
 
 
@@ -1063,6 +1087,7 @@ void CPage4::OnBnClickedEndtrack()
 		szDemodCmd_RecvData[19]=szDemodCmd_RecvData[19]+szDemodCmd_RecvData[i];
 	}
 	pGEDevice->SendTo(szDemodCmd_RecvData,nDemodCmdSize_RecvData);
+	delete[] szDemodCmd_RecvData;
 }
 
 
@@ -1099,6 +1124,7 @@ void CPage4::OnBnClickedBeginoffset()
 		szDemodCmd_RecvData[19]=szDemodCmd_RecvData[19]+szDemodCmd_RecvData[i];
 	}
 	pGEDevice->SendTo(szDemodCmd_RecvData,nDemodCmdSize_RecvData);
+	delete[] szDemodCmd_RecvData;
 }
 
 
@@ -1134,6 +1160,7 @@ void CPage4::OnBnClickedEndoffset()
 		szDemodCmd_RecvData[19]=szDemodCmd_RecvData[19]+szDemodCmd_RecvData[i];
 	}
 	pGEDevice->SendTo(szDemodCmd_RecvData,nDemodCmdSize_RecvData);
+	delete[] szDemodCmd_RecvData;
 }
 
 
@@ -1143,13 +1170,14 @@ afx_msg LRESULT CPage4::OnButtonChanged(WPARAM wParam, LPARAM lParam)
 	{
 	case 0:               //在线模式
 	{
-		for (int i = 0; i < BUTTON_NUM_OFFLINE; i++)          //先销毁离线模式的按钮
+		for (int i = 0; i < buttonnum_offline; i++)          //先销毁离线模式的按钮
 		{
 			m_buttons[i]->DestroyWindow();
+			delete m_buttons[i];
 			m_buttons[i] = nullptr;
 		}
 
-		for (int i = 0; i < BUTTON_NUM_ONLINE; i++)           //再新建在线模式的按钮
+		for (int i = 0; i < buttonnum_online; i++)           //再新建在线模式的按钮
 		{
 			m_buttons[i] = new CButton();
 		}
@@ -1163,7 +1191,9 @@ afx_msg LRESULT CPage4::OnButtonChanged(WPARAM wParam, LPARAM lParam)
 		m_buttons[7]->Create(_T("比对"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, rect_button[7], this, IDB_COMPAR);
 		m_buttons[8]->Create(_T("开始跟踪"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, rect_button[8], this, IDB_BEGINTRACK);
 		m_buttons[9]->Create(_T("停止跟踪"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, rect_button[9], this, IDB_ENDTRACK);
-		m_buttons[10]->Create(_T("GMSK中频时延"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, rect_button[9], this, IDB_ENDTRACK);
+		m_buttons[10]->Create(_T("GMSK中频时延"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, rect_button[10], this, IDB_ENDTRACK);
+		m_buttons[11]->Create(_T("FLASH1"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, rect_button[11], this, IDB_FLASH1);
+		m_buttons[12]->Create(_T("FLASH2"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, rect_button[12], this, IDB_FLASH2);
 		m_buttons[0]->SetFont(GetFont());
 		m_buttons[1]->SetFont(GetFont());
 		m_buttons[2]->SetFont(GetFont());
@@ -1175,17 +1205,24 @@ afx_msg LRESULT CPage4::OnButtonChanged(WPARAM wParam, LPARAM lParam)
 		m_buttons[8]->SetFont(GetFont());
 		m_buttons[9]->SetFont(GetFont());
 		m_buttons[10]->SetFont(GetFont());
+		m_buttons[11]->SetFont(GetFont());
+		m_buttons[12]->SetFont(GetFont());
 		break;
 	}
 	case 1:               //离线模式
 	{
-		for (int i = 0; i < BUTTON_NUM_ONLINE; i++)
+		for (int i = 0; i < buttonnum_online; i++)
 		{
 			m_buttons[i]->DestroyWindow();
+			if (dynamicbutton)
+			{
+				delete m_buttons[i];
+			}
 			m_buttons[i] = nullptr;
 		}
+		dynamicbutton = true;
 
-		for (int i = 0; i < BUTTON_NUM_OFFLINE; i++)
+		for (int i = 0; i < buttonnum_offline; i++)
 		{
 			m_buttons[i] = new CButton();
 		}
@@ -1206,6 +1243,7 @@ void CPage4::OnBnClickedCallsimulink()
 	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼þÍ¨Öª´¦Àí³ÌÐò´úÂë
 	TCHAR path_execution[100];
 	CPerformanceEvaluationSystemDlg *pMainDlg = static_cast<CPerformanceEvaluationSystemDlg *>(GetParent());
+	pMainDlg->DisplayRunningInfo(_T("开始解调"));
 	GetModuleFileName(NULL, path_execution, 100);
 	CString path_simulink(path_execution);
 	path_simulink = path_simulink.Left(path_simulink.ReverseFind('\\'));
@@ -1215,15 +1253,16 @@ void CPage4::OnBnClickedCallsimulink()
 	mPath = mxCreateString(path_simulink.GetBuffer());
 	engPutVariable(pMainDlg->en, _T("simulinkpath"), mPath);
 	engEvalString(pMainDlg->en, _T("cd(simulinkpath)"));
-	//engEvalString(pMainDlg->en, "callsimulink");
-	engEvalString(pMainDlg->en, _T("load_system('QAM16_100K_I2Q2');"));
+	engEvalString(pMainDlg->en, _T("callsimulink"));
+	pMainDlg->DisplayRunningInfo(_T("解调完成"));
+	/*engEvalString(pMainDlg->en, _T("load_system('QAM16_100K_I2Q2');"));
 	engEvalString(pMainDlg->en, _T("sim('QAM16_100K_I2Q2')"));
 	engEvalString(pMainDlg->en, _T("close_system('QAM16_100K_I2Q2')"));
 	engEvalString(pMainDlg->en, _T("save result"));
 	engEvalString(pMainDlg->en, _T("subplot(2,1,1);"));
 	engEvalString(pMainDlg->en, _T("plot(result.time, result.signals(1).values);"));
 	engEvalString(pMainDlg->en, _T("subplot(2,1,2);"));
-	engEvalString(pMainDlg->en, _T("plot(result.time, result.signals(2).values);"));
+	engEvalString(pMainDlg->en, _T("plot(result.time, result.signals(2).values);"));*/
 }
 
 
@@ -1259,6 +1298,7 @@ void CPage4::OnBnClickedGmskifdelay()
 		szDemodCmd_RecvData[19]=szDemodCmd_RecvData[19]+szDemodCmd_RecvData[i];
 	}
 	pGEDevice->SendTo(szDemodCmd_RecvData,nDemodCmdSize_RecvData);
+	delete[] szDemodCmd_RecvData;
 }
 
 void CPage4::OnBnClickedFlash1()
@@ -1292,6 +1332,7 @@ void CPage4::OnBnClickedFlash1()
 	}
 	pGEDevice->SendTo(szDemodCmd_RecvData,nDemodCmdSize_RecvData);
 	GetDlgItem(IDE_FLASHSTATE)->SetWindowText(_T("1"));
+	delete[] szDemodCmd_RecvData;
 }
 
 
@@ -1326,4 +1367,5 @@ void CPage4::OnBnClickedFlash2()
 	}
 	pGEDevice->SendTo(szDemodCmd_RecvData,nDemodCmdSize_RecvData);
 	GetDlgItem(IDE_FLASHSTATE)->SetWindowText(_T("2"));
+	delete[] szDemodCmd_RecvData;
 }

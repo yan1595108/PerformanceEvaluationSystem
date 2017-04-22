@@ -170,6 +170,7 @@ public:
 	CPage3 m_Page3;						//参数测量模式
 	CPage4 m_Page4;						//信道化解调模式
 	CPage5 m_Page5;						//遥测遥控
+	int pagestatus;                     //指示当前显示的是哪个页面
 
 private:
 	CWinThread *m_pThreadSpectrumDisplay;
