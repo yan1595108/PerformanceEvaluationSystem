@@ -403,6 +403,7 @@ void CPage1::OnBnClickedAnalysis()
 	engEvalString(pMainDlg->en, _T("cd(simulinkpath)"));
 	pMainDlg->DisplayRunningInfo(_T("开始频谱分析"));
 	engEvalString(pMainDlg->en, _T("channelfft"));               //进行子信道频谱分析
+	pMainDlg->DisplayRunningInfo(_T("频谱分析结束，开始画图"));
 	mxArray *mxfftdata = NULL;
 	if ((mxfftdata = engGetVariable(pMainDlg->en, _T("fftresult"))) == NULL)
 	{
@@ -417,7 +418,8 @@ void CPage1::OnBnClickedAnalysis()
 	}
 	double *fftdata = new double[row];
 	memcpy((void *)fftdata, (void *)(mxGetPr(mxfftdata)), row * sizeof(double));             //获取频谱分析结果
-	double *spectrumjoint = new double[200 * 1024];
+	const int spectrumlen = 200 * 1024;
+	double *spectrumjoint = new double[spectrumlen];
 	for (int j = 0; j < 10; j++)   //进行频谱拼接
 	{
 		for (int i = 0; i < 10240; i++)
@@ -427,5 +429,6 @@ void CPage1::OnBnClickedAnalysis()
 		}
 	}
 	delete[] fftdata;
+	::SendMessage(pMainDlg->GetSafeHwnd(), WM_PLOTDATA, spectrumlen, (LPARAM)spectrumjoint);
 	delete[] spectrumjoint;
 }

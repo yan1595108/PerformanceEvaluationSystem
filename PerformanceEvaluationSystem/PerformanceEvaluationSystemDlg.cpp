@@ -438,6 +438,7 @@ void CPerformanceEvaluationSystemDlg::InitialiPlotX()
 	//设置iPlotX控件的环形Buffer大小
 	int nRingBufferSize = 1000000;
 	m_iPlotX.GetChannel(0).SetRingBufferSize(nRingBufferSize);
+	int buffersize = m_iPlotX.GetChannel(0).GetRingBufferSize();
 }
 
 void CPerformanceEvaluationSystemDlg::InitialiPlotX_Page1()
@@ -1691,7 +1692,27 @@ LRESULT CPerformanceEvaluationSystemDlg::PlotData(WPARAM wParam, LPARAM lParam)
 {
 	//m_iPlotX.GetXAxis(0).SetMin(0);
 	//m_iPlotX.GetXAxis(0).SetSpan(10);
-	SetTimer(1, 100, NULL);
+	int spectrumlen = (int)wParam;
+	if (spectrumlen == 0)
+	{
+		SetTimer(1, 100, NULL);        //启动定时器画Page4上的接收数据按钮接收到的数据
+	}
+	else                  //画离线模式频谱分析的数据
+	{
+		double *spectrumjoint = (double *)lParam;
+		double dAxisXDelt = 0.001;
+		double AxiesX = 0;
+		CiPlotChannelX ChannelX = m_iPlotX.GetChannel(0);
+		CiPlotAxisX XAxis = m_iPlotX.GetXAxis(0);
+		int buffersize = m_iPlotX.GetChannel(0).GetRingBufferSize();
+		XAxis.SetMin(0);
+		XAxis.SetSpan(spectrumlen * dAxisXDelt);
+		for (int i = 0; i < spectrumlen; i++)
+		{
+			ChannelX.AddXY(AxiesX, spectrumjoint[i]);
+			AxiesX += dAxisXDelt;
+		}
+	}
 	return 0;
 }
 
