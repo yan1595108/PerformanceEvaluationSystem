@@ -10,6 +10,8 @@
 
 extern const int nLenFrame;
 
+DWORD WINAPI ThreadAnalysis(LPVOID lpParam);
+
 // CPage1 对话框
 
 IMPLEMENT_DYNAMIC(CPage1, CPageBase)
@@ -385,8 +387,16 @@ afx_msg LRESULT CPage1::OnButtonChanged(WPARAM wParam, LPARAM lParam)
 
 void CPage1::OnBnClickedAnalysis()
 {
-	TCHAR path_execution[100];
 	CPerformanceEvaluationSystemDlg *pMainDlg = static_cast<CPerformanceEvaluationSystemDlg *>(GetParent());
+	HANDLE hThread = CreateThread(NULL, 0, ThreadAnalysis, pMainDlg, 0, NULL);
+	CloseHandle(hThread);
+}
+
+
+DWORD WINAPI ThreadAnalysis(LPVOID lpParam)
+{
+	CPerformanceEvaluationSystemDlg *pMainDlg = (CPerformanceEvaluationSystemDlg *)lpParam;
+	TCHAR path_execution[100];
 	GetModuleFileName(NULL, path_execution, 100);
 	CString path_simulink(path_execution);
 	path_simulink = path_simulink.Left(path_simulink.ReverseFind('\\'));
@@ -394,30 +404,45 @@ void CPage1::OnBnClickedAnalysis()
 	path_simulink.Append(_T("\\MatlabFiles\\pinpu_analyse"));        //获取频谱分析simulink文件的路径
 	if (GetFileAttributes(path_simulink.GetBuffer()) == INVALID_FILE_ATTRIBUTES)
 	{
-		pMainDlg->DisplayRunningInfo(_T("路径pinpu_analyse不存在"));
-		return;
+		TRACE(_T("路径pinpu_analyse不存在"));
+		return 0;
 	}
+
+	Engine *en;
+	if (!(en = engOpen(NULL)))
+	{
+		TRACE(_T("打开Matlab引擎失败！"));
+		return 0;
+		//MessageBox(_T("打开Matlab引擎失败！"));
+	}
+	else
+	{
+		//打开成功则隐藏Matlab引擎
+		engSetVisible(en,FALSE);
+	}
+
 	mxArray *mxPath = nullptr;
 	mxPath = mxCreateString(path_simulink.GetBuffer());
-	engPutVariable(pMainDlg->en, _T("simulinkpath"), mxPath);
-	engEvalString(pMainDlg->en, _T("cd(simulinkpath)"));
+	engPutVariable(en, _T("simulinkpath"), mxPath);
+	engEvalString(en, _T("cd(simulinkpath)"));
 	pMainDlg->DisplayRunningInfo(_T("开始频谱分析"));
-	engEvalString(pMainDlg->en, _T("channelfft"));               //进行子信道频谱分析
+	engEvalString(en, _T("channelfft"));               //进行子信道频谱分析
 	pMainDlg->DisplayRunningInfo(_T("频谱分析结束，开始画图"));
 	mxArray *mxfftdata = NULL;
-	if ((mxfftdata = engGetVariable(pMainDlg->en, _T("fftresult"))) == NULL)
+	if ((mxfftdata = engGetVariable(en, _T("fftresult"))) == NULL)
 	{
 		TRACE(_T("获取fftresult失败\r\n"));
-		return;
+		return 0;
 	}
 	int row = 0;
 	if ((row = mxGetM(mxfftdata)) == 0)
 	{
 		TRACE(_T("row = 0\r\n"));
-		return;
+		return 0;
 	}
 	double *fftdata = new double[row];
 	memcpy((void *)fftdata, (void *)(mxGetPr(mxfftdata)), row * sizeof(double));             //获取频谱分析结果
+	engClose(en);
 	const int spectrumlen = 200 * 1024;
 	double *spectrumjoint = new double[spectrumlen];
 	for (int j = 0; j < 10; j++)   //进行频谱拼接

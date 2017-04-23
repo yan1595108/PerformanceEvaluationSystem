@@ -1526,19 +1526,9 @@ void CPerformanceEvaluationSystemDlg::OnDestroy()
 void CPerformanceEvaluationSystemDlg::OnCbnSelchangeComboWorkmode()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	if (pagestatus == 1)
-	{
-		::SendMessage(m_Page1.GetSafeHwnd(), WM_CHANGEBUTTON, (WPARAM)m_WorkMode.GetCurSel(), 0);
-	}
-	else if (pagestatus == 3)
-	{
-		::SendMessage(m_Page3.GetSafeHwnd(), WM_CHANGEBUTTON, (WPARAM)m_WorkMode.GetCurSel(), 0);
-	}
-	else if (pagestatus == 4)
-	{
-		::SendMessage(m_Page4.GetSafeHwnd(), WM_CHANGEBUTTON, (WPARAM)m_WorkMode.GetCurSel(), 0);
-	}
-	
+	::SendMessage(m_Page1.GetSafeHwnd(), WM_CHANGEBUTTON, (WPARAM)m_WorkMode.GetCurSel(), 0);
+	::SendMessage(m_Page3.GetSafeHwnd(), WM_CHANGEBUTTON, (WPARAM)m_WorkMode.GetCurSel(), 0);
+	::SendMessage(m_Page4.GetSafeHwnd(), WM_CHANGEBUTTON, (WPARAM)m_WorkMode.GetCurSel(), 0);
 }
 
 void CPerformanceEvaluationSystemDlg::OnCbnSelchangeComboSignaltype()
